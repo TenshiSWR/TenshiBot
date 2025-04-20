@@ -120,4 +120,4 @@ undiscussed_moves = process_non_contested_requests(undiscussed_moves)
 contested_requests = process_contested_requests(contested_requests)
 if actions["technical"]+actions["RMUM"]+actions["contested"] > 0:  # Check to see if anything has been done before saving an edit.
     rmtr.text = reassemble_page()
-    #rmtr.save(summary="Userspace testing: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} technical requests, {} move revert requests and {} contested requests.".format(actions["technical"], actions["RMUM"], actions["contested"]), minor=False)
+    rmtr.save(summary="Userspace testing: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} technical requests, {} move revert requests and {} contested requests.".format(actions["technical"], actions["RMUM"], actions["contested"]), minor=False)
