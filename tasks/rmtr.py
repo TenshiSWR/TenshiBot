@@ -81,7 +81,7 @@ def process_contested_requests(section_queue):
         last_reply = MediawikiApi.get_last_reply(None, whole_request)
         if (datetime.datetime.now().replace(tzinfo=None)-datetime.timedelta(hours=72)) > last_reply.replace(tzinfo=None):
             print("Removing expired contested request:", str(initial_request.filter_templates()[0].get(1).value)+" --> "+str(initial_request.filter_templates()[0].get(2).value))
-            #notify_requesters(initial_request.filter_templates()[0].get("requester").value)
+            notify_requesters(initial_request.filter_templates()[0].get("requester").value)
             try:
                 number_to_update_by = requests[i+1][0]-requests[i][0]
                 del section_queue[indexes[0]:indexes[1]]
