@@ -52,7 +52,10 @@ def process_non_contested_requests(section_queue, section_group):
                     del section_queue[requests[i][0]:requests[i+1][0]]
                 except (IndexError, ValueError):  # Exception will always raise at the end of the section
                     #print((requests[i][0], "Index/ValueError"), section_queue[requests[i][0]:len(section_queue)-1])
-                    del section_queue[requests[i][0]:len(section_queue)-1]
+                    if section_group == "Administrator needed": # Administrator needed section does not have whitespace at the end of the section since it's at the end of the page.
+                        del section_queue[requests[i][0]:len(section_queue)]
+                    else:
+                        del section_queue[requests[i][0]:len(section_queue)-1]
                 finally:
                     requests = [[x[0]-number_to_update_by, x[1]] for x in requests]
                     actions[{"Uncontroversial technical requests":"technical", "Requests to revert undiscussed moves":"RMUM", "Administrator needed":"moved"}[section_group]] += 1
