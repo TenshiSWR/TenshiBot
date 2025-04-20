@@ -1,0 +1,6 @@
+.idea/*
+.vscode/*
+/apicache/*
+/__pycache__/*
+throttle.ctrl
+user-config.py
