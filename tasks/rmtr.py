@@ -2,15 +2,19 @@ import pywikibot
 import mwparserfromhell
 from tasks.majavahbot.mediawiki import MediawikiApi  # Essentially from majavahbot.api import MediawikiApi
 import datetime
+from sys import exit
 site = pywikibot.Site()
 rmtr = pywikibot.Page(site, "User:TenshiBot/RMTRtest")
 split_text_by_line = rmtr.text.split("\n")  # Convert the page text into a list of lines
 
 # Find where each section starts
-section_indexes = [split_text_by_line.index("==== Uncontroversial technical requests ===="),
-                   split_text_by_line.index("==== Requests to revert undiscussed moves ===="),
-                   split_text_by_line.index("==== Contested technical requests ===="),
-                   split_text_by_line.index("==== Administrator needed ====")]
+try:
+    section_indexes = [split_text_by_line.index("==== Uncontroversial technical requests ===="),
+                       split_text_by_line.index("==== Requests to revert undiscussed moves ===="),
+                       split_text_by_line.index("==== Contested technical requests ===="),
+                       split_text_by_line.index("==== Administrator needed ====")]
+except ValueError:
+    exit("Section headings not found, check {} for possible problems".format(rmtr.title()))
 
 # Splits each section into its own var using the section indexes
 instructions, uncontroversial_requests, undiscussed_moves, contested_requests, administrator_moves = split_text_by_line[0:section_indexes[0]], \
@@ -81,7 +85,7 @@ def process_contested_requests(section_queue):
         last_reply = MediawikiApi.get_last_reply(None, whole_request)
         if (datetime.datetime.now().replace(tzinfo=None)-datetime.timedelta(hours=72)) > last_reply.replace(tzinfo=None):
             print("Removing expired contested request:", str(initial_request.filter_templates()[0].get(1).value)+" --> "+str(initial_request.filter_templates()[0].get(2).value))
-            notify_requesters(initial_request.filter_templates()[0].get("requester").value)
+            notify_requesters(initial_request.filter_templates()[0].get("requester").value, initial_request.filter_templates()[0].get(1).value)
             try:
                 number_to_update_by = requests[i+1][0]-requests[i][0]
                 del section_queue[indexes[0]:indexes[1]]
@@ -96,15 +100,20 @@ def process_contested_requests(section_queue):
     return section_queue
 
 
-def notify_requesters(requester):
+def notify_requesters(requester, article):
+    article_talk_page = pywikibot.Page(site, "Talk:{}".format(article))
+    for template in mwparserfromhell.parse(article_talk_page.text).filter_templates():
+        if template.name.matches("Requested move/dated"):
+            print("RM started on talk page of {}, not notifying {}".format(article, requester))
+            return
     if requester == "":
         return
-    talk_page = pywikibot.Page(site, "User talk:{}".format(requester))
-    if talk_page.isRedirectPage():  # If a user is renamed while their request is being contested.
-        talk_page = talk_page.getRedirectTarget()
-    talk_page.text += "\n{{subst:User:TenshiBot/RMTR contested notification}}"
+    user_talk_page = pywikibot.Page(site, "User talk:{}".format(requester))
+    if user_talk_page.isRedirectPage():  # If a user is renamed while their request is being contested.
+        user_talk_page = user_talk_page.getRedirectTarget()
+    user_talk_page.text += "\n{{subst:User:TenshiBot/RMTR contested notification}}"
     try:
-        talk_page.save(summary="Notification: Your contested technical move request has been removed from [[Wikipedia:Requested moves/Technical requests]].", minor=False)
+        user_talk_page.save(summary="Notification: Your contested technical move request has been removed from [[Wikipedia:Requested moves/Technical requests]].", minor=False)
     except pywikibot.exceptions.OtherPageSaveError:
         print("Failed to notify {}".format(requester))
     else:

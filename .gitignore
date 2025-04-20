@@ -4,3 +4,4 @@
 /__pycache__/*
 throttle.ctrl
 user-config.py
+*.pyc
