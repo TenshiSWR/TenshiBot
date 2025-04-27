@@ -24,6 +24,7 @@ instructions, uncontroversial_requests, undiscussed_moves, contested_requests, a
                                                                                                      split_text_by_line[section_indexes[3]:]
 
 actions = {"technical": 0, "RMUM": 0, "contested": 0, "administrator": 0, "moved": 0}
+notification_queue = {}
 
 
 def process_non_contested_requests(section_queue, section_group):
@@ -101,7 +102,7 @@ def process_contested_requests(section_queue):
         last_reply = MediawikiApi.get_last_reply(None, whole_request)
         if (datetime.datetime.now().replace(tzinfo=None)-datetime.timedelta(hours=72)) > last_reply.replace(tzinfo=None):
             print("Removing expired contested request: {} --> {}".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
-            notify_requesters(initial_request.filter_templates()[0].get("requester").value, initial_request.filter_templates()[0].get(1).value)
+            add_to_notification_queue(initial_request.filter_templates()[0].get("requester").value, initial_request.filter_templates()[0].get(1).value)
             try:
                 number_to_update_by = requests[i+1][0]-requests[i][0]
                 del section_queue[indexes[0]:indexes[1]]
@@ -116,24 +117,43 @@ def process_contested_requests(section_queue):
     return section_queue
 
 
-def notify_requesters(requester, article):
-    article_talk_page = pywikibot.Page(site, "{}".format(article)).toggleTalkPage()
-    for template in mwparserfromhell.parse(article_talk_page.text).filter_templates():
-        if template.name.matches("Requested move/dated"):
-            print("RM started on talk page of {}, not notifying {}".format(article, requester))
-            return
-    if requester == "":
-        return
+def add_to_notification_queue(requester, article):
+    global notification_queue
+    #print("Notification queue:", requester, article)
     user_talk_page = pywikibot.Page(site, "User talk:{}".format(requester))
-    if user_talk_page.isRedirectPage():  # If a user is renamed while their request is being contested.
-        user_talk_page = user_talk_page.getRedirectTarget()
-    user_talk_page.text += "\n{{subst:User:TenshiBot/RMTR contested notification}}"
-    try:
-        user_talk_page.save(summary="Notification: Your contested technical move request has been removed from [[Wikipedia:Requested moves/Technical requests]].", minor=False)
-    except pywikibot.exceptions.OtherPageSaveError:
-        print("Failed to notify {}".format(requester))
+    if user_talk_page.isRedirectPage():
+        requester = str(user_talk_page.getRedirectTarget().title()).replace("User talk:", "")
     else:
-        print("Notified {}of their contested request being removed".format(requester))
+        requester = user_talk_page.title().replace("User talk:", "")
+    try: # The dictionary does not support mwparserfromhell wikicode as a key, even if it is human-readable
+        notification_queue[requester].append(str(article))
+    except (TypeError, KeyError):
+        notification_queue[requester] = [str(article)]
+
+
+def notify_requesters():
+    #print(notification_queue)
+    for requester in notification_queue.keys():
+        #print("Requester: {}".format(requester))
+        user_talk_page = pywikibot.Page(site, "User talk:{}".format(requester))
+        if user_talk_page.isRedirectPage():  # If a user is renamed while their request is being contested.
+            user_talk_page = user_talk_page.getRedirectTarget()
+        for article in notification_queue[requester]:
+            #print("Article ({}): {}".format(requester, article))
+            article_talk_page = pywikibot.Page(site, "{}".format(article)).toggleTalkPage()
+            for template in mwparserfromhell.parse(article_talk_page.text).filter_templates():
+                if template.name.matches("Requested move/dated"):
+                    print("RM started on talk page of {}, not notifying {}".format(article, requester))
+                    break
+            else:
+                user_talk_page.text += "\n{{subst:User:TenshiBot/RMTR contested notification}}"
+                print("Notification prepared for {} about {}".format(requester, article))
+        try:
+            user_talk_page.save(summary="Notification: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].", minor=False)
+        except pywikibot.exceptions.OtherPageSaveError:
+            print("Failed to notify {}".format(requester))
+        else:
+            print("Notified {} of their contested request(s) being removed".format(requester))
 
 
 def reassemble_page():
@@ -147,3 +167,4 @@ administrator_moves = process_non_contested_requests(administrator_moves, "Admin
 if sum([action for action in actions.values()]) > 0:  # Check to see if anything has been done before saving an edit.
     rmtr.text = reassemble_page()
     rmtr.save(summary="Userspace testing: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in actions.values()])), minor=False)
+    notify_requesters()
