@@ -167,4 +167,4 @@ administrator_moves = process_non_contested_requests(administrator_moves, "Admin
 if sum([action for action in actions.values()]) > 0:  # Check to see if anything has been done before saving an edit.
     rmtr.text = reassemble_page()
     notify_requesters()
-    rmtr.save(summary="[[Wikipedia:Bots/Requests_for_approval/TenshiBot|Bot trial]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in actions.values()])), minor=False)
+    rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Bot trial]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in actions.values()])), minor=False)
