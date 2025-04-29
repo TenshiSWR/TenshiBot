@@ -4,7 +4,7 @@ from tasks.majavahbot.mediawiki import MediawikiApi  # Essentially from majavahb
 import datetime
 from sys import exit
 site = pywikibot.Site()
-rmtr = pywikibot.Page(site, "User:TenshiBot/RMTRtest")
+rmtr = pywikibot.Page(site, "Wikipedia:Requested moves/Technical requests")
 split_text_by_line = rmtr.text.split("\n")  # Convert the page text into a list of lines
 
 # Find where each section starts
@@ -167,4 +167,4 @@ administrator_moves = process_non_contested_requests(administrator_moves, "Admin
 if sum([action for action in actions.values()]) > 0:  # Check to see if anything has been done before saving an edit.
     rmtr.text = reassemble_page()
     notify_requesters()
-    rmtr.save(summary="Userspace testing: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in actions.values()])), minor=False)
+    rmtr.save(summary="[[Wikipedia:Bots/Requests_for_approval/TenshiBot|Bot trial]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in actions.values()])), minor=False)
