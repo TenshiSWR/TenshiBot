@@ -3,8 +3,12 @@
   name: task1.1
   emails: onfailure
   schedule: 0 0 * * *
+  filelog-stderr: log.err
+  filelog-stdout: log.out
 - command: launcher pwb -family:wikipedia -lang:en /data/project/tenshihinanawi-bot/TenshiBot/tasks/rmtr.py -always
   image: tool-pywikibot/pywikibot-scripts-stable:latest
   name: task1.2
   emails: onfailure
   schedule: 0 12 * * *
+  filelog-stderr: log.err
+  filelog-stdout: log.out
