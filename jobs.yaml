@@ -1,9 +1,9 @@
-- command: launcher pwb -family:PROJECT -lang:LANGUAGE /data/project/tenshihinanawi-bot/TenshiBot/tasks/rmtr.py -always
+- command: launcher pwb -family:wikipedia -lang:en /data/project/tenshihinanawi-bot/TenshiBot/tasks/rmtr.py -always
   image: tool-pywikibot/pywikibot-scripts-stable:latest
   name: task1.1
   emails: onfailure
   schedule: 0 0 * * *
-- command: launcher pwb -family:PROJECT -lang:LANGUAGE /data/project/tenshihinanawi-bot/TenshiBot/tasks/rmtr.py -always
+- command: launcher pwb -family:wikipedia -lang:en /data/project/tenshihinanawi-bot/TenshiBot/tasks/rmtr.py -always
   image: tool-pywikibot/pywikibot-scripts-stable:latest
   name: task1.2
   emails: onfailure
