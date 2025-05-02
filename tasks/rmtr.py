@@ -126,7 +126,7 @@ def add_to_notification_queue(requester, articles):
     else:
         requester = user_talk_page.title().replace("User talk:", "")
     try:  # The dictionary does not support mwparserfromhell wikicode as a key, even if it is human-readable
-        source_article_test, destination_article_test = pywikibot.Page(site, articles[0]), pywikibot.Page(site, articles[1])
+        source_article_test, destination_article_test = pywikibot.Page(site, str(articles[0])), pywikibot.Page(site, str(articles[1]))
         notification_queue[requester].append((str(articles[0]), str(articles[1])))
     except (TypeError, KeyError):
         notification_queue[requester] = [(str(articles[0]), str(articles[1]))]
