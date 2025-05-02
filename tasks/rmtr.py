@@ -146,7 +146,8 @@ def notify_requesters():
             try:
                 article_talk_page = pywikibot.Page(site, "{}".format(articles[0])).toggleTalkPage()
             except pywikibot.exceptions.InvalidTitleError:
-                print("Bad request (invalid title error): "+str(articles[0]))
+                print("Notification prepared for {} (Not checked for RM/No permalink)".format(requester))
+                user_talk_page.text += "\n{{subst:User:TenshiBot/RMTR contested notification}}"
                 continue
             for template in mwparserfromhell.parse(article_talk_page.text).filter_templates():
                 if template.name.matches("Requested move/dated"):

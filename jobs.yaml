@@ -1,9 +1,9 @@
-- command: /data/project/tenshihinanawi-bot/pwbvenv/bin/python3 /data/project/tenshihinanawi-bot/tasks/__main__.py
+- command: /data/project/tenshihinanawi-bot/pwbvenv/bin/python3 /data/project/tenshihinanawi-bot/__main__.py
   image: python3.11
   name: task1.1
   emails: onfailure
   schedule: 0 0 * * *
-- command: /data/project/tenshihinanawi-bot/pwbvenv/bin/python3 /data/project/tenshihinanawi-bot/tasks/__main__.py
+- command: /data/project/tenshihinanawi-bot/pwbvenv/bin/python3 /data/project/tenshihinanawi-bot/__main__.py
   image: python3.11
   name: task1.2
   emails: onfailure
