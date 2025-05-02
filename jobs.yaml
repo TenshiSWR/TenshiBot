@@ -1,10 +1,10 @@
-- command: toolforge jobs run task1.1 --command "$HOME/pwbvenv/bin/python3 $HOME/tasks/rmtr.py" --image python3.11
-  image: tool-pywikibot/pywikibot-scripts-stable:latest
+- command: /data/project/tenshihinanawi-bot/pwbvenv/bin/python3 /data/project/tenshihinanawi-bot/tasks/rmtr.py
+  image: python3.11
   name: task1.1
   emails: onfailure
   schedule: 0 0 * * *
 - command: toolforge jobs run task1.1 --command "$HOME/pwbvenv/bin/python3 $HOME/tasks/rmtr.py" --image python3.11
-  image: tool-pywikibot/pywikibot-scripts-stable:latest
+  image: python3.11
   name: task1.2
   emails: onfailure
   schedule: 0 12 * * *
