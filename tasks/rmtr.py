@@ -143,7 +143,11 @@ def notify_requesters():
             user_talk_page = user_talk_page.getRedirectTarget()
         for articles in notification_queue[requester]:
             #print("Article {}: {}".format(requester, articles))
-            article_talk_page = pywikibot.Page(site, "{}".format(articles[0])).toggleTalkPage()
+            try:
+                article_talk_page = pywikibot.Page(site, "{}".format(articles[0])).toggleTalkPage()
+            except pywikibot.exceptions.InvalidTitleError:
+                print("Bad request (invalid title error): "+str(articles[0]))
+                continue
             for template in mwparserfromhell.parse(article_talk_page.text).filter_templates():
                 if template.name.matches("Requested move/dated"):
                     print("RM started on talk page of {}, not notifying {}".format(articles[0], requester))
