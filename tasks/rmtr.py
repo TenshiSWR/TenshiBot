@@ -62,7 +62,7 @@ def process_non_contested_requests(section_queue, section_group):
                     actions[{"Uncontroversial technical requests":"technical", "Requests to revert undiscussed moves":"RMUM", "Administrator needed":"moved"}[section_group]] += 1
             elif section_group != "Administrator needed":  # Check protections on both pages
                 protections = [base_page.protection(), target_page.protection()]
-                if ({"move":("sysop", "infinity")} or {"create":("sysop", "infinity")} in protections[0].items()) or ({"move":("sysop", "infinity")} or {"create":("sysop", "infinity")} in protections[1].items()):
+                if any(type.items() == page.items() for page in protections for type in [{"move":("sysop", "infinity")}, {"create":("sysop", "infinity")}]):
                     print("One or both pages mentioned in {} --> {} are either create-protected or move-protected. Moving to Administrator needed section".format(base_page.title(), target_page.title()))
                     print("Protections:", str(protections[0]), str(protections[1]))
                     try:  # This could probably be refactored into a single common function at some point
