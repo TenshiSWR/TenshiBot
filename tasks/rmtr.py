@@ -64,6 +64,7 @@ def process_non_contested_requests(section_queue, section_group):
                 protections = [base_page.protection(), target_page.protection()]
                 if ({"move":("sysop", "infinity")} or {"create":("sysop", "infinity")} in protections[0].items()) or ({"move":("sysop", "infinity")} or {"create":("sysop", "infinity")} in protections[1].items()):
                     print("One or both pages mentioned in {} --> {} are either create-protected or move-protected. Moving to Administrator needed section".format(base_page.title(), target_page.title()))
+                    print("Protections:", str(protections[0]), str(protections[1]))
                     try:  # This could probably be refactored into a single common function at some point
                         number_to_update_by = requests[i+1][0]-requests[i][0]
                         administrator_moves += section_queue[requests[i][0]:requests[i+1][0]]
