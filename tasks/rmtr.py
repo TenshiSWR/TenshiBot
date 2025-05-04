@@ -3,25 +3,32 @@ import mwparserfromhell
 from tasks.majavahbot.mediawiki import MediawikiApi  # Essentially from majavahbot.api import MediawikiApi
 import datetime
 from sys import exit
-site = pywikibot.Site()
-rmtr = pywikibot.Page(site, "Wikipedia:Requested moves/Technical requests")
-split_text_by_line = rmtr.text.split("\n")  # Convert the page text into a list of lines
+site, rmtr = pywikibot.Site(), None
+notified = False
 
-# Find where each section starts
-try:
-    section_indexes = [split_text_by_line.index("==== Uncontroversial technical requests ===="),
-                       split_text_by_line.index("==== Requests to revert undiscussed moves ===="),
-                       split_text_by_line.index("==== Contested technical requests ===="),
-                       split_text_by_line.index("==== Administrator needed ====")]
-except ValueError:
-    exit("Section headings not found, check {} for possible problems".format(rmtr.title()))
+def get_rmtr():
+    global rmtr
+    global instructions, uncontroversial_requests, undiscussed_moves, contested_requests, administrator_moves
+    rmtr = pywikibot.Page(site, "Wikipedia:Requested moves/Technical requests")
+    split_text_by_line = rmtr.text.split("\n")  # Convert the page text into a list of lines
 
-# Splits each section into its own var using the section indexes
-instructions, uncontroversial_requests, undiscussed_moves, contested_requests, administrator_moves = split_text_by_line[0:section_indexes[0]], \
-                                                                                                     split_text_by_line[section_indexes[0]:section_indexes[1]], \
-                                                                                                     split_text_by_line[section_indexes[1]:section_indexes[2]], \
-                                                                                                     split_text_by_line[section_indexes[2]:section_indexes[3]], \
-                                                                                                     split_text_by_line[section_indexes[3]:]
+    # Find where each section starts
+    try:
+        section_indexes = [split_text_by_line.index("==== Uncontroversial technical requests ===="),
+                           split_text_by_line.index("==== Requests to revert undiscussed moves ===="),
+                           split_text_by_line.index("==== Contested technical requests ===="),
+                           split_text_by_line.index("==== Administrator needed ====")]
+    except ValueError:
+        exit("Section headings not found, check {} for possible problems".format(rmtr.title()))
+
+    # Splits each section into its own var using the section indexes
+    instructions, uncontroversial_requests, undiscussed_moves, contested_requests, administrator_moves = split_text_by_line[0:section_indexes[0]], \
+                                                                                                         split_text_by_line[section_indexes[0]:section_indexes[1]], \
+                                                                                                         split_text_by_line[section_indexes[1]:section_indexes[2]], \
+                                                                                                         split_text_by_line[section_indexes[2]:section_indexes[3]], \
+                                                                                                         split_text_by_line[section_indexes[3]:]
+    print("Got {}".format(rmtr.title()))
+
 
 actions = {"technical": 0, "RMUM": 0, "contested": 0, "administrator": 0, "moved": 0}
 notification_queue = {}
@@ -136,6 +143,7 @@ def add_to_notification_queue(requester, articles):
 
 
 def notify_requesters():
+    global notified
     #print(notification_queue)
     for requester in notification_queue.keys():
         #print("Requester: {}".format(requester))
@@ -163,17 +171,33 @@ def notify_requesters():
             print("Failed to notify {}".format(requester))
         else:
             print("Notified {} of their contested request(s) being removed".format(requester))
+    notified = True
 
 
 def reassemble_page():
     return "\n".join(instructions+uncontroversial_requests+undiscussed_moves+contested_requests+administrator_moves)
 
 
-uncontroversial_requests = process_non_contested_requests(uncontroversial_requests, "Uncontroversial technical requests")
-undiscussed_moves = process_non_contested_requests(undiscussed_moves, "Requests to revert undiscussed moves")
-contested_requests = process_contested_requests(contested_requests)
-administrator_moves = process_non_contested_requests(administrator_moves, "Administrator needed")
-if sum([action for action in actions.values()]) > 0:  # Check to see if anything has been done before saving an edit.
-    rmtr.text = reassemble_page()
-    notify_requesters()
-    rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Bot trial]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in actions.values()])), minor=False)
+tries = 0
+while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted on the page, but if it is then it'll try at least try to redo it
+    get_rmtr()
+    uncontroversial_requests = process_non_contested_requests(uncontroversial_requests, "Uncontroversial technical requests")
+    undiscussed_moves = process_non_contested_requests(undiscussed_moves, "Requests to revert undiscussed moves")
+    contested_requests = process_contested_requests(contested_requests)
+    administrator_moves = process_non_contested_requests(administrator_moves, "Administrator needed")
+    if sum([action for action in actions.values()]) > 0:  # Check to see if anything has been done before saving an edit.
+        rmtr.text = reassemble_page()
+        if not notified:
+            notify_requesters()
+        try:
+            rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Bot trial]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in actions.values()])), minor=False)
+        except pywikibot.exceptions.EditConflictError:
+            print("Edit conflict on {}".format(rmtr.title()))
+            actions = {action: 0 for action, value in actions.items()}
+        else:
+            break
+        finally:
+            tries += 1
+            print("Tried {} times to update {}".format(str(tries), rmtr.title()))
+    else:  # If no actions were taken, stop here so that it doesn't loop endlessly
+        break
