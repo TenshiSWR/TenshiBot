@@ -5,7 +5,7 @@ import datetime
 from sys import exit
 site, rmtr = pywikibot.Site(), None
 notified = False
-start_time = datetime.datetime.now().strftime("Y%-%m-%d %H:%M")
+start_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
 def get_rmtr():
     global rmtr
@@ -201,4 +201,5 @@ while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted o
             tries += 1
             print("Tried {} times to update {} ({})".format(str(tries), rmtr.title(), start_time))
     else:  # If no actions were taken, stop here so that it doesn't loop endlessly
+        print("Did nothing ({})".format(start_time))
         break
