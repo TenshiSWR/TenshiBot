@@ -5,6 +5,7 @@ import datetime
 from sys import exit
 site, rmtr = pywikibot.Site(), None
 notified = False
+start_time = datetime.datetime.now().strftime("Y%-%m-%d %H:%M")
 
 def get_rmtr():
     global rmtr
@@ -27,7 +28,7 @@ def get_rmtr():
                                                                                                          split_text_by_line[section_indexes[1]:section_indexes[2]], \
                                                                                                          split_text_by_line[section_indexes[2]:section_indexes[3]], \
                                                                                                          split_text_by_line[section_indexes[3]:]
-    print("Got {}".format(rmtr.title()))
+    print("Got {}".format(rmtr.title()), "({})".format(start_time))
 
 
 actions = {"technical": 0, "RMUM": 0, "contested": 0, "administrator": 0, "moved": 0}
@@ -198,6 +199,6 @@ while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted o
             break
         finally:
             tries += 1
-            print("Tried {} times to update {}".format(str(tries), rmtr.title()))
+            print("Tried {} times to update {} ({})".format(str(tries), rmtr.title(), start_time))
     else:  # If no actions were taken, stop here so that it doesn't loop endlessly
         break
