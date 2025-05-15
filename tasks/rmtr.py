@@ -191,7 +191,7 @@ while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted o
         if not notified:
             notify_requesters()
         try:
-            rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Bot trial]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in actions.values()])), minor=False)
+            rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in actions.values()])), minor=False)
         except pywikibot.exceptions.EditConflictError:
             print("Edit conflict on {}".format(rmtr.title()))
             actions = {action: 0 for action, value in actions.items()}
