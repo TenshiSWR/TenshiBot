@@ -2,6 +2,8 @@
 .vscode/*
 /apicache/*
 /__pycache__/*
+*/apicache/*
+*/__pycache__/*
 throttle.ctrl
 user-config.py
 *.pyc

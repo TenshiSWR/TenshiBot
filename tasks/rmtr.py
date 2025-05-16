@@ -109,7 +109,7 @@ def process_contested_requests(section_queue):
         except IndexError:
             initial_request, whole_request, indexes = mwparserfromhell.parse(section_queue[requests[i][0]]), "".join(section_queue[requests[i][0]:len(section_queue)-1]), (requests[i][0], len(section_queue)-1)
         last_reply = MediawikiApi.get_last_reply(None, whole_request)
-        if (datetime.datetime.now().replace(tzinfo=None)-datetime.timedelta(hours=72)) > last_reply.replace(tzinfo=None):
+        if (datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=72)) > last_reply.replace(tzinfo=None):
             print("Removing expired contested request: {} --> {}".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
             add_to_notification_queue(initial_request.filter_templates()[0].get("requester").value, (initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
             try:
@@ -167,7 +167,7 @@ def notify_requesters():
                 user_talk_page.text += "\n{{subst:User:TenshiBot/RMTR contested notification|"+articles[0]+"|"+articles[1]+"}}"
                 print("Notification prepared for {} about {}".format(requester, articles[0]))
         try:
-            user_talk_page.save(summary="Notification: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].", minor=False)
+            user_talk_page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].", minor=False)
         except pywikibot.exceptions.OtherPageSaveError:
             print("Failed to notify {}".format(requester))
         else:
