@@ -3,9 +3,10 @@ import mwparserfromhell
 from tasks.majavahbot.mediawiki import MediawikiApi  # Essentially from majavahbot.api import MediawikiApi
 import datetime
 from sys import exit
+from tools import log_error
 site, rmtr = pywikibot.Site(), None
 notified = False
-start_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+start_time = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
 
 def get_rmtr():
     global rmtr
@@ -20,6 +21,7 @@ def get_rmtr():
                            split_text_by_line.index("==== Contested technical requests ===="),
                            split_text_by_line.index("==== Administrator needed ====")]
     except ValueError:
+        log_error("Section headings not found, check {} for possible problems".format(rmtr.title()), 1)
         exit("Section headings not found, check {} for possible problems".format(rmtr.title()))
 
     # Splits each section into its own var using the section indexes
@@ -35,7 +37,7 @@ actions = {"technical": 0, "RMUM": 0, "contested": 0, "administrator": 0, "moved
 notification_queue = {}
 
 
-def process_non_contested_requests(section_queue, section_group):
+def process_non_contested_requests(section_queue: list, section_group: str):
     global administrator_moves
     requests = []
     number_to_update_by = 0
@@ -94,7 +96,7 @@ def process_non_contested_requests(section_queue, section_group):
     return section_queue
 
 
-def process_contested_requests(section_queue):
+def process_contested_requests(section_queue: list):
     requests = []
     number_to_update_by = 0
     for i, line in enumerate(section_queue):
@@ -126,7 +128,7 @@ def process_contested_requests(section_queue):
     return section_queue
 
 
-def add_to_notification_queue(requester, articles):
+def add_to_notification_queue(requester: str, articles: tuple):
     global notification_queue
     #print("Notification queue:", requester, articles)
     user_talk_page = pywikibot.Page(site, "User talk:{}".format(requester))
