@@ -90,6 +90,7 @@ def process_non_contested_requests(section_queue: list, section_group: str):
             pass
         except pywikibot.exceptions.InvalidTitleError:
             print("Bad request (invalid title error): "+str(requests[i][1]))
+            log_error("Bad request (invalid title error): <nowiki>{}</nowiki>".format(str(requests[i][1])), 1)
         i += 1
         continue
     #print(section_queue)
@@ -143,6 +144,7 @@ def add_to_notification_queue(requester: str, articles: tuple):
         notification_queue[requester] = [(str(articles[0]), str(articles[1]))]
     except pywikibot.exceptions.InvalidTitleError:
         print("Bad request (invalid title error): "+str(articles[0]))
+        log_error("Bad request (invalid title error): <nowiki>{}</nowiki>".format(str(requests[i][1])), 1)
 
 
 def notify_requesters():
