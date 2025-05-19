@@ -3,6 +3,7 @@ import mwparserfromhell
 from tasks.majavahbot.mediawiki import MediawikiApi  # Essentially from majavahbot.api import MediawikiApi
 import datetime
 from sys import exit
+from tools import get_talk_page
 from tools import log_error
 site, rmtr = pywikibot.Site(), None
 notified = False
@@ -152,9 +153,7 @@ def notify_requesters():
     #print(notification_queue)
     for requester in notification_queue.keys():
         #print("Requester: {}".format(requester))
-        user_talk_page = pywikibot.Page(site, "User talk:{}".format(requester))
-        if user_talk_page.isRedirectPage():  # If a user is renamed while their request is being contested.
-            user_talk_page = user_talk_page.getRedirectTarget()
+        user_talk_page = get_talk_page(requester)
         for articles in notification_queue[requester]:
             #print("Article {}: {}".format(requester, articles))
             try:
