@@ -50,9 +50,9 @@ def check_pending_afc_submissions():
                 reviewer_talk_page = get_talk_page(reviewer)
                 #print(draft.title(), (reviewer, timestamp))
                 if (datetime.datetime.utcnow()-datetime.timedelta(hours=72)) > timestamp and check_notified(reviewer):
-                        print("{}'s review has been ongoing for more than 72 hours and {} has been notified, returning it to the queue.".format(draft.title().strip(), reviewer))
-                        draft.text = draft.text.replace(str(template), str(template).replace("r", "", 1))
-                        draft.save(": Mark [[Wikipedia:Articles for Creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.")
+                    print("{}'s review has been ongoing for more than 72 hours and {} has been notified, returning it to the queue.".format(draft.title().strip(), reviewer))
+                    draft.text = draft.text.replace(str(template), str(template).replace("r", "", 1))
+                    draft.save(": Mark [[Wikipedia:Articles for Creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.")
                 elif (datetime.datetime.utcnow()-datetime.timedelta(hours=48)) > timestamp:
                     print("{} has been reviewed for longer than 48 hours, notifying {}".format(draft.title(), reviewer))
                     add_to_notification_queue(reviewer, draft.title())
