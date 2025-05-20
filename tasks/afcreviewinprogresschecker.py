@@ -47,12 +47,11 @@ def check_pending_afc_submissions():
         for template in mwparserfromhell.parse(draft.text).filter_templates():
             if (template.name.matches("AfC submission") or template.name.matches("AFC submission")) and template.get(1).value == "r":
                 reviewer, timestamp = template.get("reviewer").value, mediawikitimestamp_to_datetime(str(template.get("reviewts").value))
-                reviewer_talk_page = get_talk_page(reviewer)
                 #print(draft.title(), (reviewer, timestamp))
                 if (datetime.datetime.utcnow()-datetime.timedelta(hours=72)) > timestamp and check_notified(reviewer):
                     print("{}'s review has been ongoing for more than 72 hours and {} has been notified, returning it to the queue.".format(draft.title().strip(), reviewer))
                     draft.text = draft.text.replace(str(template), str(template).replace("r", "", 1))
-                    draft.save(": Mark [[Wikipedia:Articles for Creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.")
+                    draft.save("[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Bot trial]]: Mark [[Wikipedia:Articles for Creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.")
                 elif (datetime.datetime.utcnow()-datetime.timedelta(hours=48)) > timestamp:
                     print("{} has been reviewed for longer than 48 hours, notifying {}".format(draft.title(), reviewer))
                     add_to_notification_queue(reviewer, draft.title())
@@ -64,7 +63,7 @@ def notify_reviewers():
         for draft in notification_queue[reviewer]:
             reviewer_talk_page.text += "\n{{subst:User:TenshiBot/AfC review notification|"+draft.title()+"|"+draft.title(with_ns=False)+"}}"
         try:
-            reviewer_talk_page.save(summary="Notification: Your Articles for Creation review(s) has been marked as ongoing for over forty-eight hours.", minor=False)
+            reviewer_talk_page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Notification]]: Your Articles for Creation review(s) has been marked as ongoing for over forty-eight hours.", minor=False)
         except pywikibot.exceptions.OtherPageSaveError:
             print("Failed to notify {}".format(reviewer))
         else:

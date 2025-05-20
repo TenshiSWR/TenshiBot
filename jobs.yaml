@@ -1,10 +1,15 @@
 - command: /data/project/tenshihinanawi-bot/pwbvenv/bin/python3 /data/project/tenshihinanawi-bot/twiceperday.py
   image: python3.11
-  name: task1.1
+  name: twiceperday_1
   emails: onfailure
   schedule: 0 0 * * *
 - command: /data/project/tenshihinanawi-bot/pwbvenv/bin/python3 /data/project/tenshihinanawi-bot/twiceperday.py
   image: python3.11
-  name: task1.2
+  name: twiceperday_2
   emails: onfailure
   schedule: 0 12 * * *
+- command: /data/project/tenshihinanawi-bot/pwbvenv/bin/python3 /data/project/tenshihinanawi-bot/daily.py
+  image: python3.11
+  name: daily
+  emails: onfailure
+  schedule: "@daily"
