@@ -19,9 +19,9 @@ def add_to_notification_queue(user: str, article):
     else:
         user = user_talk_page.title().replace("User talk:", "")
     try:
-        notification_queue[user].append(str(article))
+        notification_queue[user].append(article)
     except (TypeError, KeyError):
-        notification_queue[user] = [str(article)]
+        notification_queue[user] = [article]
     except pywikibot.exceptions.InvalidTitleError:
         print("Bad notification request (invalid title error): "+str(article))
         log_error("Bad notification request (invalid title error): {}".format((user, str(article))), 2)
@@ -51,7 +51,7 @@ def check_pending_afc_submissions():
                 if (datetime.datetime.utcnow()-datetime.timedelta(hours=72)) > timestamp and check_notified(reviewer):
                     print("{}'s review has been ongoing for more than 72 hours and {} has been notified, returning it to the queue.".format(draft.title().strip(), reviewer))
                     draft.text = draft.text.replace(str(template), str(template).replace("r", "", 1))
-                    draft.save("[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Bot trial]]: Mark [[Wikipedia:Articles for Creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.")
+                    draft.save("[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Bot trial]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.")
                 elif (datetime.datetime.utcnow()-datetime.timedelta(hours=48)) > timestamp:
                     print("{} has been reviewed for longer than 48 hours, notifying {}".format(draft.title(), reviewer))
                     add_to_notification_queue(reviewer, draft.title())
