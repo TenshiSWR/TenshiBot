@@ -36,7 +36,7 @@ def check_notified(user: str):
         if time is None:  # It's not there if its None
             return False
         time = datetime.datetime.fromisoformat(time)
-        if datetime.datetime.utcnow()-datetime.timedelta(hours=23) > time:  # A bit of leeway, but not much.
+        if datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=23) > time > datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=25):  # A bit of leeway, but not much.
             return True
         else:
             return False
