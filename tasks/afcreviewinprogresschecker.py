@@ -71,7 +71,12 @@ def notify_reviewers():
         finally:
             connection = toolforge.toolsdb("s56602__afc_notifications_p")
             with connection.cursor() as cursor:
-                cursor.execute("INSERT INTO long_reviews (user, time) VALUES (%(username), $(time));", {"username": reviewer, "time": datetime.datetime.utcnow().isoformat()})
+                cursor.execute("SELECT time FROM long_reviews WHERE user = %(username)s;", {"username": reviewer})
+                time = cursor.fetchone()
+                if time is None:
+                    cursor.execute("INSERT INTO long_reviews (user, time) VALUES (%(username), $(time));", {"username": reviewer, "time": datetime.datetime.utcnow().isoformat()})
+                else:
+                    cursor.execute("UPDATE long_reviews SET time = $(time)s WHERE user = $(username)s;", {"time": datetime.datetime.utcnow().isoformat(), "username": reviewer})
                 connection.close()
 
 
