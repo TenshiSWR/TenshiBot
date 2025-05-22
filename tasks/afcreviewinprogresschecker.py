@@ -74,7 +74,7 @@ def notify_reviewers():
                 cursor.execute("SELECT time FROM long_reviews WHERE user = %(username)s;", {"username": reviewer})
                 time = cursor.fetchone()
                 if time is None:
-                    cursor.execute("INSERT INTO long_reviews (user, time) VALUES (%(username), $(time));", {"username": reviewer, "time": datetime.datetime.utcnow().isoformat()})
+                    cursor.execute("INSERT INTO long_reviews (user, time) VALUES (%(username)s, $(time)s);", {"username": reviewer, "time": datetime.datetime.utcnow().isoformat()})
                 else:
                     cursor.execute("UPDATE long_reviews SET time = $(time)s WHERE user = $(username)s;", {"time": datetime.datetime.utcnow().isoformat(), "username": reviewer})
                 connection.close()
