@@ -54,7 +54,7 @@ def check_pending_afc_submissions():
                     draft.save("[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Bot trial]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.")
                 elif (datetime.datetime.utcnow()-datetime.timedelta(hours=48)) > timestamp:
                     print("{} has been reviewed for longer than 48 hours, notifying {}".format(draft.title(), reviewer))
-                    add_to_notification_queue(reviewer, draft.title())
+                    add_to_notification_queue(reviewer, draft)
 
 
 def notify_reviewers():
