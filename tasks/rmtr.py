@@ -133,12 +133,12 @@ def process_contested_requests(section_queue: list):
 def add_to_notification_queue(requester: str, articles: tuple):
     global notification_queue
     #print("Notification queue:", requester, articles)
-    user_talk_page = pywikibot.Page(site, "User talk:{}".format(requester))
-    if user_talk_page.isRedirectPage():
-        requester = str(user_talk_page.getRedirectTarget().title()).replace("User talk:", "")
-    else:
-        requester = user_talk_page.title().replace("User talk:", "")
     try:  # The dictionary does not support mwparserfromhell wikicode as a key, even if it is human-readable
+        user_talk_page = pywikibot.Page(site, "User talk:{}".format(requester))
+        if user_talk_page.isRedirectPage():
+            requester = str(user_talk_page.getRedirectTarget().title()).replace("User talk:", "")
+        else:
+            requester = user_talk_page.title().replace("User talk:", "")
         source_article_test, destination_article_test = pywikibot.Page(site, str(articles[0])), pywikibot.Page(site, str(articles[1]))
         notification_queue[requester].append((str(articles[0]), str(articles[1])))
     except (TypeError, KeyError):
