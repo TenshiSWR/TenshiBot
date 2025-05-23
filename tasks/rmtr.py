@@ -145,7 +145,7 @@ def add_to_notification_queue(requester: str, articles: tuple):
         notification_queue[requester] = [(str(articles[0]), str(articles[1]))]
     except pywikibot.exceptions.InvalidTitleError:
         print("Bad requester (invalid title error): ", requester, str(articles[0])+" --> "+str(articles[1]))
-        log_error("Bad requester (invalid title error): <nowiki>{}</nowiki>".format(requester, str(articles[0])+" --> "+str(articles[1])), 1)
+        log_error("Bad requester (invalid title error): <nowiki>{}</nowiki>".format(requester+" "+str(articles[0])+" --> "+str(articles[1])), 1)
 
 
 def notify_requesters():
