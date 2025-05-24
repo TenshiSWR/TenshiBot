@@ -45,6 +45,8 @@ def check_notified(user: str):
 def check_pending_afc_submissions():
     for draft in drafts:
         for template in mwparserfromhell.parse(draft.text).filter_templates():
+            if template.name.matches("bots") and template.get("deny").value == "TenshiBot":
+                break  # Yes, pywikibot does have exclusion compliance by default, but that may not apply to the reviewer's talk page who has left a {{bots|deny=TenshiBot}} on the draft.
             if (template.name.matches("AfC submission") or template.name.matches("AFC submission")) and template.get(1).value == "r":
                 reviewer, timestamp = template.get("reviewer").value, mediawikitimestamp_to_datetime(str(template.get("reviewts").value))
                 #print(draft.title(), (reviewer, timestamp))
