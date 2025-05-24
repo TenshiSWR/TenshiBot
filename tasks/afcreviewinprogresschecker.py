@@ -35,8 +35,8 @@ def check_notified(user: str):
         connection.close()
         if time is None:  # It's not there if its None
             return False
-        time = datetime.datetime.fromisoformat(time)
-        if datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=23) > time > datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=25):  # A bit of leeway, but not much.
+        # Change back to 23 | 25 later
+        if datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=17) > time[0] > datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=31):  # A bit of leeway, but not much.
             return True
         else:
             return False
