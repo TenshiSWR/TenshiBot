@@ -45,7 +45,7 @@ def check_notified(user: str):
 def check_pending_afc_submissions():
     for draft in drafts:
         for template in mwparserfromhell.parse(draft.text).filter_templates():
-            if template.name.matches("bots") and template.get("deny").value == "TenshiBot":
+            if template.name.matches("bots") and (template.get("deny").value == "TenshiBot" or template.get("deny").value == "all"):
                 break  # Yes, pywikibot does have exclusion compliance by default, but that may not apply to the reviewer's talk page who has left a {{bots|deny=TenshiBot}} on the draft.
             if (template.name.matches("AfC submission") or template.name.matches("AFC submission")) and template.get(1).value == "r":
                 reviewer, timestamp = template.get("reviewer").value, mediawikitimestamp_to_datetime(str(template.get("reviewts").value))
@@ -76,7 +76,7 @@ def notify_reviewers():
                 cursor.execute("SELECT time FROM long_reviews WHERE user = %(username)s;", {"username": reviewer})
                 time = cursor.fetchone()
                 if time is None:
-                    cursor.execute("INSERT INTO long_reviews (user, time) VALUES (%(username)s, %(time)s);", {"username": reviewer, "time": datetime.datetime.utcnow().isoformat()})
+                    cursor.execute("INSERT INTO long_reviews(user, time) VALUES(%(username)s, %(time)s);", {"username": reviewer, "time": datetime.datetime.utcnow().isoformat()})
                 else:
                     cursor.execute("UPDATE long_reviews SET time = %(time)s WHERE user = %(username)s;", {"time": datetime.datetime.utcnow().isoformat(), "username": reviewer})
                 connection.close()
