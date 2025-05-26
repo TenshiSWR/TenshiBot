@@ -170,7 +170,7 @@ def notify_requesters():
                 user_talk_page.text += "\n{{subst:User:TenshiBot/RMTR contested notification|"+articles[0]+"|"+articles[1]+"}}"
                 print("Notification prepared for {} about {}".format(requester, articles[0]))
         try:
-            user_talk_page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].", minor=False)
+            user_talk_page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].", minor=False, bot=True)
         except pywikibot.exceptions.OtherPageSaveError:
             print("Failed to notify {}".format(requester))
         else:
@@ -194,7 +194,7 @@ while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted o
         if not notified:
             notify_requesters()
         try:
-            rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in actions.values()])), minor=False)
+            rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in actions.values()])), minor=False, bot=True)
         except pywikibot.exceptions.EditConflictError:
             print("Edit conflict on {}".format(rmtr.title()))
             actions = {action: 0 for action, value in actions.items()}
