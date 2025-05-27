@@ -12,8 +12,9 @@ def log_error(error: str, task_number: int):
     import pywikibot
     site = pywikibot.Site()
     error_page = pywikibot.Page(site, "User:TenshiBot/Errors")
-    error_page.text += "{} (Task {}): {}\n".format(datetime.utcnow().strftime("[%Y-%m-%d %H:%M]"), str(task_number), error)
-    error_page.save(summary="Logging error during task {}".format(str(task_number)), minor=False)
+    error_page.text += "\n{} (Task {}): {}".format(datetime.utcnow().strftime("[%Y-%m-%d %H:%M]"), str(task_number), error)
+    error_page.save(summary="Logging error during task {}".format(str(task_number)), minor=False, bot=True)
+
 
 def mediawikitimestamp_to_datetime(mediawikitimestamp: str):
     from datetime import datetime
