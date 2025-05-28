@@ -33,6 +33,7 @@ def check_notified(user: str):
         cursor.execute("SELECT time FROM long_reviews WHERE user = %(username)s;", {"username": user})
         time = cursor.fetchone()
         connection.close()
+        print("Check_notified (query response):", str(time))
         if time is None:  # It's not there if its None
             return False
         # Change back to 23 | 25 later
@@ -75,10 +76,15 @@ def notify_reviewers():
             with connection.cursor() as cursor:
                 cursor.execute("SELECT time FROM long_reviews WHERE user = %(username)s;", {"username": reviewer})
                 time = cursor.fetchone()
+                print("Notify_reviewers (query response):", str(time))
                 if time is None:
+                    print("Inserting new data for {}".format(reviewer))
                     cursor.execute("INSERT INTO long_reviews(user, time) VALUES(%(username)s, %(time)s);", {"username": reviewer, "time": datetime.datetime.utcnow().isoformat()})
                 else:
+                    print("Updating data for {}".format(reviewer))
                     cursor.execute("UPDATE long_reviews SET time = %(time)s WHERE user = %(username)s;", {"time": datetime.datetime.utcnow().isoformat(), "username": reviewer})
+                output = cursor.fetchone()
+                print("Notify_reviewers (error check response):", str(output))
                 connection.close()
 
 
