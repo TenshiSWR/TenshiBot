@@ -19,9 +19,13 @@ report_page.text = "\n".join(['{{/header}}',
                               '{| class="wikitable sortable" style="width:100%"',
                               '!Username!!Number of userspace drafts!!class="unsortable"|Pages\n'])
 for username, pages in indeffed_user_drafts.items():
-    report_page.text += "\n".join(["|-", f"| [[User:{username}|{username}]]", f"| {len(pages)}", "|{{hidden begin}}\n"])
-    report_page.text += "\n".join(["* [[{}]]".format(page) for page in pages])+"\n"
-    report_page.text += "{{hidden end}}\n"
+    if len(pages) > 5:
+        report_page.text += "\n".join(["|-", f"| [[User:{username}|{username}]]", f"| {len(pages)}", "|{{hidden begin}}\n"])
+        report_page.text += "\n".join(["* [[{}]]".format(page) for page in pages])+"\n"
+        report_page.text += "{{hidden end}}\n"
+    else:
+        report_page.text += "\n".join(["|-", f"| [[User:{username}|{username}]]", f"| {len(pages)}", "|\n"])
+        report_page.text += "\n".join(["* [[{}]]".format(page) for page in pages])+"\n"
 report_page.text += "|}"
 report_page.save(summary="Updating report data", minor=False)
 
