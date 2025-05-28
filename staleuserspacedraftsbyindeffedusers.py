@@ -3,9 +3,10 @@ site = pywikibot.Site()
 userspace_drafts = [userspace_draft for userspace_draft in pywikibot.Category(site, "Stale userspace drafts").articles()]
 indeffed_user_drafts = {}
 for userspace_draft in userspace_drafts:
-    user = pywikibot.User(site, userspace_draft.oldest_revision.user)
+    user = pywikibot.User(site, userspace_draft.title().split("/")[0])
     if user.is_blocked():
         print(userspace_draft.title())
+        user = user.username
         try:
             indeffed_user_drafts[user].append(userspace_draft.title())
         except KeyError:
