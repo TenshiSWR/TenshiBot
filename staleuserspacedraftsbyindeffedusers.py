@@ -3,7 +3,7 @@ site = pywikibot.Site()
 userspace_drafts = [userspace_draft for userspace_draft in pywikibot.Category(site, "Stale userspace drafts").articles()]
 indeffed_user_drafts = {}
 for userspace_draft in userspace_drafts:
-    user = pywikibot.User(site, userspace_draft.title().split("/")[0])
+    user = pywikibot.User(site, userspace_draft.title(with_ns=False).split("/")[0])
     if user.is_blocked():
         print(userspace_draft.title())
         user = user.username
