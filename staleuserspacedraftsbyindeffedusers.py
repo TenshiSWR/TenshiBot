@@ -23,5 +23,5 @@ for username, pages in indeffed_user_drafts.items():
     report_page.text += "\n".join(["* [[{}]]".format(page) for page in pages])+"\n"
     report_page.text += "{{hidden end}}\n"
 report_page.text += "|}"
-report_page.save(summary="Adding report data", minor=False)
+report_page.save(summary="Updating report data", minor=False)
 
