@@ -79,10 +79,10 @@ def notify_reviewers():
                 print("Notify_reviewers (query response):", str(time))
                 if time is None:
                     print("Inserting new data for {}".format(reviewer))
-                    cursor.execute("INSERT INTO long_reviews(user, time) VALUES(%(username)s, %(time)s);", {"username": reviewer, "time": datetime.datetime.utcnow().isoformat()})
+                    cursor.execute("INSERT INTO long_reviews(user, time) VALUES(%(username)s, %(time)s);", {"username": reviewer, "time": datetime.datetime.utcnow()})
                 else:
                     print("Updating data for {}".format(reviewer))
-                    cursor.execute("UPDATE long_reviews SET time = %(time)s WHERE user = %(username)s;", {"time": datetime.datetime.utcnow().isoformat(), "username": reviewer})
+                    cursor.execute("UPDATE long_reviews SET time = %(time)s WHERE user = %(username)s;", {"time": datetime.datetime.utcnow(), "username": reviewer})
                 output = cursor.fetchone()
                 print("Notify_reviewers (error check response):", str(output))
                 connection.close()
