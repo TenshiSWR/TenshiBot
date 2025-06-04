@@ -30,7 +30,7 @@ def add_to_notification_queue(user: str, article):
 def check_notified(user: str):
     connection = toolforge.toolsdb("s56602__afc_notifications_p")
     with connection.cursor() as cursor:
-        cursor.execute("SELECT time FROM long_reviews WHERE user = %(username)s;", {"username": user})
+        cursor.execute("SELECT time FROM long_reviews WHERE user = '%(username)s;'", {"username": user})
         time = cursor.fetchone()
         connection.close()
         print("Check_notified (query response):", str(time))
@@ -74,15 +74,15 @@ def notify_reviewers():
         finally:
             connection = toolforge.toolsdb("s56602__afc_notifications_p")
             with connection.cursor() as cursor:
-                cursor.execute("SELECT time FROM long_reviews WHERE user = %(username)s;", {"username": reviewer})
+                cursor.execute("SELECT time FROM long_reviews WHERE user = '%(username)s';", {"username": reviewer})
                 time = cursor.fetchone()
                 print("Notify_reviewers (query response):", str(time))
                 if time is None:
                     print("Inserting new data for {}".format(reviewer))
-                    cursor.execute("INSERT INTO long_reviews(user, time) VALUES(%(username)s, %(time)s);", {"username": reviewer, "time": "TIMESTAMP({})".format(datetime.datetime.utcnow().strftime("%Y-%M-%d %H:%M:%S"))})
+                    cursor.execute("INSERT INTO long_reviews(user, time) VALUES('%(username)s', %(time)s);", {"username": reviewer, "time": "TIMESTAMP({})".format(datetime.datetime.utcnow().strftime("%Y-%M-%d %H:%M:%S"))})
                 else:
                     print("Updating data for {}".format(reviewer))
-                    cursor.execute("UPDATE long_reviews SET time = %(time)s WHERE user = %(username)s;", {"time": "TIMESTAMP({})".format(datetime.datetime.utcnow().strftime("%Y-%M-%d %H:%M:%S")), "username": reviewer})
+                    cursor.execute("UPDATE long_reviews SET time = %(time)s WHERE user = '%(username)s';", {"time": "TIMESTAMP({})".format(datetime.datetime.utcnow().strftime("%Y-%M-%d %H:%M:%S")), "username": reviewer})
                 output = cursor.fetchone()
                 print("Notify_reviewers (error check response):", str(output))
                 connection.close()
