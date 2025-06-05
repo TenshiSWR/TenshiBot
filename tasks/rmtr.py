@@ -7,7 +7,6 @@ from tools import get_talk_page
 from tools import log_error
 site, rmtr = pywikibot.Site(), None
 notified = False
-start_time = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
 
 def get_rmtr():
     global rmtr
@@ -31,7 +30,7 @@ def get_rmtr():
                                                                                                          split_text_by_line[section_indexes[1]:section_indexes[2]], \
                                                                                                          split_text_by_line[section_indexes[2]:section_indexes[3]], \
                                                                                                          split_text_by_line[section_indexes[3]:]
-    print("Got {}".format(rmtr.title()), "({})".format(start_time))
+    print("Got {}".format(rmtr.title()), "({})".format(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
 
 
 actions = {"technical": 0, "RMUM": 0, "contested": 0, "administrator": 0, "moved": 0}
@@ -113,22 +112,27 @@ def process_contested_requests(section_queue: list):
         except IndexError:
             initial_request, whole_request, indexes = mwparserfromhell.parse(section_queue[requests[i][0]]), "".join(section_queue[requests[i][0]:len(section_queue)-1]), (requests[i][0], len(section_queue)-1)
         last_reply = MediawikiApi.get_last_reply(None, whole_request)
-        if (datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=72)) > last_reply.replace(tzinfo=None):
-            print("Removing expired contested request: {} --> {}".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
-            try:
-                add_to_notification_queue(initial_request.filter_templates()[0].get("requester").value, (initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
-            except ValueError:
-                print("Cannot notify requester of {} --> {}, requester parameter missing".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
-            try:
-                number_to_update_by = requests[i+1][0]-requests[i][0]
-                del section_queue[indexes[0]:indexes[1]]
-            except (IndexError, ValueError):  # Exception will always raise at the end of the section
-                #print((requests[i][0], "Index/ValueError"), section_queue[requests[i][0]:len(section_queue)-1])
-                del section_queue[requests[i][0]:len(section_queue)-1]
-            finally:
-                requests = [[x[0]-number_to_update_by, x[1]] for x in requests]
-                actions["contested"] += 1
-        i += 1
+        try:
+            if (datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=72)) > last_reply.replace(tzinfo=None):
+                print("Removing expired contested request: {} --> {}".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
+                try:
+                    add_to_notification_queue(initial_request.filter_templates()[0].get("requester").value, (initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
+                except ValueError:
+                    print("Cannot notify requester of {} --> {}, requester parameter missing".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
+                try:
+                    number_to_update_by = requests[i+1][0]-requests[i][0]
+                    del section_queue[indexes[0]:indexes[1]]
+                except (IndexError, ValueError):  # Exception will always raise at the end of the section
+                    #print((requests[i][0], "Index/ValueError"), section_queue[requests[i][0]:len(section_queue)-1])
+                    del section_queue[requests[i][0]:len(section_queue)-1]
+                finally:
+                    requests = [[x[0]-number_to_update_by, x[1]] for x in requests]
+                    actions["contested"] += 1
+            i += 1
+        except AttributeError:
+            print("Invalid UTC timestamp in signature")
+            log_error("Invalid UTC timestamp in signature: <nowiki>{}</nowiki>".format(initial_request), 1)
+            i += 1
     #print(section_queue)
     return section_queue
 
@@ -185,7 +189,7 @@ def reassemble_page():
     return "\n".join(instructions+uncontroversial_requests+undiscussed_moves+contested_requests+administrator_moves)
 
 
-tries = 0
+tries, complete = 0, False
 while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted on the page, but if it is then it'll try at least try to redo it
     get_rmtr()
     uncontroversial_requests = process_non_contested_requests(uncontroversial_requests, "Uncontroversial technical requests")
@@ -202,12 +206,14 @@ while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted o
             print("Edit conflict on {}".format(rmtr.title()))
             actions = {action: 0 for action, value in actions.items()}
         else:
+            complete = True
             break
         finally:
             tries += 1
-            print("Tried {} times to update {} ({})".format(str(tries), rmtr.title(), start_time))
+            print("Tried {} times to update {} ({})".format(str(tries), rmtr.title(), datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
     else:  # If no actions were taken, stop here so that it doesn't loop endlessly
-        print("Did nothing ({})".format(start_time))
+        print("Did nothing ({})".format(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
+        complete = True
         break
-if tries == 5:
+if tries == 5 and not complete:
     log_error("Tried 5 times to update {} and was not able to do it".format(rmtr.title()), 1)
