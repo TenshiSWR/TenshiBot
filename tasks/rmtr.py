@@ -115,7 +115,11 @@ def process_contested_requests(section_queue: list):
         last_reply = MediawikiApi.get_last_reply(None, whole_request)
         if (datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=72)) > last_reply.replace(tzinfo=None):
             print("Removing expired contested request: {} --> {}".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
-            add_to_notification_queue(initial_request.filter_templates()[0].get("requester").value, (initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
+            try:
+                add_to_notification_queue(initial_request.filter_templates()[0].get("requester").value, (initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
+            except ValueError:
+                print("Cannot notify requester of {} --> {}, requester parameter missing".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
+                continue
             try:
                 number_to_update_by = requests[i+1][0]-requests[i][0]
                 del section_queue[indexes[0]:indexes[1]]
