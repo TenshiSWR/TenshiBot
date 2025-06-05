@@ -119,7 +119,6 @@ def process_contested_requests(section_queue: list):
                 add_to_notification_queue(initial_request.filter_templates()[0].get("requester").value, (initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
             except ValueError:
                 print("Cannot notify requester of {} --> {}, requester parameter missing".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
-                continue
             try:
                 number_to_update_by = requests[i+1][0]-requests[i][0]
                 del section_queue[indexes[0]:indexes[1]]
@@ -210,3 +209,5 @@ while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted o
     else:  # If no actions were taken, stop here so that it doesn't loop endlessly
         print("Did nothing ({})".format(start_time))
         break
+if tries == 5:
+    log_error("Tried 5 times to update {} and was not able to do it".format(rmtr.title()), 1)
