@@ -50,15 +50,28 @@ def check_pending_afc_submissions():
             if template.name.matches("bots") and (template.get("deny").value == "TenshiBot" or template.get("deny").value == "all"):
                 break  # Yes, pywikibot does have exclusion compliance by default, but that may not apply to the reviewer's talk page who has left a {{bots|deny=TenshiBot}} on the draft.
             if (template.name.matches("AfC submission") or template.name.matches("AFC submission")) and template.get(1).value == "r":
-                reviewer, timestamp = template.get("reviewer").value, mediawikitimestamp_to_datetime(str(template.get("reviewts").value))
-                #print(draft.title(), (reviewer, timestamp))
-                if (datetime.datetime.utcnow()-datetime.timedelta(hours=72)) > timestamp and check_notified(reviewer):
-                    print("{}'s review has been ongoing for more than 72 hours and {} has been notified, returning it to the queue.".format(draft.title().strip(), reviewer))
-                    draft.text = draft.text.replace(str(template), str(template).replace("r", "", 1))
-                    draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Bot trial]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False, bot=True)
-                elif (datetime.datetime.utcnow()-datetime.timedelta(hours=48)) > timestamp:
-                    print("{} has been reviewed for longer than 48 hours, notifying {}".format(draft.title(), reviewer))
-                    add_to_notification_queue(reviewer, draft)
+                try:
+                    reviewer, timestamp = template.get("reviewer").value, mediawikitimestamp_to_datetime(str(template.get("reviewts").value))
+                    #print(draft.title(), (reviewer, timestamp))
+                except ValueError:  # Would occur if reviewer or reviewts parameter is missing somehow
+                    try:
+                        timestamp = mediawikitimestamp_to_datetime(str(template.get("reviewts").value))
+                    except ValueError:  # Definitely the reviewts or both parameter, needs human intervention
+                        log_error("Missing parameter reviewts, cannot evaluate: [[{}]]".format(draft.title()), 2)
+                        continue
+                    else:
+                        if (datetime.datetime.utcnow()-datetime.timedelta(hours=72)) > timestamp:
+                            print("{}'s review has been ongoing for more than 72 hours, unable to notify reviewer, returning it to the queue.".format(draft.title().strip()))
+                            draft.text = draft.text.replace(str(template), str(template).replace("r", "", 1))
+                            draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Bot trial]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False)
+                else:
+                    if (datetime.datetime.utcnow()-datetime.timedelta(hours=72)) > timestamp and check_notified(reviewer):
+                        print("{}'s review has been ongoing for more than 72 hours and {} has been notified, returning it to the queue.".format(draft.title().strip(), reviewer))
+                        draft.text = draft.text.replace(str(template), str(template).replace("r", "", 1))
+                        draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Bot trial]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False)
+                    elif (datetime.datetime.utcnow()-datetime.timedelta(hours=48)) > timestamp:
+                        print("{} has been reviewed for longer than 48 hours, notifying {}".format(draft.title(), reviewer))
+                        add_to_notification_queue(reviewer, draft)
 
 
 def notify_reviewers():
