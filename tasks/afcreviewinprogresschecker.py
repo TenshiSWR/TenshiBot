@@ -20,7 +20,6 @@ class AfcReviews:
 
     # I really need to figure out a standardised system for these things.
     def add_to_notification_queue(self, user: str, article):
-        global notification_queue
         user_talk_page = pywikibot.Page(self.site, "User talk:{}".format(user))
         if user_talk_page.isRedirectPage():
             user = str(user_talk_page.getRedirectTarget().title()).replace("User talk:", "")

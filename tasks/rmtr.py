@@ -22,7 +22,7 @@ class RmtrClerking:
             self.administrator_moves = self.process_non_contested_requests(self.administrator_moves, "Administrator needed")
             if sum([action for action in self.actions.values()]) > 0:  # Check to see if anything has been done before saving an edit.
                 rmtr.text = self.reassemble_page()
-                if not notified:
+                if not self.notified:
                     self.notify_requesters()
                 try:
                     rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in self.actions.values()])), minor=False, bot=True)
@@ -177,7 +177,6 @@ class RmtrClerking:
             log_error("Bad requester (invalid title error): <nowiki>{}</nowiki>".format(requester+" "+str(articles[0])+" --> "+str(articles[1])), 1)
 
     def notify_requesters(self):
-        global notified
         #print(notification_queue)
         for requester in self.notification_queue.keys():
             #print("Requester: {}".format(requester))
@@ -203,7 +202,7 @@ class RmtrClerking:
                 print("Failed to notify {}".format(requester))
             else:
                 print("Notified {} of their contested request(s) being removed".format(requester))
-        notified = True
+        self.notified = True
 
 
     def reassemble_page(self):
