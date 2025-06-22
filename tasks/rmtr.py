@@ -209,5 +209,4 @@ class RmtrClerking:
         return "\n".join(self.instructions+self.uncontroversial_requests+self.undiscussed_moves+self.contested_requests+self.administrator_moves)
 
 
-if __name__ == "__main__":
-    RmtrClerking()
+RmtrClerking()

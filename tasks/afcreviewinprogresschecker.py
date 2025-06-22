@@ -96,5 +96,4 @@ class AfcReviews:
                 self.connection.commit()
 
 
-if __name__ == "__main__":
-    AfcReviews()
+AfcReviews()
