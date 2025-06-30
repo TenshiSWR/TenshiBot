@@ -11,6 +11,7 @@ class AfcReviews:
     def __init__(self):
         self.site = pywikibot.Site()
         self.drafts = [draft for draft in pywikibot.Category(self.site, "Pending AfC submissions being reviewed now").articles()]
+        print("Initial amount of submissions in category: {}".format(len(self.drafts)))
         self.notification_queue = {}
         self.connection = toolforge.toolsdb("s56602__afc_notifications_p")
         self.cursor = self.connection.cursor()
