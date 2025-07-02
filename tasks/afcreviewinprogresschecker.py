@@ -63,12 +63,12 @@ class AfcReviews:
                             if (datetime.datetime.utcnow()-datetime.timedelta(hours=72)) > timestamp:
                                 print("{}'s review has been ongoing for more than 72 hours, unable to notify reviewer, returning it to the queue.".format(draft.title().strip()))
                                 draft.text = draft.text.replace(str(template), str(template).replace("r", "", 1))
-                                draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Bot trial]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False)
+                                draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Task 2]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False)
                     else:
                         if (datetime.datetime.utcnow()-datetime.timedelta(hours=72)) > timestamp and self.check_notified(reviewer):
                             print("{}'s review has been ongoing for more than 72 hours and {} has been notified, returning it to the queue.".format(draft.title().strip(), reviewer))
                             draft.text = draft.text.replace(str(template), str(template).replace("r", "", 1))
-                            draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Bot trial]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False)
+                            draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Task 2]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False)
                         elif (datetime.datetime.utcnow()-datetime.timedelta(hours=48)) > timestamp:
                             print("{} has been reviewed for longer than 48 hours, notifying {}".format(draft.title(), reviewer))
                             self.add_to_notification_queue(reviewer, draft)
