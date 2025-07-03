@@ -4,5 +4,6 @@ jobs:
   deploy:
     steps:
       - name: deployment
+        runs-on: ubuntu-latest
         run: |
           curl --fail-with-body -X POST "https://api.svc.toolforge.org/components/v1/tool/tenshihinanawi-bot/deployment?token=${{ secrets.TOOLFORGE }}"
