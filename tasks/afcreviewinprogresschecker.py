@@ -1,6 +1,6 @@
-import pywikibot
-import mwparserfromhell
 import datetime
+import mwparserfromhell
+import pywikibot
 from tools import get_talk_page
 from tools import log_error
 from tools import mediawikitimestamp_to_datetime
