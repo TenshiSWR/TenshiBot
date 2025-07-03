@@ -2,6 +2,7 @@ name: Deploy to Toolforge
 on: [push]
 jobs:
   deploy:
-    name: deployment
-    run: |
-      curl --fail-with-body -X POST "https://api.svc.toolforge.org/components/v1/tool/tenshihinanawi-bot/deployment?token=${{ secrets.TOOLFORGE }}"
+    steps:
+      - name: deployment
+        run: |
+          curl --fail-with-body -X POST "https://api.svc.toolforge.org/components/v1/tool/tenshihinanawi-bot/deployment?token=${{ secrets.TOOLFORGE }}"
