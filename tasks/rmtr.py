@@ -77,7 +77,7 @@ class RmtrClerking:
         i = 0
         while i <= len(requests)-1:
             parsed_request = mwparserfromhell.parse(requests[i][1])
-            base_page, target_page = pywikibot.Page(self.site, wiki_delinker(parsed_request.filter_templates()[0].get(1).value)), pywikibot.Page(self.site, wiki_delinker(parsed_request.filter_templates()[0].get(2).value))
+            base_page, target_page = pywikibot.Page(self.site, wiki_delinker(str(parsed_request.filter_templates()[0].get(1).value))), pywikibot.Page(self.site, wiki_delinker(str(parsed_request.filter_templates()[0].get(2).value)))
             #print(base_page, target_page, (len(requests), i))
             #print("NC Requests: "+str(requests))
             try:
@@ -142,7 +142,7 @@ class RmtrClerking:
                 if (datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=72)) > last_reply.replace(tzinfo=None):
                     print("Removing expired contested request: {} --> {}".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
                     try:
-                        self.add_to_notification_queue(initial_request.filter_templates()[0].get("requester").value, (wiki_delinker(initial_request.filter_templates()[0].get(1).value), wiki_delinker(initial_request.filter_templates()[0].get(2).value)))
+                        self.add_to_notification_queue(initial_request.filter_templates()[0].get("requester").value, (wiki_delinker(str(initial_request.filter_templates()[0].get(1).value)), wiki_delinker(str(initial_request.filter_templates()[0].get(2).value))))
                     except ValueError:
                         print("Cannot notify requester of {} --> {}, requester parameter missing".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
                     try:
