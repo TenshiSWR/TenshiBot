@@ -174,7 +174,7 @@ class RmtrClerking:
         except (TypeError, KeyError):
             self.notification_queue[requester] = [(str(articles[0]), str(articles[1]))]
         except pywikibot.exceptions.InvalidTitleError:
-            log_error("Bad requester (invalid title error): <nowiki>{}</nowiki>".format(requester+" "+str(articles[0])+" --> "+str(articles[1])), 1)
+            log_error("Bad requester (invalid title error): <nowiki>{}</nowiki>".format(str(requester)+" "+str(articles[0])+" --> "+str(articles[1])), 1)
 
     def notify_requesters(self):
         #print(notification_queue)
