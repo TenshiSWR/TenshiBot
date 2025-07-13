@@ -10,4 +10,4 @@ for talk_page in talk_pages:
             print("{}: Parameter added".format(talk_page.title()))
             talk_page.text = parsed_text
             break
-    talk_page.save(summary="Mark WikiProject Canada ns-importance parameter as low.", minor=False)
+    talk_page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 3|Task 3]]: Mark WikiProject Canada ns-importance parameter as low.", minor=False)
