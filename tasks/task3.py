@@ -11,4 +11,3 @@ for talk_page in talk_pages:
             talk_page.text = parsed_text
             break
     talk_page.save(summary="Mark WikiProject Canada ns-importance parameter as low.", minor=False)
-print()
