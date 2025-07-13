@@ -79,7 +79,7 @@ class AfcReviews:
             for draft in self.notification_queue[reviewer]:
                 reviewer_talk_page.text += "\n{{subst:User:TenshiBot/AfC review notification|"+draft.title()+"|"+draft.title(with_ns=False)+"}}"
             try:
-                reviewer_talk_page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Notification]]: Your Articles for Creation review(s) has been marked as ongoing for over forty-eight hours.", minor=False, bot=True)
+                reviewer_talk_page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Notification]]: Your Articles for Creation review(s) has been marked as ongoing for over forty-eight hours.", minor=False)
             except pywikibot.exceptions.OtherPageSaveError:
                 print("Failed to notify {}".format(reviewer))
             else:

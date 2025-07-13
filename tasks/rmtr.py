@@ -26,7 +26,7 @@ class RmtrClerking:
                 if not self.notified:
                     self.notify_requesters()
                 try:
-                    rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in self.actions.values()])), minor=False, bot=True)
+                    rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in self.actions.values()])), minor=False)
                 except pywikibot.exceptions.EditConflictError:
                     print("Edit conflict on {}".format(rmtr.title()))
                     self.actions = {action: 0 for action, value in self.actions.items()}
@@ -197,7 +197,7 @@ class RmtrClerking:
                     user_talk_page.text += "\n{{subst:User:TenshiBot/RMTR contested notification|"+articles[0]+"|"+articles[1]+"}}"
                     print("Notification prepared for {} about {}".format(requester, articles[0]))
             try:
-                user_talk_page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].", minor=False, bot=True)
+                user_talk_page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].", minor=False)
             except pywikibot.exceptions.OtherPageSaveError:
                 print("Failed to notify {}".format(requester))
             else:
