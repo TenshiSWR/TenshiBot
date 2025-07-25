@@ -38,8 +38,7 @@ class AfcReviews:
         self.time = self.cursor.fetchone()
         if self.time is None:  # It's not there if its None
             return False
-        # Change back to 23 | 25 later
-        if datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=17) > self.time[0] > datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=31):  # A bit of leeway, but not much.
+        if datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=23) > self.time[0] > datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=25):  # A bit of leeway, but not much.
             return True
         else:
             return False
