@@ -46,9 +46,13 @@ class AfcReviews:
 
     def check_pending_afc_submissions(self):
         for draft in self.drafts:
+            try:
+                for template in mwparserfromhell.parse(draft.text).filter_templates():
+                    if template.name.matches("bots") and (template.get("deny").value == "TenshiBot" or template.get("deny").value == "all"):
+                        raise KeyboardInterrupt  # Yes, pywikibot does have exclusion compliance by default, but that may not apply to the reviewer's talk page who has left a {{bots|deny=TenshiBot}} on the draft.
+            except KeyboardInterrupt:
+                break
             for template in mwparserfromhell.parse(draft.text).filter_templates():
-                if template.name.matches("bots") and (template.get("deny").value == "TenshiBot" or template.get("deny").value == "all"):
-                    break  # Yes, pywikibot does have exclusion compliance by default, but that may not apply to the reviewer's talk page who has left a {{bots|deny=TenshiBot}} on the draft.
                 if (template.name.matches("AfC submission") or template.name.matches("AFC submission")) and template.get(1).value == "r":
                     try:
                         reviewer, timestamp = template.get("reviewer").value, mediawikitimestamp_to_datetime(str(template.get("reviewts").value))

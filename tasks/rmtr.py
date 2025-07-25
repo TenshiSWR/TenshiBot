@@ -91,9 +91,11 @@ class RmtrClerking:
                         del section_queue[requests[i][0]:requests[i+1][0]]
                     except (IndexError, ValueError):  # Exception will always raise at the end of the section
                         #print((requests[i][0], "Index/ValueError"), section_queue[requests[i][0]:len(section_queue)-1])
-                        if section_group == "Administrator needed": # Administrator needed section does not have whitespace at the end of the section since it's at the end of the page.
+                        if section_group == "Administrator needed":  # Administrator needed section does not have whitespace at the end of the section since it's at the end of the page.
                             del section_queue[requests[i][0]:len(section_queue)]
                         else:
+                            if section_queue[-1] != "":
+                                section_queue.append("\n")
                             del section_queue[requests[i][0]:len(section_queue)-1]
                     finally:
                         requests = [[x[0]-number_to_update_by, x[1]] for x in requests]
@@ -108,6 +110,8 @@ class RmtrClerking:
                             self.administrator_moves += section_queue[requests[i][0]:requests[i+1][0]]
                             del section_queue[requests[i][0]:requests[i+1][0]]
                         except (IndexError, ValueError):
+                            if section_queue[-1] != "":
+                                section_queue.append("\n")
                             self.administrator_moves += section_queue[requests[i][0]:len(section_queue)-1]
                             del section_queue[requests[i][0]:len(section_queue)-1]
                         finally:
