@@ -14,7 +14,7 @@ while index < len(working_list):
         del text[working_list[index]]
         working_list.pop(index)
         continue
-    result = re.search("==* *(Track listing|Track list|Tracklist|Disc 1|Disc 2|CD track listing|DVD track listing|Set listing|Tracks|Tracklisting)", working_text, re.I)
+    result = re.search("==* *.*(Track listing|Track list|Tracklist|Disc 1|Disc 2|CD track listing|DVD track listing|Set listing|Tracks|Tracklisting)", working_text, re.I)
     if result:
         del text[working_list[index]]
         working_list.pop(index)
