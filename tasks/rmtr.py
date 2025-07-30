@@ -100,7 +100,12 @@ class RmtrClerking:
                     finally:
                         requests = [[x[0]-number_to_update_by, x[1]] for x in requests]
                         self.actions[{"Uncontroversial technical requests":"technical", "Requests to revert undiscussed moves":"RMUM", "Administrator needed":"moved"}[section_group]] += 1
-                elif section_group != "Administrator needed":  # Check protections on both pages
+                        i += 1
+                        continue
+            except pywikibot.exceptions.NoMoveTargetError:
+                pass
+            try:
+                if section_group != "Administrator needed":  # Check protections on both pages
                     protections = [base_page.protection(), target_page.protection()]
                     if any(type.items() == page.items() for page in protections for type in [{"move":("sysop", "infinity")}, {"create":("sysop", "infinity")}]):
                         print("One or both pages mentioned in {} --> {} are either create-protected or move-protected. Moving to Administrator needed section".format(base_page.title(), target_page.title()))
@@ -118,8 +123,6 @@ class RmtrClerking:
                             requests = [[x[0]-number_to_update_by, x[1]] for x in requests]
                             self.administrator_moves.append("::{{Clerk note bot}} One or both pages in this request are either create-protected or move-protected. It has been moved from the {} section. ~~~~".format(section_group))
                             self.actions["moved"] += 1
-            except pywikibot.exceptions.NoMoveTargetError:
-                pass
             except pywikibot.exceptions.InvalidTitleError:
                 log_error("Bad request (invalid title error): <nowiki>{}</nowiki>".format(str(requests[i][1])), 1)
             i += 1
