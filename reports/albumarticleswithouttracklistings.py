@@ -32,5 +32,5 @@ if len(working_list) > 0:
         page.text += "\n* [[{}]]".format(article)
 else:
     page.text += "\nNo results found."
-page.save(summary="Updating report", minor=False)
+page.save(summary='[[User:TenshiBot#Tasks|Task 3U]]: Updating report "Album articles without track listings"', minor=False)
 

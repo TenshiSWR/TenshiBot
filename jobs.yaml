@@ -13,3 +13,8 @@
   name: daily
   emails: onfailure
   schedule: "@daily"
+- command: /data/project/tenshihinanawi-bot/pwbvenv/bin/python3 /data/project/tenshihinanawi-bot/monthly.py
+  image: python3.11
+  name: monthly
+  emails: onfailure
+  schedule: "@monthly"

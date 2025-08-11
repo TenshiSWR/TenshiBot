@@ -176,7 +176,7 @@ class RmtrClerking:
                 requester = str(user_talk_page.getRedirectTarget().title()).replace("User talk:", "")
             else:
                 requester = user_talk_page.title().replace("User talk:", "")
-            source_article_test, destination_article_test = pywikibot.Page(self.site, str(articles[0])), pywikibot.Page(self.site, str(articles[1]))
+            pywikibot.Page(self.site, str(articles[0])), pywikibot.Page(self.site, str(articles[1]))
             self.notification_queue[requester].append((str(articles[0]), str(articles[1])))
         except (TypeError, KeyError):
             self.notification_queue[requester] = [(str(articles[0]), str(articles[1]))]
