@@ -34,14 +34,15 @@ def check_subpages():
 for page in transclusions:
     page_regex = re.compile(r'<span class="anchor" id="{}"><\/span>\[\[{}\]\]'.format(re.escape(page), re.escape(page)))
     parsed_text = mwparserfromhell.parse(wiki.page_text(page))
-    result = subpage = time = None
+    result, subpage, time = None, None, None
     for template in parsed_text.filter_templates():
         if template.name.matches("Copyvio"):
             try:
                 time = mediawikitimestamp_to_datetime(template.get("timestamp").value)
             except ValueError:
                 break
-            subpage_name = "Wikipedia:Copyright problems/"+time.strftime("%Y %B %d")
+            day = str(int(time.strftime("%d")))
+            subpage_name = "Wikipedia:Copyright problems/"+time.strftime("%Y %B")+" {}".format(day)
             subpage = wiki.page_text(subpage_name)
             result = page_regex.search(subpage)
             break
