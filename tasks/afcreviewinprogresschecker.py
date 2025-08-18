@@ -60,7 +60,7 @@ class AfcReviews:
                         try:
                             timestamp = mediawikitimestamp_to_datetime(str(template.get("reviewts").value))
                         except ValueError:  # Definitely the reviewts or both parameter, needs human intervention
-                            log_error("Missing parameter reviewts, cannot evaluate: [[{}]]".format(draft.title()), 2)
+                            print("Missing parameter reviewts, cannot evaluate: [[{}]]".format(draft.title()))
                             continue
                         else:
                             if (datetime.datetime.utcnow()-datetime.timedelta(hours=72)) > timestamp:
