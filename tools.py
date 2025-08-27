@@ -36,5 +36,43 @@ def mediawikitimestamp_to_datetime(mediawikitimestamp: str):
                     hour=int(mediawikitimestamp[8:10]), minute=int(mediawikitimestamp[10:12]), second=int(mediawikitimestamp[12:14]))
 
 
+class NotificationSystem:
+    def __init__(self):
+        self.notification_queue = {}
+
+    def add_to_notification_queue(self, receiver: str, message: str):
+        try:
+            user_talk_page = get_talk_page(receiver)
+            if "User talk:"+receiver != user_talk_page.title():
+                receiver = str(user_talk_page.title()).replace("User talk:", "")
+            self.notification_queue[receiver].append(message)
+        except (TypeError, KeyError):
+            self.notification_queue[receiver] = [message]
+
+    def notify_all(self, summary: str):
+        from pywikibot.exceptions import EditConflictError
+        for receiver in self.notification_queue.keys():
+            while True:
+                try:
+                    self._notify(receiver, summary)
+                except EditConflictError:
+                    pass
+                else:
+                    break
+        self.notification_queue = {}
+
+    def _notify(self, receiver: str, summary: str):
+        from pywikibot.exceptions import OtherPageSaveError
+        user_talk_page = get_talk_page(receiver)
+        for message in self.notification_queue[receiver]:
+            user_talk_page.text += "\n"+message
+        try:
+            user_talk_page.save(summary=summary, minor=False)
+        except OtherPageSaveError:
+            print("Failed to notify {}".format(receiver))
+        else:
+            print("Notified {}".format(receiver))
+
+
 def wiki_delinker(link: str):
     return link.replace("[[", "", 1).replace("]]", "", 1)
