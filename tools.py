@@ -27,7 +27,7 @@ def log_error(error: str, task_number: int):
     error_text = "\n# {} (Task {}): {}\n".format(datetime.utcnow().strftime("[%Y-%m-%d %H:%M]"), str(task_number), error)
     error_page.text += error_text
     print(error_text[3:])
-    error_page.save(summary="Logging error during task {}".format(str(task_number)), minor=False, bot=True)
+    error_page.save(summary="Logging error during task {}".format(str(task_number)), minor=False, quiet=True)
 
 
 def mediawikitimestamp_to_datetime(mediawikitimestamp: str):
@@ -67,7 +67,7 @@ class NotificationSystem:
         for message in self.notification_queue[receiver]:
             user_talk_page.text += "\n"+message
         try:
-            user_talk_page.save(summary=summary, minor=False)
+            user_talk_page.save(summary=summary, minor=False, quiet=True)
         except OtherPageSaveError:
             print("Failed to notify {}".format(receiver))
         else:

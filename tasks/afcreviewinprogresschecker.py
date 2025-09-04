@@ -14,6 +14,7 @@ class AfcReviews:
         self.connection = toolforge.toolsdb("s56602__afc_notifications_p")
         self.cursor = self.connection.cursor()
         self.check_pending_afc_submissions()
+        print("Checking notifications...")
         self.log_notifications()  # Has to be before the notification system notifies, else it'll be wiped before its in the database.
         self.notification_system.notify_all("[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Notification]]: Your Articles for Creation review(s) has been marked as ongoing for over forty-eight hours.")
         self.connection.close()
@@ -51,18 +52,21 @@ class AfcReviews:
                             if (datetime.datetime.utcnow()-datetime.timedelta(hours=72)) > timestamp:
                                 print("{}'s review has been ongoing for more than 72 hours, unable to notify reviewer, returning it to the queue.".format(draft.title().strip()))
                                 draft.text = draft.text.replace(str(template), str(template).replace("r", "", 1))
-                                draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Task 2]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False)
+                                draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Task 2]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False, quiet=True)
                     else:
                         if (datetime.datetime.utcnow()-datetime.timedelta(hours=72)) > timestamp and self.check_notified(reviewer):
                             print("{}'s review has been ongoing for more than 72 hours and {} has been notified, returning it to the queue.".format(draft.title().strip(), reviewer))
                             draft.text = draft.text.replace(str(template), str(template).replace("r", "", 1))
-                            draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Task 2]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False)
+                            draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Task 2]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False, quiet=True)
                         elif (datetime.datetime.utcnow()-datetime.timedelta(hours=48)) > timestamp:
                             print("{} has been reviewed for longer than 48 hours, notifying {}".format(draft.title(), reviewer))
                             self.notification_system.add_to_notification_queue(reviewer, "{{subst:User:TenshiBot/AfC review notification|"+draft.title()+"|"+draft.title(with_ns=False)+"}}")
+                    break  # It should be done at this point, no need to continue searching templates if we found an AfC template marked as being reviewed
 
     def log_notifications(self):
+        print("log_notifications")
         for reviewer in self.notification_system.notification_queue.keys():
+            print("Reviewer: {}".format(reviewer))
             self.cursor.execute("SELECT time FROM long_reviews WHERE user = %(username)s;", {"username": reviewer})
             time = self.cursor.fetchone()
             if time is None:
