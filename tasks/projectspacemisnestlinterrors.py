@@ -83,8 +83,8 @@ for page in lint_list:
         lines[misnests["<s>"][i][1]] += "</s>"
         for y in range(misnests["<s>"][i][1]+1, misnests["</s>"][i][1]):
             #print(y)
-            lines[y] = re.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2</s>", lines[y])
-        lines[misnests["</s>"][i][1]] = re.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2", lines[misnests["</s>"][i][1]])
+            lines[y] = regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2</s>", lines[y])
+        lines[misnests["</s>"][i][1]] = regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2", lines[misnests["</s>"][i][1]])
     page.text = "\n".join(lines)
     page.text = regex.sub("<s><\/s>", "", page.text)  # Final sanity check because it cannot remove on its own a single </s>
     page.save(summary=": Fix misnested tags lints caused by <s>", minor=True)
