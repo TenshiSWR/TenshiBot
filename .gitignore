@@ -5,6 +5,7 @@
 /logs/*
 */apicache/*
 */__pycache__/*
+.env
 throttle.ctrl
 user-config.py
 *.pyc
