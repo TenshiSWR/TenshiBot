@@ -37,16 +37,19 @@ params = {}
 
 
 for error in full_list:
-    for key in count.keys():
-        if not regex.search(key, error["title"]) and error["params"]["name"] == "s":
-            count[key] += 1
+    for log_page in log_pages:
+        if not regex.search(log_page, error["title"]) and error["params"]["name"] == "s":
             lint_list.append(error["title"])
+    """
+    for key in count.keys():
+        if regex.search(key, error["title"]):
+            count[key] += 1
     try:
         params[error["params"]["name"]] += 1
     except KeyError:
         params[error["params"]["name"]] = 1
 
-""" Mostly for counting
+# Mostly for counting
 for key, value in count.items():
     print(key+": "+str(value))
 
@@ -85,4 +88,3 @@ for page in lint_list:
     page.text = "\n".join(lines)
     page.text = regex.sub("<s><\/s>", "", page.text)  # Final sanity check because it cannot remove on its own a single </s>
     page.save(summary=": Fix misnested tags lints caused by <s>", minor=True)
-
