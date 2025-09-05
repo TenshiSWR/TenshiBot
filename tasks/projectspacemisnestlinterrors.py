@@ -70,7 +70,7 @@ for page in lint_list:
                 #print("Found </s>:", line, "({})".format(i))
                 misnests["</s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
         if misnests["</s>"][0][1] < misnests["<s>"][0][1]:
-            lines[misnests["</s>"][0][1]] = re.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2", lines[misnests["</s>"][0][1]])
+            lines[misnests["</s>"][0][1]] = regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2", lines[misnests["</s>"][0][1]])
             misnests["</s>"].pop(0)
         else:
             for i in range(len(misnests["<s>"])-1):
