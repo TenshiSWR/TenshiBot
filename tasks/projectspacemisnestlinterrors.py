@@ -70,15 +70,14 @@ for page in lint_list:
                 #print("Found </s>:", line, "({})".format(i))
                 misnests["</s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
         if misnests["</s>"][0][1] < misnests["<s>"][0][1]:
-            lines[misnests["</s>"][0][1]] = regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2", lines[misnests["</s>"][0][1]])
             misnests["</s>"].pop(0)
-        else:
+        try:
             for i in range(len(misnests["<s>"])-1):
                 if misnests["<s>"][i+1][1] < misnests["</s>"][i][1]:
-                    lines[misnests["<s>"][i][1]] += "</s>"
-                    break
-            else:
-                break
+                    misnests["<s>"].pop(i)
+                    raise KeyboardInterrupt
+        except KeyboardInterrupt:
+            break
     for i in range(len(misnests["<s>"])):
         lines[misnests["<s>"][i][1]] += "</s>"
         for y in range(misnests["<s>"][i][1]+1, misnests["</s>"][i][1]):
