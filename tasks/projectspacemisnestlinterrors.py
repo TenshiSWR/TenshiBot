@@ -38,7 +38,7 @@ params = {}
 
 for error in full_list:
     for log_page in log_pages:
-        if not regex.search(log_page, error["title"]) and error["params"]["name"] == "s":
+        if not regex.search(log_page, error["title"]) and error["params"]["name"] == "s" or "strike":
             lint_list.append(error["title"])
     """
     for key in count.keys():
@@ -59,6 +59,7 @@ for param, value in params.items():
 
 for page in lint_list:
     page = pywikibot.Page(site, page)
+    page.text = regex.sub(r"(<\/?)([Ss]trike)>", r"\1s>", page.text)
     lines = page.text.split("\n")
     while True:
         misnests = {"<s>": [], "</s>": []}
@@ -71,6 +72,8 @@ for page in lint_list:
                 misnests["</s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
         if misnests["</s>"][0][1] < misnests["<s>"][0][1]:
             misnests["</s>"].pop(0)
+        if len(misnests["<s>"]) <= 1:
+            break
         try:
             for i in range(len(misnests["<s>"])-1):
                 if misnests["<s>"][i+1][1] < misnests["</s>"][i][1]:
