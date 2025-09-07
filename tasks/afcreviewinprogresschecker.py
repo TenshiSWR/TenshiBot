@@ -40,7 +40,7 @@ class AfcReviews:
             for template in mwparserfromhell.parse(draft.text).filter_templates():
                 if (template.name.matches("AfC submission") or template.name.matches("AFC submission")) and template.get(1).value == "r":
                     try:
-                        reviewer, timestamp = template.get("reviewer").value, mediawikitimestamp_to_datetime(str(template.get("reviewts").value))
+                        reviewer, timestamp = str(template.get("reviewer").value), mediawikitimestamp_to_datetime(str(template.get("reviewts").value))
                         #print(draft.title(), (reviewer, timestamp))
                     except ValueError:  # Would occur if reviewer or reviewts parameter is missing somehow
                         try:
