@@ -36,7 +36,7 @@ class AfcReviews:
                     if template.name.matches("bots") and (template.get("deny").value == "TenshiBot" or template.get("deny").value == "all"):
                         raise KeyboardInterrupt  # Yes, pywikibot does have exclusion compliance by default, but that may not apply to the reviewer's talk page who has left a {{bots|deny=TenshiBot}} on the draft.
             except KeyboardInterrupt:
-                break
+                continue
             for template in mwparserfromhell.parse(draft.text).filter_templates():
                 if (template.name.matches("AfC submission") or template.name.matches("AFC submission")) and template.get(1).value == "r":
                     try:
