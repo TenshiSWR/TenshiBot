@@ -32,13 +32,19 @@ while True:
 
 #count = {"^(?!.*Archived nominations)(?!.*Featured log).*Featured article candidates.*":0, "^(?!.*\/archive\/).*Featured article review.*":0, "^(?!.*Failed log)(?!.*Featured log).*Featured list candidates.*":0}
 lint_list = []
-log_pages = {"\/Assessment\/.*\/\d{4}", ".*\/archive\/.*", ".*Archived nominations.*", ".*Failed log.*" ".*Featured log.*", ".*\/Log\/.*", "Peer review\/"}
+log_pages = {"\/Assessment\/.*\/\d{4}", ".*\/[Aa]rchive\/.*", ".*\/Archived nominations\/.*", ".*Deletion sorting.*", ".*\/Failed log\/.*", ".*\/Featured log\/.*", ".*Featured picture candidates\/.*-\d{4}", ".*\/Log\/.*", "Peer review\/"}
 params = {}
 
 
 for error in full_list:
-    for log_page in log_pages:
-        if not regex.search(log_page, error["title"]) and error["params"]["name"] == "s" or "strike":
+    try:
+        for log_page in log_pages:
+            if regex.search(log_page, error["title"]):
+                raise KeyboardInterrupt
+    except KeyboardInterrupt:
+        continue
+    else:
+        if error["params"]["name"] == "s" or error["params"]["name"] == "strike":
             lint_list.append(error["title"])
     """
     for key in count.keys():
@@ -59,34 +65,100 @@ for param, value in params.items():
 
 for page in lint_list:
     page = pywikibot.Page(site, page)
+    print(page.title()+": ({})".format(lint_list.index(page.title())))
     page.text = regex.sub(r"(<\/?)([Ss]trike)>", r"\1s>", page.text)
     lines = page.text.split("\n")
-    while True:
-        misnests = {"<s>": [], "</s>": []}
-        for i, line in enumerate(lines):
-            if regex.search(r"(?!.*<\/s>).*<s>.*", line):  # <s> without any </s>
-                #print("Found <s>:", line, "({})".format(i))
-                misnests["<s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
-            if regex.search(r"(?<!<s[^>]*>[^<]*|<code>.*?)(<\/s>)(?![^<]*<s[^>]*>.*?<\/code>)", line):  # </s> without any <s>
-                #print("Found </s>:", line, "({})".format(i))
-                misnests["</s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
-        if misnests["</s>"][0][1] < misnests["<s>"][0][1]:
-            misnests["</s>"].pop(0)
-        if len(misnests["<s>"]) <= 1:
-            break
-        try:
-            for i in range(len(misnests["<s>"])-1):
-                if misnests["<s>"][i+1][1] < misnests["</s>"][i][1]:
+    stop = False
+    # This whole segment is a big sprawling mess and needs to be cut down and simplified.
+    misnests = {"<s>": [], "</s>": []}
+    for i, line in enumerate(lines):
+        if regex.search(r"(?!.*<\/[Ss]>).*<[Ss]>.*", line) and not regex.search(r"<nowiki>.*<s>.*<\/nowiki>", line):  # <s> without any </s>
+            #print("Found <s>:", line, "({})".format(i))
+            misnests["<s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
+        if regex.search(r"(?![^<]*<\/code>)(?<!<[Ss][^>]*>[^<]*)(<\/[Ss]>)", line) and not regex.search(r"<nowiki>.*<\/s>.*<\/nowiki>", line):  # </s> without any <s>
+            #print("Found </s>:", line, "({})".format(i))
+            misnests["</s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
+    print("Misnests: "+str(misnests))
+    if len(misnests["<s>"]) < 1 or len(misnests["</s>"]) < 1:
+        print("Skipping {}, something is wrong with the amount of <s> tags".format(page.title()))
+        print("<s>: {}, </s>: {}".format(misnests["<s>"], misnests["</s>"]))
+        continue
+    i = 0
+    while i < len(misnests["<s>"]):
+        if misnests["</s>"][i][1] < misnests["<s>"][0][1]:
+            #print("(Filtering 1) Removed {}".format(misnests["</s>"][0]))
+            misnests["</s>"].pop(i)
+            i = 0
+        else:
+            i += 1
+    i = 0
+    while i < len(misnests["<s>"]):
+        if misnests["</s>"][i][1] < misnests["<s>"][i][1]:
+            #print("(Filtering 2) Removed {}".format(misnests["</s>"][0]))
+            misnests["</s>"].pop(i)
+            i = 0
+        else:
+            i += 1
+    i = 0
+    while i < len(misnests["<s>"]):
+        no_more = False
+        for x in range(len(misnests["</s>"])):
+            try:
+                if misnests["<s>"][i+1][1] < misnests["</s>"][x][1]:
+                    #print("(Filtering 3) Removed {}".format(misnests["<s>"][x]))
                     misnests["<s>"].pop(i)
-                    raise KeyboardInterrupt
-        except KeyboardInterrupt:
+                else:
+                    i += 1
+            except IndexError:
+                no_more = True
+                break
+        if no_more:
             break
+    if len(misnests["<s>"]) != len(misnests["</s>"]):
+        print("Skipping {}, something is wrong with the amount of <s> tags (post filtering)".format(page.title()))
+        stop = True
+    print("(Post filtering) <s>: {}, </s>: {}".format(misnests["<s>"], misnests["</s>"]))
+    #for misnest in misnests["<s>"]:
+    #    print("<s> ({})".format(misnest[1])+str(lines[misnest[1]]))
+    #for misnest in misnests["</s>"]:
+    #    print("</s> ({})".format(misnest[1])+str(lines[misnest[1]]))
+    if stop:
+        continue
+    fixes = []
     for i in range(len(misnests["<s>"])):
-        lines[misnests["<s>"][i][1]] += "</s>"
+        fixes.append((misnests["<s>"][i][1], lines[misnests["<s>"][i][1]]+"</s>"))
         for y in range(misnests["<s>"][i][1]+1, misnests["</s>"][i][1]):
             #print(y)
-            lines[y] = regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2</s>", lines[y])
-        lines[misnests["</s>"][i][1]] = regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2", lines[misnests["</s>"][i][1]])
+            if regex.search(r"==*.*=*", lines[y]):
+                fixes.append((y, regex.sub(r"(==*)(.*[^=])(=*)", r"\1<s>\2</s>\3", lines[y])))
+            else:
+                fixes.append((y, regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2</s>", lines[y])))
+        fixes.append((misnests["</s>"][i][1], regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2", lines[misnests["</s>"][i][1]])))
+    # Post-post filtering & cleanup
+    # Mainly for the issues in post which can't be filtered till after
+    i = 0
+    while i < len(fixes):
+        if regex.search(r"<s>.*<s>", fixes[i][1]) or regex.search(r"<\/s>.*<\/s>", fixes[i][1]):
+            print("(Post-post filtering) Double markup ({}): {}".format(fixes[i][0], fixes[i][1]))
+        elif regex.search(r"(?<!\[\[[^\]]*)]]", fixes[i][1]):
+            print("(Post-post filtering) Unclosed wikilink ({}): {}".format(fixes[i][0], fixes[i][1]))
+        else:
+            i += 1
+            continue
+        for x in range(len(misnests["<s>"])):
+            if misnests["<s>"][x][1] <= fixes[i][0] <= misnests["</s>"][x][1]:
+                y = 0
+                while y < len(fixes):
+                    if misnests["<s>"][x][1] <= fixes[y][0] <= misnests["</s>"][x][1]:
+                        fixes.pop(y)
+                        y = 0
+                    else:
+                        y += 1
+                break
+        i = 0
+    for fix in fixes:
+        lines[fix[0]] = fix[1]
     page.text = "\n".join(lines)
-    page.text = regex.sub("<s><\/s>", "", page.text)  # Final sanity check because it cannot remove on its own a single </s>
-    page.save(summary=": Fix misnested tags lints caused by <s>", minor=True)
+    page.text = regex.sub(r"(?<!<nowiki>.*?)<s> *<\/s>(?!<\/nowiki>)", "", page.text)  # Final sanity check because it cannot remove on its own a single </s>
+    #pywikibot.showDiff(pywikibot.Page(site, page.title()).text, page.text)
+    page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 4|Bot trial]]: Fix misnested tags lints caused by <s>", minor=True)
