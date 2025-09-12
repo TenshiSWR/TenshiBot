@@ -30,9 +30,9 @@ while True:
         break
 
 
-#count = {"^(?!.*Archived nominations)(?!.*Featured log).*Featured article candidates.*":0, "^(?!.*\/archive\/).*Featured article review.*":0, "^(?!.*Failed log)(?!.*Featured log).*Featured list candidates.*":0}
 lint_list = []
 log_pages = {"\/Assessment\/.*\/\d{4}", ".*\/[Aa]rchive\/.*", ".*\/Archived nominations\/.*", ".*Deletion sorting.*", ".*\/Failed log\/.*", ".*\/Featured log\/.*", ".*Featured picture candidates\/.*-\d{4}", ".*\/Log\/.*", "Peer review\/"}
+#count = {page:0 for page in log_pages}
 params = {}
 
 
@@ -42,6 +42,7 @@ for error in full_list:
             if regex.search(log_page, error["title"]):
                 raise KeyboardInterrupt
     except KeyboardInterrupt:
+        #pass
         continue
     else:
         if error["params"]["name"] == "s" or error["params"]["name"] == "strike":
@@ -63,6 +64,7 @@ for param, value in params.items():
     print(param+": "+str(value))
 """
 
+lint_list = list(set(lint_list))  # To remove duplicates of any pages
 for page in lint_list:
     page = pywikibot.Page(site, page)
     print(page.title()+": ({})".format(lint_list.index(page.title())))
@@ -138,7 +140,7 @@ for page in lint_list:
     # Mainly for the issues in post which can't be filtered till after
     i = 0
     while i < len(fixes):
-        if regex.search(r"<s>.*<s>", fixes[i][1]) or regex.search(r"<\/s>.*<\/s>", fixes[i][1]):
+        if regex.search(r"<s>(?:(?!<\/s>).)*?<s>", fixes[i][1]) or regex.search(r"<\/s>(?:(?!<s>).)*?<\/s>", fixes[i][1]):
             print("(Post-post filtering) Double markup ({}): {}".format(fixes[i][0], fixes[i][1]))
         elif regex.search(r"(?<!\[\[[^\]]*)]]", fixes[i][1]):
             print("(Post-post filtering) Unclosed wikilink ({}): {}".format(fixes[i][0], fixes[i][1]))
@@ -160,5 +162,8 @@ for page in lint_list:
         lines[fix[0]] = fix[1]
     page.text = "\n".join(lines)
     page.text = regex.sub(r"(?<!<nowiki>.*?)<s> *<\/s>(?!<\/nowiki>)", "", page.text)  # Final sanity check because it cannot remove on its own a single </s>
+    if page.text == pywikibot.Page(site, page.title()).text:
+        print("Skipping {}, no changes detected".format(page.title()))
+        continue
     #pywikibot.showDiff(pywikibot.Page(site, page.title()).text, page.text)
     page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 4|Bot trial]]: Fix misnested tags lints caused by <s>", minor=True)
