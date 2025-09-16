@@ -3,18 +3,18 @@ import mwparserfromhell
 import pywikibot
 from sys import exit
 from tasks.majavahbot.mediawiki import MediawikiApi  # Essentially from majavahbot.api import MediawikiApi
-from tools import get_talk_page
-from tools import log_error
-from tools import wiki_delinker
+from tools import log_error, NotificationSystem, wiki_delinker
+
+COMPLETE = NOTIFIED = True
 
 
 class RmtrClerking:
     def __init__(self):
         self.site, rmtr = pywikibot.Site(), None
-        self.notified = False
+        self.was_notified = not NOTIFIED
         self.actions = {"technical": 0, "RMUM": 0, "contested": 0, "administrator": 0, "moved": 0}
-        self.notification_queue = {}
-        tries, complete = 0, False
+        self.notification_system = NotificationSystem()
+        tries, is_complete = 0, not COMPLETE
         while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted on the page, but if it is then it'll try at least try to redo it
             rmtr = self.get_rmtr()
             self.uncontroversial_requests = self.process_non_contested_requests(self.uncontroversial_requests, "Uncontroversial technical requests")
@@ -23,24 +23,26 @@ class RmtrClerking:
             self.administrator_moves = self.process_non_contested_requests(self.administrator_moves, "Administrator needed")
             if sum([action for action in self.actions.values()]) > 0:  # Check to see if anything has been done before saving an edit.
                 rmtr.text = self.reassemble_page()
-                if not self.notified:
-                    self.notify_requesters()
+                if not self.was_notified:
+                    self.notification_system.notify_all("[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].")
+                    self.was_notified = NOTIFIED
                 try:
-                    rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in self.actions.values()])), minor=False)
+                    pass
+                    #rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in self.actions.values()])), minor=False, quiet=True)
                 except pywikibot.exceptions.EditConflictError:
                     print("Edit conflict on {}".format(rmtr.title()))
                     self.actions = {action: 0 for action, value in self.actions.items()}
                 else:
-                    complete = True
+                    is_complete = COMPLETE
                     break
                 finally:
                     tries += 1
                     print("Tried {} times to update {} ({})".format(str(tries), rmtr.title(), datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
             else:  # If no actions were taken, stop here so that it doesn't loop endlessly
                 print("Did nothing ({})".format(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
-                complete = True
+                is_complete = COMPLETE
                 break
-        if tries == 5 and not complete:
+        if tries == 5 and is_complete == False:
             log_error("Tried 5 times to update {} and was not able to do it".format(rmtr.title()), 1)
 
     def get_rmtr(self):
@@ -107,7 +109,7 @@ class RmtrClerking:
             try:
                 if section_group != "Administrator needed":  # Check protections on both pages
                     protections = [base_page.protection(), target_page.protection()]
-                    if any(type.items() == page.items() for page in protections for type in [{"move":("sysop", "infinity")}, {"create":("sysop", "infinity")}]):
+                    if any(protection_type.items() == page.items() for page in protections for protection_type in [{"move":("sysop", "infinity")}, {"create":("sysop", "infinity")}]):
                         print("One or both pages mentioned in {} --> {} are either create-protected or move-protected. Moving to Administrator needed section".format(base_page.title(), target_page.title()))
                         print("Protections:", str(protections[0]), str(protections[1]))
                         try:  # This could probably be refactored into a single common function at some point
@@ -177,39 +179,25 @@ class RmtrClerking:
             else:
                 requester = user_talk_page.title().replace("User talk:", "")
             pywikibot.Page(self.site, str(articles[0])), pywikibot.Page(self.site, str(articles[1]))
-            self.notification_queue[requester].append((str(articles[0]), str(articles[1])))
-        except (TypeError, KeyError):
-            self.notification_queue[requester] = [(str(articles[0]), str(articles[1]))]
+        except TypeError:
+            pass
         except pywikibot.exceptions.InvalidTitleError:
             log_error("Bad requester (invalid title error): <nowiki>{}</nowiki>".format(str(requester)+" "+str(articles[0])+" --> "+str(articles[1])), 1)
-
-    def notify_requesters(self):
-        #print(notification_queue)
-        for requester in self.notification_queue.keys():
-            #print("Requester: {}".format(requester))
-            user_talk_page = get_talk_page(requester)
-            for articles in self.notification_queue[requester]:
-                #print("Article {}: {}".format(requester, articles))
-                try:
-                    article_talk_page = pywikibot.Page(self.site, "{}".format(articles[0])).toggleTalkPage()
-                except pywikibot.exceptions.InvalidTitleError:
-                    print("Notification prepared for {} (Not checked for RM/No permalink)".format(requester))
-                    user_talk_page.text += "\n{{subst:User:TenshiBot/RMTR contested notification}}"
-                    continue
-                for template in mwparserfromhell.parse(article_talk_page.text).filter_templates():
-                    if template.name.matches("Requested move/dated"):
-                        print("RM started on talk page of {}, not notifying {}".format(articles[0], requester))
-                        break
-                else:
-                    user_talk_page.text += "\n{{subst:User:TenshiBot/RMTR contested notification|"+articles[0]+"|"+articles[1]+"}}"
-                    print("Notification prepared for {} about {}".format(requester, articles[0]))
+        finally:
+            # print("Article {}: {}".format(requester, articles))
             try:
-                user_talk_page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].", minor=False)
-            except pywikibot.exceptions.OtherPageSaveError:
-                print("Failed to notify {}".format(requester))
+                article_talk_page = pywikibot.Page(self.site, "{}".format(articles[0])).toggleTalkPage()
+            except pywikibot.exceptions.InvalidTitleError:
+                print("Notification prepared for {} (Not checked for RM/No permalink)".format(requester))
+                self.notification_system.add_to_notification_queue(requester, "{{subst:User:TenshiBot/RMTR contested notification}}")
+                return
+            for template in mwparserfromhell.parse(article_talk_page.text).filter_templates():
+                if template.name.matches("Requested move/dated"):
+                    print("RM started on talk page of {}, not notifying {}".format(articles[0], requester))
+                    break
             else:
-                print("Notified {} of their contested request(s) being removed".format(requester))
-        self.notified = True
+                self.notification_system.add_to_notification_queue(requester, "{{subst:User:TenshiBot/RMTR contested notification|"+articles[0]+"|"+articles[1]+"}}")
+                print("Notification prepared for {} about {}".format(requester, articles[0]))
 
     def reassemble_page(self):
         return "\n".join(self.instructions+self.uncontroversial_requests+self.undiscussed_moves+self.contested_requests+self.administrator_moves)

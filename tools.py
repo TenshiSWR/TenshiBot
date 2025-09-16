@@ -65,7 +65,7 @@ class NotificationSystem:
         from pywikibot.exceptions import OtherPageSaveError
         user_talk_page = get_talk_page(receiver)
         for message in self.notification_queue[receiver]:
-            user_talk_page.text += "\n"+message
+            user_talk_page.text += "\n\n"+message
         try:
             user_talk_page.save(summary=summary, minor=False, quiet=True)
         except OtherPageSaveError:

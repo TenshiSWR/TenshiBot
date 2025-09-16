@@ -68,7 +68,7 @@ lint_list = list(set(lint_list))  # To remove duplicates of any pages
 for page in lint_list:
     page = pywikibot.Page(site, page)
     print(page.title()+": ({})".format(lint_list.index(page.title())))
-    page.text = regex.sub(r"(<\/?)([Ss]trike)>", r"\1s>", page.text)
+    page.text = regex.sub(r"(<\/?)(?:[Ss]trike)>", r"\1s>", page.text)
     lines = page.text.split("\n")
     stop = False
     # This whole segment is a big sprawling mess and needs to be cut down and simplified.
@@ -77,7 +77,7 @@ for page in lint_list:
         if regex.search(r"(?!.*<\/[Ss]>).*<[Ss]>.*", line) and not regex.search(r"<nowiki>.*<s>.*<\/nowiki>", line):  # <s> without any </s>
             #print("Found <s>:", line, "({})".format(i))
             misnests["<s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
-        if regex.search(r"(?![^<]*<\/code>)(?<!<[Ss][^>]*>[^<]*)(<\/[Ss]>)", line) and not regex.search(r"<nowiki>.*<\/s>.*<\/nowiki>", line):  # </s> without any <s>
+        if regex.search(r"(?![^<]*<\/code>)(?<!<[Ss][^>]*>[^<]*)(?:<\/[Ss]>)", line) and not regex.search(r"<nowiki>.*<\/s>.*<\/nowiki>", line):  # </s> without any <s>
             #print("Found </s>:", line, "({})".format(i))
             misnests["</s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
     print("Misnests: "+str(misnests))
