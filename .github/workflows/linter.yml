@@ -1,0 +1,19 @@
+name: Linter
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  pylinter:
+    name: Pylinter
+    runs-on: ubuntu-latest
+    steps:
+      - name: pylinter
+        uses: programmingwithalex/pylinter@v1.4.3
+  python-black:
+    name: Python Black
+    runs-on: ubuntu-latest
+    steps:
+      - name: Python Black
+        uses: cytopia/docker-black@0.11
