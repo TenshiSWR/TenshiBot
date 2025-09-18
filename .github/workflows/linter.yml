@@ -11,9 +11,13 @@ jobs:
     steps:
       - name: pylinter
         uses: programmingwithalex/pylinter@v1.4.3
+        with:
+          python-root: "tasks"
   python-black:
     name: Python Black
     runs-on: ubuntu-latest
     steps:
       - name: Python Black
         uses: cytopia/docker-black@0.11
+        with:
+          path: "tasks/"
