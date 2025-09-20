@@ -27,8 +27,7 @@ class RmtrClerking:
                     self.notification_system.notify_all("[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].")
                     self.was_notified = NOTIFIED
                 try:
-                    pass
-                    #rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in self.actions.values()])), minor=False, quiet=True)
+                    rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in self.actions.values()])), minor=False, quiet=True)
                 except pywikibot.exceptions.EditConflictError:
                     print("Edit conflict on {}".format(rmtr.title()))
                     self.actions = {action: 0 for action, value in self.actions.items()}
