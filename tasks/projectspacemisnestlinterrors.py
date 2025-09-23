@@ -114,8 +114,6 @@ for page in lint_list:
                     i += 1
             except IndexError:
                 no_more = True
-                if len(misnests["<s>"]) < len(misnests["</s>"]):
-                    del misnests["</s>"][x+1:]
                 break
         if no_more:
             break
