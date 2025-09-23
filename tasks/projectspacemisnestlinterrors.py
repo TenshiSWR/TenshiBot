@@ -93,14 +93,15 @@ for page in lint_list:
             i = 0
         else:
             i += 1
-    i = 0
-    while i < len(misnests["</s>"]):
-        if misnests["</s>"][i][1] < misnests["<s>"][i][1]:
-            #print("(Filtering 2) Removed {}".format(misnests["</s>"][0]))
-            misnests["</s>"].pop(i)
-            i = 0
-        else:
-            i += 1
+    if len(misnests["<s>"]) == len(misnests["</s>"]):
+        i = 0
+        while i < len(misnests["</s>"]):
+            if misnests["</s>"][i][1] < misnests["<s>"][i][1]:
+                #print("(Filtering 2) Removed {}".format(misnests["</s>"][0]))
+                misnests["</s>"].pop(i)
+                i = 0
+            else:
+                i += 1
     i = 0
     while i < len(misnests["<s>"]):
         no_more = False
@@ -113,6 +114,8 @@ for page in lint_list:
                     i += 1
             except IndexError:
                 no_more = True
+                if len(misnests["<s>"]) < len(misnests["</s>"]):
+                    del misnests["</s>"][x+1:]
                 break
         if no_more:
             break
