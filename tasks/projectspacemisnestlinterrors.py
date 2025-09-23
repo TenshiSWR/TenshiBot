@@ -170,5 +170,5 @@ for page in lint_list:
     #pywikibot.showDiff(pywikibot.Page(site, page.title()).text, page.text)
     try:
         page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 4|Task 4]]: Fix misnested tags lints caused by <s>", minor=True)
-    except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError):
-        log_error("Either edit conflicted on page or the page is protected, failed to edit [[{}]]".format(page.title()), 4)
+    except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
+        log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), 4)
