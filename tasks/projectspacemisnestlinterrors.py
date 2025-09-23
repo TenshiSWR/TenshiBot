@@ -5,6 +5,7 @@ import pywikibot
 import regex
 import requests
 from requests_oauthlib import OAuth1
+from tools import log_error
 site = pywikibot.Site()
 
 load_dotenv()
@@ -167,4 +168,7 @@ for page in lint_list:
         print("Skipping {}, no changes detected".format(page.title()))
         continue
     #pywikibot.showDiff(pywikibot.Page(site, page.title()).text, page.text)
-    page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 4|Task 4]]: Fix misnested tags lints caused by <s>", minor=True)
+    try:
+        page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 4|Task 4]]: Fix misnested tags lints caused by <s>", minor=True)
+    except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError):
+        log_error("Either edit conflicted on page or the page is protected, failed to edit [[{}]]".format(page.title()), 4)
