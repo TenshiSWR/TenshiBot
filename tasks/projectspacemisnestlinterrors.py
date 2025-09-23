@@ -166,4 +166,4 @@ for page in lint_list:
         print("Skipping {}, no changes detected".format(page.title()))
         continue
     #pywikibot.showDiff(pywikibot.Page(site, page.title()).text, page.text)
-    page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 4|Bot trial]]: Fix misnested tags lints caused by <s>", minor=True)
+    page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 4|Task 4]]: Fix misnested tags lints caused by <s>", minor=True)
