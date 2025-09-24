@@ -72,15 +72,15 @@ for page in lint_list:
     page.text = regex.sub(r"(<\/?)(?:[Ss]trike)>", r"\1s>", page.text)
     lines = page.text.split("\n")
     stop = False
-    # This whole segment is a big sprawling mess and needs to be cut down and simplified.
     misnests = {"<s>": [], "</s>": []}
     for i, line in enumerate(lines):
-        if regex.search(r"(?!.*<\/[Ss]>).*<[Ss]>.*", line) and not regex.search(r"<nowiki>.*<s>.*<\/nowiki>", line):  # <s> without any </s>
-            #print("Found <s>:", line, "({})".format(i))
+        s = len(regex.findall(r"<[Ss]>", line))-len(regex.findall(r"<nowiki>.*<[Ss]>.*<\/nowiki>", line))
+        closing_s = len(regex.findall(r"<\/[Ss]>", line))-len(regex.findall(r"<nowiki>.*<\/[Ss]>.*<\/nowiki>", line))
+        if s > closing_s:
             misnests["<s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
-        if regex.search(r"(?![^<]*<\/code>)(?<!<[Ss][^>]*>[^<]*)(?:<\/[Ss]>)", line) and not regex.search(r"<nowiki>.*<\/s>.*<\/nowiki>", line):  # </s> without any <s>
-            #print("Found </s>:", line, "({})".format(i))
+        if s < closing_s:
             misnests["</s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
+    # This whole segment is a big sprawling mess and needs to be cut down and simplified.
     print("Misnests: "+str(misnests))
     if len(misnests["<s>"]) < 1 or len(misnests["</s>"]) < 1:
         print("Skipping {}, something is wrong with the amount of <s> tags".format(page.title()))
@@ -146,6 +146,10 @@ for page in lint_list:
             print("(Post-post filtering) Double markup ({}): {}".format(fixes[i][0], fixes[i][1]))
         elif regex.search(r"(?<!\[\[[^\]]*)]]", fixes[i][1]):
             print("(Post-post filtering) Unclosed wikilink ({}): {}".format(fixes[i][0], fixes[i][1]))
+        elif (len(regex.findall(r"\{\{", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\{\{.*<\/nowiki>", fixes[i][1]))) > (len(regex.findall(r"\}\}", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\}\}.*<\/nowiki>", fixes[i][1]))):
+            print("(Post-post filtering) Unclosed template ({}): {}".format(fixes[i][0], fixes[i][1]))
+        elif (len(regex.findall(r"\{\{", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\{\{.*<\/nowiki>", fixes[i][1]))) < (len(regex.findall(r"\}\}", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\}\}.*<\/nowiki>", fixes[i][1]))):
+            print("(Post-post filtering) Unclosed template ({}): {}".format(fixes[i][0], fixes[i][1]))
         else:
             i += 1
             continue
