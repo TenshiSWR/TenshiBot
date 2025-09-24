@@ -116,7 +116,7 @@ for page in lint_list:
             except IndexError:
                 no_more = True
                 break
-        if no_more:
+        if no_more or not misnests["</s>"]:
             break
     if len(misnests["<s>"]) != len(misnests["</s>"]):
         print("Skipping {}, something is wrong with the amount of <s> tags (post filtering)".format(page.title()))
