@@ -150,6 +150,14 @@ for page in lint_list:
             print("(Post-post filtering) Unclosed template ({}): {}".format(fixes[i][0], fixes[i][1]))
         elif (len(regex.findall(r"\{\{", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\{\{.*<\/nowiki>", fixes[i][1]))) < (len(regex.findall(r"\}\}", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\}\}.*<\/nowiki>", fixes[i][1]))):
             print("(Post-post filtering) Unclosed template ({}): {}".format(fixes[i][0], fixes[i][1]))
+        elif (len(regex.findall(r"\{\|", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\{\|.*<\/nowiki>", fixes[i][1]))) > (len(regex.findall(r"\|\}", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\|\}.*<\/nowiki>", fixes[i][1]))):
+            print("(Post-post filtering) Unclosed table tag ({}): {}".format(fixes[i][0], fixes[i][1]))
+        elif (len(regex.findall(r"\{\|", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\{\|.*<\/nowiki>", fixes[i][1]))) < (len(regex.findall(r"\|\}", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\|\}.*<\/nowiki>", fixes[i][1]))):
+            print("(Post-post filtering) Unclosed table tag ({}): {}".format(fixes[i][0], fixes[i][1]))
+        elif (len(regex.findall(r"<blockquote>", fixes[i][1]))-len(regex.findall(r"<nowiki>.*<blockquote>.*</nowiki>", fixes[i][1]))) > (len(regex.findall(r"<\/blockquote>", fixes[i][1]))-len(regex.findall(r"<\/blockquote>", fixes[i][1]))):
+            print("(Post-post filtering) Unclosed blockquote tag ({}): {}".format(fixes[i][0], fixes[i][1]))
+        elif (len(regex.findall(r"<blockquote>", fixes[i][1]))-len(regex.findall(r"<nowiki>.*<blockquote>.*</nowiki>", fixes[i][1]))) < (len(regex.findall(r"<\/blockquote>", fixes[i][1]))-len(regex.findall(r"<\/blockquote>", fixes[i][1]))):
+            print("(Post-post filtering) Unclosed blockquote tag ({}): {}".format(fixes[i][0], fixes[i][1]))
         else:
             i += 1
             continue
