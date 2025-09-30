@@ -132,14 +132,20 @@ for page in lint_list:
         continue
     fixes = []
     for i in range(len(misnests["<s>"])):
-        fixes.append((misnests["<s>"][i][1], lines[misnests["<s>"][i][1]]+"</s>"))
+        if regex.search(r"==+.*=*", lines[misnests["<s>"][i][1]]):
+            fixes.append((misnests["<s>"][i][1], regex.sub(r"(== *)(?:<s>)?([^<]+)(?:<\/s>)?( ==)", r"\1<s>\2</s>\3", lines[misnests["<s>"][i][1]])))
+        else:
+            fixes.append((misnests["<s>"][i][1], lines[misnests["<s>"][i][1]]+"</s>"))
         for y in range(misnests["<s>"][i][1]+1, misnests["</s>"][i][1]):
             #print(y)
             if regex.search(r"==+.*=*", lines[y]) and not regex.search(r"<nowiki>.*==+.*=*.*<\/nowiki>", lines[y]):
-                fixes.append((y, regex.sub(r"(==+)(.*[^=])(=*)", r"\1<s>\2</s>\3", lines[y])))
+                fixes.append((y, regex.sub(r"(== *)(?:<s>)?([^<]+)(?:<\/s>)?( ==)", r"\1<s>\2</s>\3", lines[y])))
             else:
                 fixes.append((y, regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2</s>", lines[y])))
-        fixes.append((misnests["</s>"][i][1], regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2", lines[misnests["</s>"][i][1]])))
+        if regex.search(r"==+.*=*", lines[misnests["</s>"][i][1]]):
+            fixes.append((misnests["</s>"][i][1], regex.sub(r"(== *)(?:<s>)?([^<]+)(?:<\/s>)?( ==)", r"\1<s>\2</s>\3", lines[misnests["</s>"][i][1]])))
+        else:
+            fixes.append((misnests["</s>"][i][1], regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2", lines[misnests["</s>"][i][1]])))
     # Post-post filtering & cleanup
     # Mainly for the issues in post which can't be filtered till after
     i, z = 0, 0
@@ -152,7 +158,7 @@ for page in lint_list:
             _ = regex.sub(r"<\/(.*)>", r"\1", closing_tag[z])
             x = 0
             while x < len(tag):
-                if regex.match(r"<{}(?: [^>]*)?>".format(_), tag[x]):
+                if regex.search(r"<{}(?: [^>]*)?>".format(_), tag[x]):
                     break
                 else:
                     x += 1
@@ -176,10 +182,8 @@ for page in lint_list:
             print("(Post-post filtering) Unclosed table tag ({}): {}".format(fixes[i][0], fixes[i][1]))
         elif (len(regex.findall(r"\{\|", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\{\|.*<\/nowiki>", fixes[i][1]))) < (len(regex.findall(r"\|\}", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\|\}.*<\/nowiki>", fixes[i][1]))):
             print("(Post-post filtering) Unclosed table tag ({}): {}".format(fixes[i][0], fixes[i][1]))
-        elif (len(regex.findall(r"<blockquote>", fixes[i][1]))-len(regex.findall(r"<nowiki>.*<blockquote>.*</nowiki>", fixes[i][1]))) > (len(regex.findall(r"<\/blockquote>", fixes[i][1]))-len(regex.findall(r"<\/blockquote>", fixes[i][1]))):
-            print("(Post-post filtering) Unclosed blockquote tag ({}): {}".format(fixes[i][0], fixes[i][1]))
-        elif (len(regex.findall(r"<blockquote>", fixes[i][1]))-len(regex.findall(r"<nowiki>.*<blockquote>.*</nowiki>", fixes[i][1]))) < (len(regex.findall(r"<\/blockquote>", fixes[i][1]))-len(regex.findall(r"<\/blockquote>", fixes[i][1]))):
-            print("(Post-post filtering) Unclosed blockquote tag ({}): {}".format(fixes[i][0], fixes[i][1]))
+        elif regex.search(r"\{\{(?:(?:block|poem) ?(?:indent|quote)|(?:indent 5|in5))\}\}", fixes[i][1], regex.IGNORECASE):
+            print("(Post-post filtering) Block content template or similar ({}): {}".format(fixes[i][0], fixes[i][1]))
         else:
             i += 1
             continue
