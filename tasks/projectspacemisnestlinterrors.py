@@ -133,17 +133,17 @@ for page in lint_list:
     fixes = []
     for i in range(len(misnests["<s>"])):
         if regex.search(r"==+.*=*", lines[misnests["<s>"][i][1]]):
-            fixes.append((misnests["<s>"][i][1], regex.sub(r"(== *)(?:<s>)?([^<]+)(?:<\/s>)?( ==)", r"\1<s>\2</s>\3", lines[misnests["<s>"][i][1]])))
+            fixes.append((misnests["<s>"][i][1], regex.sub(r"(==+ *)(?:<s>)?([^<]+)(?:<\/s>)?( ==+)", r"\1<s>\2</s>\3", lines[misnests["<s>"][i][1]])))
         else:
             fixes.append((misnests["<s>"][i][1], lines[misnests["<s>"][i][1]]+"</s>"))
         for y in range(misnests["<s>"][i][1]+1, misnests["</s>"][i][1]):
             #print(y)
             if regex.search(r"==+.*=*", lines[y]) and not regex.search(r"<nowiki>.*==+.*=*.*<\/nowiki>", lines[y]):
-                fixes.append((y, regex.sub(r"(== *)(?:<s>)?([^<]+)(?:<\/s>)?( ==)", r"\1<s>\2</s>\3", lines[y])))
+                fixes.append((y, regex.sub(r"(==+ *)(?:<s>)?([^<]+)(?:<\/s>)?( ==+)", r"\1<s>\2</s>\3", lines[y])))
             else:
                 fixes.append((y, regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2</s>", lines[y])))
         if regex.search(r"==+.*=*", lines[misnests["</s>"][i][1]]):
-            fixes.append((misnests["</s>"][i][1], regex.sub(r"(== *)(?:<s>)?([^<]+)(?:<\/s>)?( ==)", r"\1<s>\2</s>\3", lines[misnests["</s>"][i][1]])))
+            fixes.append((misnests["</s>"][i][1], regex.sub(r"(==+ *)(?:<s>)?([^<]+)(?:<\/s>)?( ==+)", r"\1<s>\2</s>\3", lines[misnests["</s>"][i][1]])))
         else:
             fixes.append((misnests["</s>"][i][1], regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2", lines[misnests["</s>"][i][1]])))
     # Post-post filtering & cleanup
