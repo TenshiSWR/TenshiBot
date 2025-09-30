@@ -6,6 +6,7 @@
 */apicache/*
 */__pycache__/*
 .env
+skips.txt
 throttle.ctrl
 user-config.py
 *.pyc

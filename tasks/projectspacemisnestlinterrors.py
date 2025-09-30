@@ -5,7 +5,7 @@ import pywikibot
 import regex
 import requests
 from requests_oauthlib import OAuth1
-from tools import log_error
+from tools import log_error, log_file
 site = pywikibot.Site()
 
 load_dotenv()
@@ -14,7 +14,7 @@ oauth_key = json.loads(os.getenv("OAUTH"))
 auth = OAuth1(oauth_key[0], oauth_key[1], oauth_key[2], oauth_key[3])
 del oauth_key
 
-api_query = "https://en.wikipedia.org/w/api.php?action=query&format=json&prop=&list=linterrors&formatversion=2&lntcategories=misnested-tag&lntlimit=500&lntnamespace=4%7C5"
+api_query = "https://en.wikipedia.org/w/api.php?action=query&format=json&prop=&list=linterrors&formatversion=2&lntcategories=misnested-tag&lntlimit=500&lntnamespace=1%7C3"
 full_list = []
 
 lntfrom = None
@@ -85,6 +85,7 @@ for page in lint_list:
     if len(misnests["<s>"]) < 1 or len(misnests["</s>"]) < 1:
         print("Skipping {}, something is wrong with the amount of <s> tags".format(page.title()))
         print("<s>: {}, </s>: {}".format(misnests["<s>"], misnests["</s>"]))
+        log_file("Skipped [[{}]], something is wrong with the amount of <s> tags".format(page.title()), "skips.txt")
         continue
     i = 0
     while i < len(misnests["</s>"]):
@@ -120,6 +121,7 @@ for page in lint_list:
             break
     if len(misnests["<s>"]) != len(misnests["</s>"]):
         print("Skipping {}, something is wrong with the amount of <s> tags (post filtering)".format(page.title()))
+        log_file("Skipped [[{}]], something is wrong with the amount of <s> tags (post filtering)".format(page.title()), "skips.txt")
         stop = True
     print("(Post filtering) <s>: {}, </s>: {}".format(misnests["<s>"], misnests["</s>"]))
     #for misnest in misnests["<s>"]:
@@ -133,16 +135,36 @@ for page in lint_list:
         fixes.append((misnests["<s>"][i][1], lines[misnests["<s>"][i][1]]+"</s>"))
         for y in range(misnests["<s>"][i][1]+1, misnests["</s>"][i][1]):
             #print(y)
-            if regex.search(r"==+.*=*", lines[y]):
+            if regex.search(r"==+.*=*", lines[y]) and not regex.search(r"<nowiki>.*==+.*=*.*<\/nowiki>", lines[y]):
                 fixes.append((y, regex.sub(r"(==+)(.*[^=])(=*)", r"\1<s>\2</s>\3", lines[y])))
             else:
                 fixes.append((y, regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2</s>", lines[y])))
         fixes.append((misnests["</s>"][i][1], regex.sub(r"^([\*#: ]*)(.*)$", r"\1<s>\2", lines[misnests["</s>"][i][1]])))
     # Post-post filtering & cleanup
     # Mainly for the issues in post which can't be filtered till after
-    i = 0
+    i, z = 0, 0
     while i < len(fixes):
-        if regex.search(r"<s>(?:(?!<\/s>).)*?<s>", fixes[i][1]) or regex.search(r"<\/s>(?:(?!<s>).)*?<\/s>", fixes[i][1]):
+        # 1. Get a list of the tags
+        # 2. Get a closing tag
+        # 3. Compare it to all opening tags, remove the opening tag and closing tag in the list if they match and go back to step 2 starting over, else go back to step 2 for a new closing tag
+        tag, closing_tag = regex.findall(r"<(?:(?!br *>)[^\/<>])+>", fixes[i][1]), regex.findall(r"</[^<>]+>", fixes[i][1])
+        while z < len(closing_tag):
+            _ = regex.sub(r"<\/(.*)>", r"\1", closing_tag[z])
+            x = 0
+            while x < len(tag):
+                if regex.match(r"<{}(?: [^>]*)?>".format(_), tag[x]):
+                    break
+                else:
+                    x += 1
+                    continue
+            else:
+                z += 1
+                continue
+            tag.pop(x), closing_tag.pop(z)
+            z = 0
+        if len(tag) or len(closing_tag):
+            print("(Post-post filtering) Unclosed html tag ({}): {}".format(fixes[i][0], fixes[i][1]))
+        elif regex.search(r"<s>(?:(?!<\/s>).)*?<s>", fixes[i][1]) or regex.search(r"<\/s>(?:(?!<s>).)*?<\/s>", fixes[i][1]):
             print("(Post-post filtering) Double markup ({}): {}".format(fixes[i][0], fixes[i][1]))
         elif regex.search(r"(?<!\[\[[^\]]*)]]", fixes[i][1]):
             print("(Post-post filtering) Unclosed wikilink ({}): {}".format(fixes[i][0], fixes[i][1]))
@@ -178,9 +200,10 @@ for page in lint_list:
     page.text = regex.sub(r"(?<!<nowiki>.*?)<s> *<\/s>(?!<\/nowiki>)", "", page.text)  # Final sanity check because it cannot remove on its own a single </s>
     if page.text == pywikibot.Page(site, page.title()).text:
         print("Skipping {}, no changes detected".format(page.title()))
+        log_file("Skipped [[{}]], no changes detected.".format(page.title()), "skips.txt")
         continue
     #pywikibot.showDiff(pywikibot.Page(site, page.title()).text, page.text)
     try:
-        page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 4|Task 4]]: Fix misnested tags lints caused by <s>", minor=True)
+        page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 5|Task 5]]: Fix misnested tags lints caused by <s>", minor=True)
     except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
-        log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), 4)
+        log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), 5)

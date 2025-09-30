@@ -30,6 +30,18 @@ def log_error(error: str, task_number: int):
     error_page.save(summary="Logging error during task {}".format(str(task_number)), minor=False, quiet=True)
 
 
+def log_file(message: str, path: str):
+    from datetime import datetime
+    file = None
+    try:
+        file = open(path, "a")
+    except FileNotFoundError:
+        open(path, "x")
+        file = open(path, "a")
+    finally:
+        file.write(datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S] ")+message+"\n")
+
+
 def mediawikitimestamp_to_datetime(mediawikitimestamp: str):
     from datetime import datetime
     return datetime(year=int(mediawikitimestamp[0:4]), month=int(mediawikitimestamp[4:6]), day=int(mediawikitimestamp[6:8]),
@@ -56,7 +68,7 @@ class NotificationSystem:
                 try:
                     self._notify(receiver, summary)
                 except EditConflictError:
-                    pass
+                    print("Failed to notify {} - Edit conflict".format(receiver))
                 else:
                     break
         self.notification_queue = {}
