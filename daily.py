@@ -1,4 +1,4 @@
-from tools import load_task
+from tools.misc import load_task
 
 tasks = [["tasks.afcreviewinprogresschecker", 2]]
 

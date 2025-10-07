@@ -5,7 +5,7 @@ from pwiki.mquery import MQuery
 from pwiki.ns import NS
 from pwiki.wiki import Wiki
 import re
-from tools import mediawikitimestamp_to_datetime
+from tools.misc import mediawikitimestamp_to_datetime
 mquery, wiki = MQuery(), Wiki()
 transclusions = wiki.what_transcludes_here("Template:Copyvio", ns=NS.MAIN)
 
@@ -17,7 +17,7 @@ transclusions = wiki.what_transcludes_here("Template:Copyvio", ns=NS.MAIN)
 
 
 copyright_problems = wiki.page_text("Wikipedia:Copyright problems")
-subpages = mquery.page_text(wiki, re.findall("Wikipedia:Copyright problems\/\d{4}\s[A-z]*\s\d*", copyright_problems))
+subpages = mquery.page_text(wiki, re.findall(r"Wikipedia:Copyright problems\/\d{4}\s[A-z]*\s\d*", copyright_problems))
 unlisted_copyright_problems, unlisted_subpages = [], []
 
 

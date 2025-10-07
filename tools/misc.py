@@ -7,7 +7,7 @@ def get_talk_page(user: str):
     return user_talk_page
 
 
-def load_task(task, task_number):
+def load_task(task: str, task_number: int or str):
     from datetime import datetime
     from importlib import import_module
     print("Task {} ({}) started at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
@@ -19,11 +19,11 @@ def load_task(task, task_number):
         print("Task {} ({}) ended at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
 
 
-def log_error(error: str, task_number: int):
+def log_error(error: str, task_number: int or str, error_page: str = "User:TenshiBot/Errors"):
     from datetime import datetime
     import pywikibot
     site = pywikibot.Site()
-    error_page = pywikibot.Page(site, "User:TenshiBot/Errors")
+    error_page = pywikibot.Page(site, error_page)
     error_text = "\n# {} (Task {}): {}\n".format(datetime.utcnow().strftime("[%Y-%m-%d %H:%M]"), str(task_number), error)
     error_page.text += error_text
     print(error_text[3:])
@@ -52,7 +52,7 @@ class NotificationSystem:
     def __init__(self):
         self.notification_queue = {}
 
-    def add_to_notification_queue(self, receiver: str, message: str):
+    def add(self, receiver: str, message: str):
         try:
             user_talk_page = get_talk_page(receiver)
             if "User talk:"+receiver != user_talk_page.title():

@@ -1,76 +1,13 @@
-from dotenv import load_dotenv
-import json
-import os
 import pywikibot
 import regex
-import requests
-from requests_oauthlib import OAuth1
-from tools import log_error, log_file
+from tasks.lintfix import NoChange
+from tools.misc import log_error, log_file
 site = pywikibot.Site()
 
-load_dotenv()
-user_agent = json.loads(os.getenv("USER-AGENT"))
-oauth_key = json.loads(os.getenv("OAUTH"))
-auth = OAuth1(oauth_key[0], oauth_key[1], oauth_key[2], oauth_key[3])
-del oauth_key
 
-api_query = "https://en.wikipedia.org/w/api.php?action=query&format=json&prop=&list=linterrors&formatversion=2&lntcategories=misnested-tag&lntlimit=500&lntnamespace=1%7C3"
-full_list = []
-
-lntfrom = None
-while True:
-    if lntfrom:
-        r = requests.get(api_query+"&lntfrom={}".format(lntfrom), auth=auth, headers=user_agent)
-    else:
-        r = requests.get(api_query, auth=auth, headers=user_agent)
-    decoded = json.loads(r.text)
-    full_list += decoded["query"]["linterrors"]
-    try:
-        lntfrom = decoded["continue"]["lntfrom"]
-    except KeyError:
-        break
-
-
-lint_list = []
-log_pages = {"\/Assessment\/.*\/\d{4}", ".*\/[Aa]rchive\/.*", ".*\/Archived nominations\/.*", ".*Deletion sorting.*", ".*\/Failed log\/.*", ".*\/Featured log\/.*", ".*Featured picture candidates\/.*-\d{4}", ".*\/Log\/.*", "Peer review\/"}
-#count = {page:0 for page in log_pages}
-params = {}
-
-
-for error in full_list:
-    try:
-        for log_page in log_pages:
-            if regex.search(log_page, error["title"]):
-                raise KeyboardInterrupt
-    except KeyboardInterrupt:
-        #pass
-        continue
-    else:
-        if error["params"]["name"] == "s" or error["params"]["name"] == "strike":
-            lint_list.append(error["title"])
-    """
-    for key in count.keys():
-        if regex.search(key, error["title"]):
-            count[key] += 1
-    try:
-        params[error["params"]["name"]] += 1
-    except KeyError:
-        params[error["params"]["name"]] = 1
-
-# Mostly for counting
-for key, value in count.items():
-    print(key+": "+str(value))
-
-for param, value in params.items():
-    print(param+": "+str(value))
-"""
-
-lint_list = list(set(lint_list))  # To remove duplicates of any pages
-for page in lint_list:
-    page = pywikibot.Page(site, page)
-    print(page.title()+": ({})".format(lint_list.index(page.title())))
-    page.text = regex.sub(r"(<\/?)(?:[Ss]trike)>", r"\1s>", page.text)
-    lines = page.text.split("\n")
+def fix_multiline_misnests(page: str, text: str) -> tuple:
+    text = regex.sub(r"(<\/?)(?:[Ss]trike)>", r"\1s>", text)
+    lines = text.split("\n")
     stop = False
     misnests = {"<s>": [], "</s>": []}
     for i, line in enumerate(lines):
@@ -83,10 +20,10 @@ for page in lint_list:
     # This whole segment is a big sprawling mess and needs to be cut down and simplified.
     print("Misnests: "+str(misnests))
     if len(misnests["<s>"]) < 1 or len(misnests["</s>"]) < 1:
-        print("Skipping {}, something is wrong with the amount of <s> tags".format(page.title()))
+        print("Skipping {}, something is wrong with the amount of <s> tags".format(page))
         print("<s>: {}, </s>: {}".format(misnests["<s>"], misnests["</s>"]))
-        log_file("Skipped [[{}]], something is wrong with the amount of <s> tags".format(page.title()), "skips.txt")
-        continue
+        log_file("Skipped [[{}]], something is wrong with the amount of <s> tags".format(page), "skips.txt")
+        raise NoChange
     i = 0
     while i < len(misnests["</s>"]):
         if misnests["</s>"][i][1] < misnests["<s>"][0][1]:
@@ -120,8 +57,8 @@ for page in lint_list:
         if no_more or not misnests["</s>"]:
             break
     if len(misnests["<s>"]) != len(misnests["</s>"]):
-        print("Skipping {}, something is wrong with the amount of <s> tags (post filtering)".format(page.title()))
-        log_file("Skipped [[{}]], something is wrong with the amount of <s> tags (post filtering)".format(page.title()), "skips.txt")
+        print("Skipping {}, something is wrong with the amount of <s> tags (post filtering)".format(page))
+        log_file("Skipped [[{}]], something is wrong with the amount of <s> tags (post filtering)".format(page), "skips.txt")
         stop = True
     print("(Post filtering) <s>: {}, </s>: {}".format(misnests["<s>"], misnests["</s>"]))
     #for misnest in misnests["<s>"]:
@@ -129,7 +66,7 @@ for page in lint_list:
     #for misnest in misnests["</s>"]:
     #    print("</s> ({})".format(misnest[1])+str(lines[misnest[1]]))
     if stop:
-        continue
+        raise NoChange
     fixes = []
     for i in range(len(misnests["<s>"])):
         if regex.search(r"==+.*=*", lines[misnests["<s>"][i][1]]):
@@ -200,14 +137,15 @@ for page in lint_list:
         i = 0
     for fix in fixes:
         lines[fix[0]] = fix[1]
-    page.text = "\n".join(lines)
-    page.text = regex.sub(r"(?<!<nowiki>.*?)<s> *<\/s>(?!<\/nowiki>)", "", page.text)  # Final sanity check because it cannot remove on its own a single </s>
-    if page.text == pywikibot.Page(site, page.title()).text:
-        print("Skipping {}, no changes detected".format(page.title()))
-        log_file("Skipped [[{}]], no changes detected.".format(page.title()), "skips.txt")
-        continue
-    #pywikibot.showDiff(pywikibot.Page(site, page.title()).text, page.text)
-    try:
-        page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 5|Task 5]]: Fix misnested tags/obsolete tags lints caused by <s>", minor=True)
-    except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
-        log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), 5)
+    text = "\n".join(lines)
+    text = regex.sub(r"(?<!<nowiki>.*?)<s> *<\/s>(?!<\/nowiki>)", "", text)  # Final sanity check because it cannot remove on its own a single </s>
+    if text == pywikibot.Page(site, page).text:
+        print("Skipping {}, no changes detected".format(page))
+        log_file("Skipped [[{}]], no changes detected.".format(page), "skips.txt")
+        raise NoChange
+    #pywikibot.showDiff(pywikibot.Page(site, page).text, text)
+    #try:
+    #    page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 5|Task 5]]: Fix misnested tags/obsolete tags lints caused by <s>", minor=True)
+    #except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
+    #    log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), 5)
+    return text, 5

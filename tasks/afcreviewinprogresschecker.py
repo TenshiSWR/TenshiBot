@@ -1,7 +1,7 @@
 import datetime
 import mwparserfromhell
 import pywikibot
-from tools import mediawikitimestamp_to_datetime, NotificationSystem
+from tools.misc import mediawikitimestamp_to_datetime, NotificationSystem
 import toolforge
 
 
@@ -19,9 +19,9 @@ class AfcReviews:
         self.notification_system.notify_all("[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Notification]]: Your Articles for Creation review(s) has been marked as ongoing for over forty-eight hours.")
         self.connection.close()
 
-    def check_notified(self, user: str):
+    def check_notified(self, user: str) -> bool:
         self.cursor.execute("SELECT time FROM long_reviews WHERE user = %(username)s;", {"username": user})
-        time = self.cursor.fetchone()
+        time: tuple = self.cursor.fetchone()
         if time is None:  # It's not there if its None
             return False
         if datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=23) > time[0] > datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=25):  # A bit of leeway, but not much.
@@ -60,11 +60,11 @@ class AfcReviews:
                             draft.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Task 2]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending.", minor=False, quiet=True)
                         elif (datetime.datetime.utcnow()-datetime.timedelta(hours=48)) > timestamp:
                             print("{} has been reviewed for longer than 48 hours, notifying {}".format(draft.title(), reviewer))
-                            self.notification_system.add_to_notification_queue(reviewer, "{{subst:User:TenshiBot/AfC review notification|"+draft.title()+"|"+draft.title(with_ns=False)+"}}")
+                            self.notification_system.add(reviewer, "{{subst:User:TenshiBot/AfC review notification|"+draft.title()+"|"+draft.title(with_ns=False)+"}}")
                     break  # It should be done at this point, no need to continue searching templates if we found an AfC template marked as being reviewed
 
     def log_notifications(self):
-        print("log_notifications")
+        #print("log_notifications")
         for reviewer in self.notification_system.notification_queue.keys():
             print("Reviewer: {}".format(reviewer))
             self.cursor.execute("SELECT time FROM long_reviews WHERE user = %(username)s;", {"username": reviewer})

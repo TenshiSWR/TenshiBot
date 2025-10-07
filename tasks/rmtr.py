@@ -1,9 +1,10 @@
 import datetime
-import mwparserfromhell
+from mwparserfromhell import parse
 import pywikibot
+from pywikibot.exceptions import EditConflictError, InvalidTitleError, NoMoveTargetError
 from sys import exit
 from tasks.majavahbot.mediawiki import MediawikiApi  # Essentially from majavahbot.api import MediawikiApi
-from tools import log_error, NotificationSystem, wiki_delinker
+from tools.misc import log_error, NotificationSystem, wiki_delinker
 
 COMPLETE = NOTIFIED = True
 
@@ -11,24 +12,30 @@ COMPLETE = NOTIFIED = True
 class RmtrClerking:
     def __init__(self):
         self.site, rmtr = pywikibot.Site(), None
-        self.was_notified = not NOTIFIED
-        self.actions = {"technical": 0, "RMUM": 0, "contested": 0, "administrator": 0, "moved": 0}
+        self.actions = {"technical": 0,
+                        "RMUM": 0,
+                        "contested": 0,
+                        "administrator": 0,
+                        "moved": 0}
         self.notification_system = NotificationSystem()
         tries, is_complete = 0, not COMPLETE
+        was_notified = not NOTIFIED
         while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted on the page, but if it is then it'll try at least try to redo it
             rmtr = self.get_rmtr()
-            self.uncontroversial_requests = self.process_non_contested_requests(self.uncontroversial_requests, "Uncontroversial technical requests")
-            self.undiscussed_moves = self.process_non_contested_requests(self.undiscussed_moves, "Requests to revert undiscussed moves")
-            self.contested_requests = self.process_contested_requests(self.contested_requests)
-            self.administrator_moves = self.process_non_contested_requests(self.administrator_moves, "Administrator needed")
+            self.uncontroversial_requests = self.non_contested_requests_f(self.uncontroversial_requests,
+                                                                          "Uncontroversial technical requests")
+            self.undiscussed_moves = self.non_contested_requests_f(self.undiscussed_moves,
+                                                                   "Requests to revert undiscussed moves")
+            self.contested_requests = self.contested_requests(self.contested_requests)
+            self.administrator_moves = self.non_contested_requests_f(self.administrator_moves, "Administrator needed")
             if sum([action for action in self.actions.values()]) > 0:  # Check to see if anything has been done before saving an edit.
                 rmtr.text = self.reassemble_page()
-                if not self.was_notified:
+                if not was_notified:
                     self.notification_system.notify_all("[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].")
-                    self.was_notified = NOTIFIED
+                    was_notified = NOTIFIED
                 try:
                     rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in self.actions.values()])), minor=False, quiet=True)
-                except pywikibot.exceptions.EditConflictError:
+                except EditConflictError:
                     print("Edit conflict on {}".format(rmtr.title()))
                     self.actions = {action: 0 for action, value in self.actions.items()}
                 else:
@@ -59,26 +66,27 @@ class RmtrClerking:
             exit("Section headings not found, check {} for possible problems".format(rmtr.title()))
 
         # Splits each section into its own var using the section indexes
-        self.instructions, self.uncontroversial_requests, self.undiscussed_moves, self.contested_requests, self.administrator_moves = split_text_by_line[0:section_indexes[0]], \
-                                                                                                                                      split_text_by_line[section_indexes[0]:section_indexes[1]], \
-                                                                                                                                      split_text_by_line[section_indexes[1]:section_indexes[2]], \
-                                                                                                                                      split_text_by_line[section_indexes[2]:section_indexes[3]], \
-                                                                                                                                      split_text_by_line[section_indexes[3]:]
+        self.instructions = split_text_by_line[0:section_indexes[0]]
+        self.uncontroversial_requests = split_text_by_line[section_indexes[0]:section_indexes[1]]
+        self.undiscussed_moves = split_text_by_line[section_indexes[1]:section_indexes[2]]
+        self.contested_requests = split_text_by_line[section_indexes[2]:section_indexes[3]]
+        self.administrator_moves = split_text_by_line[section_indexes[3]:]
         print("Got {}".format(rmtr.title()), "({})".format(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
         return rmtr
 
-    def process_non_contested_requests(self, section_queue: list, section_group: str):
+    def non_contested_requests_f(self, section_queue: list, section_group: str) -> list:
         requests = []
         number_to_update_by = 0
         for i, line in enumerate(section_queue):
-            parsed_text = mwparserfromhell.parse(line)
+            parsed_text = parse(line)
             for template in parsed_text.filter_templates():
                 if template.name.matches("RMassist/core"):
                     requests.append((i, line))
         i = 0
         while i <= len(requests)-1:
-            parsed_request = mwparserfromhell.parse(requests[i][1])
-            base_page, target_page = pywikibot.Page(self.site, wiki_delinker(str(parsed_request.filter_templates()[0].get(1).value))), pywikibot.Page(self.site, wiki_delinker(str(parsed_request.filter_templates()[0].get(2).value)))
+            parsed_request = parse(requests[i][1])
+            base_page = pywikibot.Page(self.site, wiki_delinker(str(parsed_request.filter_templates()[0].get(1).value)))
+            target_page = pywikibot.Page(self.site, wiki_delinker(str(parsed_request.filter_templates()[0].get(2).value)))
             #print(base_page, target_page, (len(requests), i))
             #print("NC Requests: "+str(requests))
             try:
@@ -92,7 +100,8 @@ class RmtrClerking:
                         del section_queue[requests[i][0]:requests[i+1][0]]
                     except (IndexError, ValueError):  # Exception will always raise at the end of the section
                         #print((requests[i][0], "Index/ValueError"), section_queue[requests[i][0]:len(section_queue)-1])
-                        if section_group == "Administrator needed":  # Administrator needed section does not have whitespace at the end of the section since it's at the end of the page.
+                        if section_group == "Administrator needed":
+                            # Administrator needed section does not have whitespace at the end of the section since it's at the end of the page.
                             del section_queue[requests[i][0]:len(section_queue)]
                         else:
                             if section_queue[-1] != "":
@@ -103,7 +112,7 @@ class RmtrClerking:
                         self.actions[{"Uncontroversial technical requests":"technical", "Requests to revert undiscussed moves":"RMUM", "Administrator needed":"moved"}[section_group]] += 1
                         i += 1
                         continue
-            except pywikibot.exceptions.NoMoveTargetError:
+            except NoMoveTargetError:
                 pass
             try:
                 if section_group != "Administrator needed":  # Check protections on both pages
@@ -122,30 +131,30 @@ class RmtrClerking:
                             del section_queue[requests[i][0]:len(section_queue)-1]
                         finally:
                             requests = [[x[0]-number_to_update_by, x[1]] for x in requests]
-                            self.administrator_moves.append("::{{Clerk note bot}} One or both pages in this request are either create-protected or move-protected."+"It has been moved from the {} section. ~~~~".format(section_group))
+                            self.administrator_moves.append("*:{{Clerk note bot}} One or both pages in this request are either create-protected or move-protected."+"It has been moved from the {} section. ~~~~".format(section_group))
                             self.actions["moved"] += 1
-            except pywikibot.exceptions.InvalidTitleError:
+            except InvalidTitleError:
                 log_error("Bad request (invalid title error): <nowiki>{}</nowiki>".format(str(requests[i][1])), 1)
             i += 1
             continue
         #print(section_queue)
         return section_queue
 
-    def process_contested_requests(self, section_queue: list):
+    def contested_requests_f(self, section_queue: list) -> list:
         requests = []
         number_to_update_by = 0
         for i, line in enumerate(section_queue):
-            parsed_text = mwparserfromhell.parse(line)
+            parsed_text = parse(line)
             for template in parsed_text.filter_templates():
                 if template.name.matches("RMassist/core"):
                     requests.append((i, line))
         i = 0
         while i <= len(requests)-1:
             try:
-                initial_request, whole_request, indexes = mwparserfromhell.parse(section_queue[requests[i][0]]), "".join(section_queue[requests[i][0]:requests[i+1][0]]), (requests[i][0], requests[i+1][0])
+                initial_request, whole_request, indexes = parse(section_queue[requests[i][0]]), "".join(section_queue[requests[i][0]:requests[i+1][0]]), (requests[i][0], requests[i+1][0])
             except IndexError:
-                initial_request, whole_request, indexes = mwparserfromhell.parse(section_queue[requests[i][0]]), "".join(section_queue[requests[i][0]:len(section_queue)-1]), (requests[i][0], len(section_queue)-1)
-            last_reply = MediawikiApi.get_last_reply(None, whole_request)
+                initial_request, whole_request, indexes = parse(section_queue[requests[i][0]]), "".join(section_queue[requests[i][0]:len(section_queue)-1]), (requests[i][0], len(section_queue)-1)
+            last_reply = MediawikiApi(site=self.site.code, family=self.site.family).get_last_reply(whole_request)
             try:
                 if (datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=72)) > last_reply.replace(tzinfo=None):
                     print("Removing expired contested request: {} --> {}".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
@@ -180,25 +189,25 @@ class RmtrClerking:
             pywikibot.Page(self.site, str(articles[0])), pywikibot.Page(self.site, str(articles[1]))
         except TypeError:
             pass
-        except pywikibot.exceptions.InvalidTitleError:
+        except InvalidTitleError:
             log_error("Bad requester (invalid title error): <nowiki>{}</nowiki>".format(str(requester)+" "+str(articles[0])+" --> "+str(articles[1])), 1)
         finally:
             # print("Article {}: {}".format(requester, articles))
             try:
                 article_talk_page = pywikibot.Page(self.site, "{}".format(articles[0])).toggleTalkPage()
-            except pywikibot.exceptions.InvalidTitleError:
+            except InvalidTitleError:
                 print("Notification prepared for {} (Not checked for RM/No permalink)".format(requester))
-                self.notification_system.add_to_notification_queue(requester, "{{subst:User:TenshiBot/RMTR contested notification}}")
+                self.notification_system.add(requester, "{{subst:User:TenshiBot/RMTR contested notification}}")
                 return
-            for template in mwparserfromhell.parse(article_talk_page.text).filter_templates():
+            for template in parse(article_talk_page.text).filter_templates():
                 if template.name.matches("Requested move/dated"):
                     print("RM started on talk page of {}, not notifying {}".format(articles[0], requester))
                     break
             else:
-                self.notification_system.add_to_notification_queue(requester, "{{subst:User:TenshiBot/RMTR contested notification|"+articles[0]+"|"+articles[1]+"}}")
+                self.notification_system.add(requester, "{{subst:User:TenshiBot/RMTR contested notification|"+articles[0]+"|"+articles[1]+"}}")
                 print("Notification prepared for {} about {}".format(requester, articles[0]))
 
-    def reassemble_page(self):
+    def reassemble_page(self) -> str:
         return "\n".join(self.instructions+self.uncontroversial_requests+self.undiscussed_moves+self.contested_requests+self.administrator_moves)
 
 
