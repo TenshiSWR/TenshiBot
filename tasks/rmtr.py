@@ -131,7 +131,7 @@ class RmtrClerking:
                             del section_queue[requests[i][0]:len(section_queue)-1]
                         finally:
                             requests = [[x[0]-number_to_update_by, x[1]] for x in requests]
-                            self.administrator_moves.append("*:{{Clerk note bot}} One or both pages in this request are either create-protected or move-protected."+"It has been moved from the {} section. ~~~~".format(section_group))
+                            self.administrator_moves.append("*:{{Clerk note bot}} One or both pages in this request are either create-protected or move-protected."+" It has been moved from the {} section. ~~~~".format(section_group))
                             self.actions["moved"] += 1
             except InvalidTitleError:
                 log_error("Bad request (invalid title error): <nowiki>{}</nowiki>".format(str(requests[i][1])), 1)
