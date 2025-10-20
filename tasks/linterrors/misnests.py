@@ -23,10 +23,3 @@ def fix_misnests(page: str, text: str) -> tuple:
     return text, 6
 
 
-def strip_excess(tag) -> str:
-    if regex.search(r"^<\/", tag):
-        tag = str(regex.search(r"<\/([^ >]+)", tag).group()+">").replace("/", "")  # Str is technically unneeded here but it saves a line
-    elif regex.search(r"^<", tag):
-        tag = regex.search(r"(<[^ >]+)", tag).group()+">"
-    return tag
-
