@@ -1,6 +1,6 @@
 import pywikibot
 from regex import search
-from tools.misc import log_error
+from tools.misc import log_error, NoChange
 from tools.queries import get_lint_errors
 
 
@@ -11,12 +11,6 @@ errors_to_fixes = {}
 edit_summaries = {}
 site = pywikibot.Site()
 BRFA_PREFIX = "Wikipedia:Bots/Requests for approval/TenshiBot "  # Always will be numbered because Task 1 isn't a lint error fixing task
-
-
-class NoChange(Exception):
-    """No change was detected or able to be made."""
-    pass
-
 
 errors = get_lint_errors("%7C".join(errors_to_fixes.keys()))
 for error in errors:
@@ -70,7 +64,7 @@ for page in lint_list:
         continue
     page = pywikibot.Page(site, page)
     page.text = text
-    task_numbers = sorted(set(task_numbers))
+    task_numbers = sorted(set(task_numbers))  # Making it into a set removes the possibility of duplicate tasks listed in the summary if two or more functions are used in the same BRFA
     if len(task_numbers) == 1:
         summary = "[[{}+{}|Task {}: Fix [[Wikipedia:Linter|Linter]] errors".format(BRFA_PREFIX, task_numbers[0], task_numbers[0])
     else:

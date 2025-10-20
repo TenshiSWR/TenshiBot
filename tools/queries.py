@@ -3,6 +3,7 @@ from json import loads
 from os import getenv
 import requests
 from requests_oauthlib import OAuth1
+from tools.misc import QueryError
 
 load_dotenv()
 USER_AGENT = loads(getenv("USER-AGENT"))
@@ -47,5 +48,3 @@ def get_lint_errors(lint_type: str or bool = None, namespaces: str or bool = Non
     return full_list
 
 
-class QueryError(Exception):
-    pass

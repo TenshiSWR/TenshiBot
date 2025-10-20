@@ -48,6 +48,11 @@ def mediawikitimestamp_to_datetime(mediawikitimestamp: str):
                     hour=int(mediawikitimestamp[8:10]), minute=int(mediawikitimestamp[10:12]), second=int(mediawikitimestamp[12:14]))
 
 
+class NoChange(Exception):
+    """No change was detected or able to be made."""
+    pass
+
+
 class NotificationSystem:
     def __init__(self):
         self.notification_queue = {}
@@ -85,6 +90,9 @@ class NotificationSystem:
         else:
             print("Notified {}".format(receiver))
 
+
+class QueryError(Exception):
+    pass
 
 def wiki_delinker(link: str):
     return link.replace("[[", "", 1).replace("]]", "", 1)

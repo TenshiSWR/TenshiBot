@@ -3,8 +3,8 @@
 /apicache/*
 /__pycache__/*
 /logs/*
-*/apicache/*
-*/__pycache__/*
+**/apicache/*
+**/__pycache__/*
 .env
 skips.txt
 throttle.ctrl

@@ -1,7 +1,6 @@
 import pywikibot
 import regex
-from tasks.lintfix import NoChange
-from tools.misc import log_error, log_file
+from tools.misc import log_file, NoChange
 site = pywikibot.Site()
 
 
@@ -90,7 +89,7 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
         # 1. Get a list of the tags
         # 2. Get a closing tag
         # 3. Compare it to all opening tags, remove the opening tag and closing tag in the list if they match and go back to step 2 starting over, else go back to step 2 for a new closing tag
-        tag, closing_tag = regex.findall(r"<(?:(?!br *>)[^\/<>])+>", fixes[i][1]), regex.findall(r"</[^<>]+>", fixes[i][1])
+        tag, closing_tag = regex.findall(r"<(?:(?!(?:br *>|\!--))[^\/<>])+>", fixes[i][1]), regex.findall(r"</[^<>]+>", fixes[i][1])
         while z < len(closing_tag):
             _ = regex.sub(r"<\/(.*)>", r"\1", closing_tag[z])
             x = 0
@@ -139,13 +138,5 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
         lines[fix[0]] = fix[1]
     text = "\n".join(lines)
     text = regex.sub(r"(?<!<nowiki>.*?)<s> *<\/s>(?!<\/nowiki>)", "", text)  # Final sanity check because it cannot remove on its own a single </s>
-    if text == pywikibot.Page(site, page).text:
-        print("Skipping {}, no changes detected".format(page))
-        log_file("Skipped [[{}]], no changes detected.".format(page), "skips.txt")
-        raise NoChange
     #pywikibot.showDiff(pywikibot.Page(site, page).text, text)
-    #try:
-    #    page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 5|Task 5]]: Fix misnested tags/obsolete tags lints caused by <s>", minor=True)
-    #except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
-    #    log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), 5)
     return text, 5
