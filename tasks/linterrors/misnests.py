@@ -1,9 +1,9 @@
 import regex
 
 regexes = {
-    r"<(?!nowiki)([^ >]*)([^>]*)?> *(?<!')''(?!')(.*)<\/\1>(?<!')''(?!')": r"''<\1\2>\3</\1>''",
-    r"(?<!')''(?!') *<(?!nowiki)([^ >]*)([^>]*)?>(.*)(?<!')''(?!')(.*)<\/\1>": r"<\1\2>''\3''\4</\1>",
-    r"<(?!nowiki)([^ >]*)([^>]*)?>(.*)<(?!nowiki)([^ >]*)([^>]*)?>(.*)<\/\1>(.*)<\/\4>": r"<\1\2>\3</\1><\4\5><\1\2>\6</\1>\7</\4>",
+    r"<(?!(?:nowiki|syntaxhighlight))([^ >]*)([^>]*)?> *(?<!')''(?!')(.*)<\/\1>(?<!')''(?!')": r"''<\1\2>\3</\1>''",
+    r"(?<!')''(?!') *<(?!(?:nowiki|syntaxhighlight))([^ >]*)([^>]*)?>(.*)(?<!')''(?!')(.*)<\/\1>": r"<\1\2>''\3''\4</\1>",
+    r"<(?!(?:nowiki|syntaxhighlight))([^ >]*)([^>]*)?>(.*)<(?!(?:nowiki|syntaxhighlight))([^ >]*)([^>]*)?>(.*)<\/\1>(.*)<\/\4>": r"<\1\2>\3</\1><\4\5><\1\2>\6</\1>\7</\4>",
     r"'''(.*)(?<!')''(?!')(.*)'''(.*)(?<!')''(?!')": r"'''\1''' '''''\2'''\3''"
 }
 
@@ -14,7 +14,7 @@ def fix_misnests(page: str, text: str) -> tuple:
     for i, line in enumerate(lines):
         new_line = line
         for find, replace in regexes.items():
-            if not regex.search(r"<nowiki>.*"+find+r".*<\/nowiki>", line):
+            if not regex.search(r"<(?:nowiki|syntaxhighlight)>.*"+find+r".*<\/(?:nowiki|syntaxhighlight)>", line):
                 new_line = regex.sub(find, replace, new_line)
         if new_line != line:
             fixes.append((i, new_line))
