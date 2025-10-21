@@ -1,5 +1,7 @@
 import pywikibot
 from regex import search
+from tasks.linterrors.misnests import fix_misnests
+from tasks.linterrors.multiline_misnests import fix_multiline_misnests
 from tools.misc import log_error, NoChange
 from tools.queries import get_lint_errors
 
@@ -7,8 +9,8 @@ from tools.queries import get_lint_errors
 lint_list = []
 log_pages = {"\/Assessment\/.*\/\d{4}", ".*\/[Aa]rchive\/.*", ".*\/Archived nominations\/.*", ".*Deletion sorting.*", ".*\/Failed log\/.*", ".*\/Featured log\/.*", ".*Featured picture candidates\/.*-\d{4}", ".*\/Log\/.*", "Peer review\/"}
 #count = {page:0 for page in log_pages}
-errors_to_fixes = {}
-edit_summaries = {}
+#params = {}
+errors_to_fixes = {"misnested-tag": [fix_misnests, fix_multiline_misnests]}
 site = pywikibot.Site()
 BRFA_PREFIX = "Wikipedia:Bots/Requests for approval/TenshiBot "  # Always will be numbered because Task 1 isn't a lint error fixing task
 
@@ -22,11 +24,11 @@ for error in errors:
         #pass
         continue
     else:
-        if error["params"]["name"] == "s" or error["params"]["name"] == "strike":
-            lint_list.append(error["title"])
+        #if error["params"]["name"] == "s" or error["params"]["name"] == "strike":
+        lint_list.append(error["title"])
     """
     for key in count.keys():
-        if regex.search(key, error["title"]):
+        if search(key, error["title"]):
             count[key] += 1
     try:
         params[error["params"]["name"]] += 1
@@ -70,7 +72,7 @@ for page in lint_list:
     else:
         summary = "Tasks "+"+".join(["[[{}+{}|{}]]".format(BRFA_PREFIX, task_number, task_number) for task_number in task_numbers])+": Fix [[Wikipedia:Linter|Linter]] errors"
     try:
-        page.save(summary=summary, minor=True)
+        page.save(summary=summary, minor=True, tags=["fixed lint errors"])
     except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
         log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), "+".join(task_numbers))
     del summary, text

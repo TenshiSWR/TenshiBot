@@ -139,4 +139,4 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
     text = "\n".join(lines)
     text = regex.sub(r"(?<!<nowiki>.*?)<s> *<\/s>(?!<\/nowiki>)", "", text)  # Final sanity check because it cannot remove on its own a single </s>
     #pywikibot.showDiff(pywikibot.Page(site, page).text, text)
-    return text, 5
+    return text, 6
