@@ -22,7 +22,7 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
         print("Skipping {}, something is wrong with the amount of <s> tags".format(page))
         print("<s>: {}, </s>: {}".format(misnests["<s>"], misnests["</s>"]))
         log_file("Skipped [[{}]], something is wrong with the amount of <s> tags".format(page), "skips.txt")
-        raise NoChange
+        return text, "6 (Trial)"
     i = 0
     while i < len(misnests["</s>"]):
         if misnests["</s>"][i][1] < misnests["<s>"][0][1]:
@@ -65,7 +65,7 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
     #for misnest in misnests["</s>"]:
     #    print("</s> ({})".format(misnest[1])+str(lines[misnest[1]]))
     if stop:
-        raise NoChange
+        return text, "6 (Trial)"
     fixes = []
     for i in range(len(misnests["<s>"])):
         if regex.search(r"==+.*=*", lines[misnests["<s>"][i][1]]):
@@ -139,4 +139,4 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
     text = "\n".join(lines)
     text = regex.sub(r"(?<!<nowiki>.*?)<s> *<\/s>(?!<\/nowiki>)", "", text)  # Final sanity check because it cannot remove on its own a single </s>
     #pywikibot.showDiff(pywikibot.Page(site, page).text, text)
-    return text, 6
+    return text, "6 (Trial)"

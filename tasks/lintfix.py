@@ -65,12 +65,13 @@ for page in lint_list:
         del text
         continue
     page = pywikibot.Page(site, page)
+    pywikibot.showDiff(page.text, text)
     page.text = text
     task_numbers = sorted(set(task_numbers))  # Making it into a set removes the possibility of duplicate tasks listed in the summary if two or more functions are used in the same BRFA
     if len(task_numbers) == 1:
-        summary = "[[{}+{}|Task {}: Fix [[Wikipedia:Linter|Linter]] errors".format(BRFA_PREFIX, task_numbers[0], task_numbers[0])
+        summary = "[[{}{}|Task {}]]: Fix [[Wikipedia:Linter|Linter]] errors".format(BRFA_PREFIX, task_numbers[0].replace(" (Trial)", ""), task_numbers[0])
     else:
-        summary = "Tasks "+"+".join(["[[{}+{}|{}]]".format(BRFA_PREFIX, task_number, task_number) for task_number in task_numbers])+": Fix [[Wikipedia:Linter|Linter]] errors"
+        summary = "Tasks "+"+".join(["[[{}{}|{}]]".format(BRFA_PREFIX, task_number.replace(" (Trial)", ""), task_number) for task_number in task_numbers])+": Fix [[Wikipedia:Linter|Linter]] errors"
     try:
         page.save(summary=summary, minor=True, tags=["fixed lint errors"])
     except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
