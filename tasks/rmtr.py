@@ -22,11 +22,9 @@ class RmtrClerking:
         was_notified = not NOTIFIED
         while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted on the page, but if it is then it'll try at least try to redo it
             rmtr = self.get_rmtr()
-            self.uncontroversial_requests = self.non_contested_requests_f(self.uncontroversial_requests,
-                                                                          "Uncontroversial technical requests")
-            self.undiscussed_moves = self.non_contested_requests_f(self.undiscussed_moves,
-                                                                   "Requests to revert undiscussed moves")
-            self.contested_requests = self.contested_requests(self.contested_requests)
+            self.uncontroversial_requests = self.non_contested_requests_f(self.uncontroversial_requests, "Uncontroversial technical requests")
+            self.undiscussed_moves = self.non_contested_requests_f(self.undiscussed_moves, "Requests to revert undiscussed moves")
+            self.contested_requests = self.contested_requests_f(self.contested_requests)
             self.administrator_moves = self.non_contested_requests_f(self.administrator_moves, "Administrator needed")
             if sum([action for action in self.actions.values()]) > 0:  # Check to see if anything has been done before saving an edit.
                 rmtr.text = self.reassemble_page()
