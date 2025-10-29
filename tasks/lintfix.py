@@ -13,6 +13,7 @@ log_pages = {"\/Assessment\/.*\/\d{4}", ".*\/[Aa]rchive\/.*", ".*\/Archived nomi
 errors_to_fixes = {"misnested-tag": [fix_misnests, fix_multiline_misnests]}
 site = pywikibot.Site()
 BRFA_PREFIX = "Wikipedia:Bots/Requests for approval/TenshiBot "  # Always will be numbered because Task 1 isn't a lint error fixing task
+MANUAL = True
 
 errors = get_lint_errors("%7C".join(errors_to_fixes.keys()))
 for error in errors:
@@ -65,7 +66,11 @@ for page in lint_list:
         del text
         continue
     page = pywikibot.Page(site, page)
-    pywikibot.showDiff(page.text, text)
+    if MANUAL:
+        pywikibot.showDiff(page.text, text)
+        q = input("Accept? (Y/N)")
+        if q.upper() == "N":
+            continue
     page.text = text
     task_numbers = sorted(set(task_numbers))  # Making it into a set removes the possibility of duplicate tasks listed in the summary if two or more functions are used in the same BRFA
     if len(task_numbers) == 1:
