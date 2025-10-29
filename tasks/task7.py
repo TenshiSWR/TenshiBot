@@ -12,4 +12,8 @@ for talk_page in talk_pages:
             print("{}: Parameter added".format(talk_page.title()))
             talk_page.text = parsed_text
             break
+    else:
+        continue
+    if pywikibot.Page(site, talk_page.title()).text == talk_page.text:
+        continue
     talk_page.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot 7|Task 7]]: WikiProject Medicine tagging.", minor=False)
