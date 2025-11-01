@@ -46,6 +46,7 @@ for param, value in params.items():
 
 lint_list = list(set(lint_list))  # To remove duplicates of any pages
 for page in lint_list:
+    print("Lintfix: {} ({})".format(page, lint_list.index(page)))
     text = pywikibot.Page(site, page).text
     changed = False
     task_numbers = []

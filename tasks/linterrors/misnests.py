@@ -34,5 +34,5 @@ def fix_misnests(page: str, text: str) -> tuple:
     for fix in fixes:
         lines[fix[0]] = fix[1]
     text = "\n".join(lines)
-    return text, "6 (Trial)"
+    return text, "6"
 
