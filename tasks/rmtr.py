@@ -190,21 +190,20 @@ class RmtrClerking:
         except InvalidTitleError:
             log_error("Bad requester (invalid title error): <nowiki>{}</nowiki>".format(str(requester)+" "+str(articles[0])+" --> "+str(articles[1])), 1)
             return
-        finally:
-            # print("Article {}: {}".format(requester, articles))
-            try:
-                article_talk_page = pywikibot.Page(self.site, "{}".format(articles[0])).toggleTalkPage()
-            except InvalidTitleError:
-                print("Notification prepared for {} (Not checked for RM/No permalink)".format(requester))
-                self.notification_system.add(requester, "{{subst:User:TenshiBot/RMTR contested notification}}")
-                return
-            for template in parse(article_talk_page.text).filter_templates():
-                if template.name.matches("Requested move/dated"):
-                    print("RM started on talk page of {}, not notifying {}".format(articles[0], requester))
-                    break
-            else:
-                self.notification_system.add(requester, "{{subst:User:TenshiBot/RMTR contested notification|"+articles[0]+"|"+articles[1]+"}}")
-                print("Notification prepared for {} about {}".format(requester, articles[0]))
+        # print("Article {}: {}".format(requester, articles))
+        try:
+            article_talk_page = pywikibot.Page(self.site, "{}".format(articles[0])).toggleTalkPage()
+        except InvalidTitleError:
+            print("Notification prepared for {} (Not checked for RM/No permalink)".format(requester))
+            self.notification_system.add(requester, "{{subst:User:TenshiBot/RMTR contested notification}}")
+            return
+        for template in parse(article_talk_page.text).filter_templates():
+            if template.name.matches("Requested move/dated"):
+                print("RM started on talk page of {}, not notifying {}".format(articles[0], requester))
+                break
+        else:
+            self.notification_system.add(requester, "{{subst:User:TenshiBot/RMTR contested notification|"+articles[0]+"|"+articles[1]+"}}")
+            print("Notification prepared for {} about {}".format(requester, articles[0]))
 
     def reassemble_page(self) -> str:
         return "\n".join(self.instructions+self.uncontroversial_requests+self.undiscussed_moves+self.contested_requests+self.administrator_moves)
