@@ -186,9 +186,10 @@ class RmtrClerking:
                 requester = user_talk_page.title().replace("User talk:", "")
             pywikibot.Page(self.site, str(articles[0])), pywikibot.Page(self.site, str(articles[1]))
         except TypeError:
-            pass
+            return
         except InvalidTitleError:
             log_error("Bad requester (invalid title error): <nowiki>{}</nowiki>".format(str(requester)+" "+str(articles[0])+" --> "+str(articles[1])), 1)
+            return
         finally:
             # print("Article {}: {}".format(requester, articles))
             try:
