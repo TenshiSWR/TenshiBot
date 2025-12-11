@@ -22,7 +22,7 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
         print("Skipping {}, something is wrong with the amount of <s> tags".format(page))
         print("<s>: {}, </s>: {}".format(misnests["<s>"], misnests["</s>"]))
         log_file("Skipped [[{}]], something is wrong with the amount of <s> tags".format(page), "skips.txt")
-        return text, "6 (Trial)"
+        return text, "6"
     i = 0
     while i < len(misnests["</s>"]):
         if misnests["</s>"][i][1] < misnests["<s>"][0][1]:
@@ -65,7 +65,7 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
     #for misnest in misnests["</s>"]:
     #    print("</s> ({})".format(misnest[1])+str(lines[misnest[1]]))
     if stop:
-        return text, "6 (Trial)"
+        return text, "6"
     fixes = []
     for i in range(len(misnests["<s>"])):
         if regex.search(r"==+.*=*", lines[misnests["<s>"][i][1]]):
@@ -120,6 +120,8 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
             print("(Post-post filtering) Unclosed table tag ({}): {}".format(fixes[i][0], fixes[i][1]))
         elif regex.search(r"\{\{(?:(?:block|poem) ?(?:indent|quote)|(?:indent 5|in5))\}\}", fixes[i][1], regex.IGNORECASE):
             print("(Post-post filtering) Block content template or similar ({}): {}".format(fixes[i][0], fixes[i][1]))
+        elif regex.search(r"<br *\/?>", fixes[i][1]):
+            print("(Post-post filtering) Lone br tag")
         else:
             i += 1
             continue

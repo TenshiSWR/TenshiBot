@@ -1,16 +1,40 @@
-import datetime
+from datetime import datetime, timedelta
 from mwparserfromhell import parse
+from mwparserfromhell.wikicode import Wikicode
 import pywikibot
 from pywikibot.exceptions import EditConflictError, InvalidTitleError, NoMoveTargetError
 from sys import exit
 from tasks.majavahbot.mediawiki import MediawikiApi  # Essentially from majavahbot.api import MediawikiApi
 from tools.misc import log_error, NotificationSystem, wiki_delinker
+from tools.summaries import TASK1_NOTIFICATION, TASK1_SUMMARY
 
 COMPLETE = NOTIFIED = True
 
 
 class RmtrClerking:
     def __init__(self):
+        def get_rmtr():
+            rmtr_page = pywikibot.Page(self.site, "Wikipedia:Requested moves/Technical requests")
+            split_text_by_line = rmtr_page.text.split("\n")  # Convert the page text into a list of lines
+
+            # Find where each section starts
+            try:
+                section_indexes = [split_text_by_line.index("==== Uncontroversial technical requests ===="),
+                                   split_text_by_line.index("==== Requests to revert undiscussed moves ===="),
+                                   split_text_by_line.index("==== Contested technical requests ===="),
+                                   split_text_by_line.index("==== Administrator needed ====")]
+            except ValueError:
+                log_error("Section headings not found, check {} for possible problems".format(rmtr_page.title()), 1)
+                exit("Section headings not found, check {} for possible problems".format(rmtr_page.title()))
+
+            # Splits each section into its own var using the section indexes
+            self.instructions = split_text_by_line[0:section_indexes[0]]
+            self.uncontroversial_requests = split_text_by_line[section_indexes[0]:section_indexes[1]]
+            self.undiscussed_moves = split_text_by_line[section_indexes[1]:section_indexes[2]]
+            self.contested_requests = split_text_by_line[section_indexes[2]:section_indexes[3]]
+            self.administrator_moves = split_text_by_line[section_indexes[3]:]
+            print("Got {}".format(rmtr_page.title()), "({})".format(datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
+            return rmtr_page
         self.site, rmtr = pywikibot.Site(), None
         self.actions = {"technical": 0,
                         "RMUM": 0,
@@ -21,7 +45,7 @@ class RmtrClerking:
         tries, is_complete = 0, not COMPLETE
         was_notified = not NOTIFIED
         while tries < 5:  # Theoretically this shouldn't be constantly edit conflicted on the page, but if it is then it'll try at least try to redo it
-            rmtr = self.get_rmtr()
+            rmtr = get_rmtr()
             self.uncontroversial_requests = self.non_contested_requests_f(self.uncontroversial_requests, "Uncontroversial technical requests")
             self.undiscussed_moves = self.non_contested_requests_f(self.undiscussed_moves, "Requests to revert undiscussed moves")
             self.contested_requests = self.contested_requests_f(self.contested_requests)
@@ -29,10 +53,10 @@ class RmtrClerking:
             if sum([action for action in self.actions.values()]) > 0:  # Check to see if anything has been done before saving an edit.
                 rmtr.text = self.reassemble_page()
                 if not was_notified:
-                    self.notification_system.notify_all("[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]].")
+                    self.notification_system.notify_all(TASK1_NOTIFICATION)
                     was_notified = NOTIFIED
                 try:
-                    rmtr.save(summary="[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests.".format(sum([action for action in self.actions.values()])), minor=False, quiet=True)
+                    rmtr.save(summary=TASK1_SUMMARY.format(sum([action for action in self.actions.values()])), minor=False, quiet=True)
                 except EditConflictError:
                     print("Edit conflict on {}".format(rmtr.title()))
                     self.actions = {action: 0 for action, value in self.actions.items()}
@@ -41,36 +65,13 @@ class RmtrClerking:
                     break
                 finally:
                     tries += 1
-                    print("Tried {} times to update {} ({})".format(str(tries), rmtr.title(), datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
+                    print("Tried {} times to update {} ({})".format(str(tries), rmtr.title(), datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
             else:  # If no actions were taken, stop here so that it doesn't loop endlessly
-                print("Did nothing ({})".format(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
+                print("Did nothing ({})".format(datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
                 is_complete = COMPLETE
                 break
         if tries == 5 and is_complete == False:
             log_error("Tried 5 times to update {} and was not able to do it".format(rmtr.title()), 1)
-
-    def get_rmtr(self):
-        rmtr = pywikibot.Page(self.site, "Wikipedia:Requested moves/Technical requests")
-        split_text_by_line = rmtr.text.split("\n")  # Convert the page text into a list of lines
-
-        # Find where each section starts
-        try:
-            section_indexes = [split_text_by_line.index("==== Uncontroversial technical requests ===="),
-                               split_text_by_line.index("==== Requests to revert undiscussed moves ===="),
-                               split_text_by_line.index("==== Contested technical requests ===="),
-                               split_text_by_line.index("==== Administrator needed ====")]
-        except ValueError:
-            log_error("Section headings not found, check {} for possible problems".format(rmtr.title()), 1)
-            exit("Section headings not found, check {} for possible problems".format(rmtr.title()))
-
-        # Splits each section into its own var using the section indexes
-        self.instructions = split_text_by_line[0:section_indexes[0]]
-        self.uncontroversial_requests = split_text_by_line[section_indexes[0]:section_indexes[1]]
-        self.undiscussed_moves = split_text_by_line[section_indexes[1]:section_indexes[2]]
-        self.contested_requests = split_text_by_line[section_indexes[2]:section_indexes[3]]
-        self.administrator_moves = split_text_by_line[section_indexes[3]:]
-        print("Got {}".format(rmtr.title()), "({})".format(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")))
-        return rmtr
 
     def non_contested_requests_f(self, section_queue: list, section_group: str) -> list:
         requests = []
@@ -83,8 +84,8 @@ class RmtrClerking:
         i = 0
         while i <= len(requests)-1:
             parsed_request = parse(requests[i][1])
-            base_page = pywikibot.Page(self.site, wiki_delinker(str(parsed_request.filter_templates()[0].get(1).value)))
-            target_page = pywikibot.Page(self.site, wiki_delinker(str(parsed_request.filter_templates()[0].get(2).value)))
+            base_page = pywikibot.Page(self.site, wiki_delinker(str(get_mw_param_value(parsed_request, 1))))
+            target_page = pywikibot.Page(self.site, wiki_delinker(str(get_mw_param_value(parsed_request, 2))))
             #print(base_page, target_page, (len(requests), i))
             #print("NC Requests: "+str(requests))
             try:
@@ -115,6 +116,7 @@ class RmtrClerking:
             try:
                 if section_group != "Administrator needed":  # Check protections on both pages
                     protections = [base_page.protection(), target_page.protection()]
+                    # This doesn't detect move-protection if its also protected from editing
                     if any(protection_type.items() == page.items() for page in protections for protection_type in [{"move":("sysop", "infinity")}, {"create":("sysop", "infinity")}]):
                         print("One or both pages mentioned in {} --> {} are either create-protected or move-protected. Moving to Administrator needed section".format(base_page.title(), target_page.title()))
                         print("Protections:", str(protections[0]), str(protections[1]))
@@ -154,12 +156,12 @@ class RmtrClerking:
                 initial_request, whole_request, indexes = parse(section_queue[requests[i][0]]), "".join(section_queue[requests[i][0]:len(section_queue)-1]), (requests[i][0], len(section_queue)-1)
             last_reply = MediawikiApi(site=self.site.code, family=self.site.family).get_last_reply(whole_request)
             try:
-                if (datetime.datetime.utcnow().replace(tzinfo=None)-datetime.timedelta(hours=72)) > last_reply.replace(tzinfo=None):
-                    print("Removing expired contested request: {} --> {}".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
+                if (datetime.utcnow().replace(tzinfo=None)-timedelta(hours=72)) > last_reply.replace(tzinfo=None):
+                    print("Removing expired contested request: {} --> {}".format(get_mw_param_value(initial_request, 1), get_mw_param_value(initial_request, 2)))
                     try:
-                        self.add_to_notification_queue(initial_request.filter_templates()[0].get("requester").value, (wiki_delinker(str(initial_request.filter_templates()[0].get(1).value)), wiki_delinker(str(initial_request.filter_templates()[0].get(2).value))))
+                        self.add_to_notification_queue(get_mw_param_value(initial_request, "requester"), (wiki_delinker(str(get_mw_param_value(initial_request, 1))), wiki_delinker(str(get_mw_param_value(initial_request, 2)))))
                     except ValueError:
-                        print("Cannot notify requester of {} --> {}, requester parameter missing".format(initial_request.filter_templates()[0].get(1).value, initial_request.filter_templates()[0].get(2).value))
+                        print("Cannot notify requester of {} --> {}, requester parameter missing".format(get_mw_param_value(initial_request, 1), get_mw_param_value(initial_request, 2)))
                     try:
                         number_to_update_by = requests[i+1][0]-requests[i][0]
                         del section_queue[indexes[0]:indexes[1]]
@@ -207,6 +209,10 @@ class RmtrClerking:
 
     def reassemble_page(self) -> str:
         return "\n".join(self.instructions+self.uncontroversial_requests+self.undiscussed_moves+self.contested_requests+self.administrator_moves)
+
+
+def get_mw_param_value(parsed_text: Wikicode, param: int or str):
+    return parsed_text.filter_templates()[0].get(param).value
 
 
 RmtrClerking()
