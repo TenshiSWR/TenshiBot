@@ -2,5 +2,5 @@ TASK1_NOTIFICATION = "[[Wikipedia:Bots/Requests for approval/TenshiBot|Notificat
 TASK1_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests."
 TASK2_NOTIFICATION = "[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Notification]]: Your Articles for Creation review(s) has been marked as ongoing for over forty-eight hours."
 TASK2_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Task 2]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending."
-TASK8_CREATE_SUMMARY = "Userspace test: Creating [[Wikipedia:WikiCup|WikiCup]] contestant page"
-TASK8_RESET_SUMMARY = "Userspace test: Reset [[Wikipedia:WikiCup|WikiCup]] contestant pages for Round {}"
+TASK8_CREATE_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8]]: Creating [[Wikipedia:WikiCup|WikiCup]] contestant page"
+TASK8_RESET_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8]]: Reset [[Wikipedia:WikiCup|WikiCup]] contestant pages for Round {}"
