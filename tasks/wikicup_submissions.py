@@ -6,7 +6,7 @@ site = pywikibot.Site()
 
 wikicup_round = 1
 usernames = regex.findall(r"\#.*User: *(?! *Your username)(.*)\|", pywikibot.Page(site, "Wikipedia:WikiCup/2026 signups").text)
-usernames = [username for username in usernames if pywikibot.User(site, username).isRegistered()]
+usernames = [username[0].upper()+username[1:] for username in usernames if pywikibot.User(site, username).isRegistered()]
 pages = ["Wikipedia:WikiCup/History/2026/Submissions/"+username for username in usernames]
 
 for page in pages:
