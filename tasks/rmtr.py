@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
+from ext_dependencies.mediawiki import MediawikiApi
 from mwparserfromhell import parse
 from mwparserfromhell.wikicode import Wikicode
 import pywikibot
 from pywikibot.exceptions import EditConflictError, InvalidTitleError, NoMoveTargetError
 from sys import exit
-from tasks.majavahbot.mediawiki import MediawikiApi  # Essentially from majavahbot.api import MediawikiApi
 from tools.misc import log_error, NotificationSystem, wiki_delinker
 from tools.summaries import TASK1_NOTIFICATION, TASK1_SUMMARY
 

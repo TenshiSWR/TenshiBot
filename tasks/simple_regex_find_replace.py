@@ -1,10 +1,12 @@
 import pywikibot
+from pywikibot.exceptions import EditConflictError, LockedPageError, OtherPageSaveError
 import random
 import regex
+from tools.misc import log_error
 
 site = pywikibot.Site()
-search_regex = regex.escape(input("Search regex: "))
-replace_regex = regex.escape(input("Replace regex: "))
+search_regex = input("Search regex: ")
+replace_regex = input("Replace regex: ")
 summary = input("Edit summary to use: ")
 flag = {"yes": True, "y": True, "no": False, "n": False}[input("Use bot flag if available?: ").lower()]
 minor = {"yes": True, "y": True, "no": False, "n": False}[input("Mark edits as minor?: ").lower()]
@@ -35,5 +37,10 @@ _ = 0
 for page in results:
     _ += 1
     print(page.title(), _)
-    page.text = regex.sub(search_regex, replace_regex, page.text)
-    page.save(summary=summary, bot=flag, minor=minor)
+    page.text, old_text = regex.sub(search_regex, replace_regex, page.text), page.text
+    if page.text == old_text:
+        continue
+    try:
+        page.save(summary=summary, bot=flag, minor=minor)
+    except (EditConflictError, LockedPageError, OtherPageSaveError):
+        log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), "?")
