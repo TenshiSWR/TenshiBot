@@ -4,4 +4,4 @@ TASK2_NOTIFICATION = "[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Notific
 TASK2_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Task 2]]: Mark [[Wikipedia:Articles for creation|Articles for Creation]] submissions which are marked ongoing review for over 72 hours as pending."
 TASK8_CREATE_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8]]: Creating [[Wikipedia:WikiCup|WikiCup]] contestant page"
 TASK8_RESET_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8]]: Reset [[Wikipedia:WikiCup|WikiCup]] contestant pages for Round {}"
-TASK10_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 10|Bot trial]]: Remove do not archive tags from closed cases"
+TASK10_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 10|Task 10]]: Remove do not archive tags from closed cases"
