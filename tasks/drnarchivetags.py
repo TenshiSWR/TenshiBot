@@ -10,5 +10,7 @@ site = pywikibot.Site()
 SUBSTITUTION_REGEX = r"({{DR case status\|(?:reject|resolve(?:d)?|fail(?:ed)?|close(?:d)?)}})\n<!-- \[\[User:DoNotArchiveUntil.*?-->{{User:ClueBot III\/DoNotArchiveUntil\|\d+}}<!--.*?-->"
 
 drn_page = pywikibot.Page(site, "Wikipedia:Dispute resolution noticeboard")
-drn_page.text = regex.sub(SUBSTITUTION_REGEX, "\1", drn_page.text)
-drn_page.save(summary=TASK10_SUMMARY, minor=False)
+new_text = regex.sub(SUBSTITUTION_REGEX, "\1", drn_page.text)
+if drn_page.text != new_text:
+    drn_page.text = new_text
+    drn_page.save(summary=TASK10_SUMMARY, minor=False)
