@@ -14,6 +14,7 @@ errors_to_fixes = {"misnested-tag": [fix_misnests, fix_multiline_misnests]}
 site = pywikibot.Site()
 BRFA_PREFIX = "Wikipedia:Bots/Requests for approval/TenshiBot "  # Always will be numbered because Task 1 isn't a lint error fixing task
 MANUAL = True
+IGNORE_EXCLUSION_COMPLIANCE = True
 
 errors = get_lint_errors("%7C".join(errors_to_fixes.keys()))
 for error in errors:
@@ -79,7 +80,7 @@ for page in lint_list:
     else:
         summary = "Tasks "+"+".join(["[[{}{}|{}]]".format(BRFA_PREFIX, task_number.replace(" (Trial)", ""), task_number) for task_number in task_numbers])+": Fix [[Wikipedia:Linter|Linter]] errors"
     try:
-        page.save(summary=summary, minor=True, tags=["fixed lint errors"])
+        page.save(summary=summary, minor=True, tags=["fixed lint errors"], force=IGNORE_EXCLUSION_COMPLIANCE)
     except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
         log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), "+".join(task_numbers))
     del summary, text
