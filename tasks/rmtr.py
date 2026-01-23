@@ -5,7 +5,7 @@ from mwparserfromhell.wikicode import Wikicode
 import pywikibot
 from pywikibot.exceptions import EditConflictError, InvalidTitleError, NoMoveTargetError
 from sys import exit
-from tools.misc import log_error, NotificationSystem, wiki_delinker
+from tools.misc import get_talk_page, log_error, NotificationSystem, wiki_delinker
 from tools.summaries import TASK1_NOTIFICATION, TASK1_SUMMARY
 
 COMPLETE = NOTIFIED = True
@@ -116,8 +116,7 @@ class RmtrClerking:
             try:
                 if section_group != "Administrator needed":  # Check protections on both pages
                     protections = [base_page.protection(), target_page.protection()]
-                    # This doesn't detect move-protection if its also protected from editing
-                    if any(protection_type.items() == page.items() for page in protections for protection_type in [{"move":("sysop", "infinity")}, {"create":("sysop", "infinity")}]):
+                    if any(protection_type in page_protection and page_protection[protection_type][0] == "sysop" for protection_type in ["move", "create"] for page_protection in protections):
                         print("One or both pages mentioned in {} --> {} are either create-protected or move-protected. Moving to Administrator needed section".format(base_page.title(), target_page.title()))
                         print("Protections:", str(protections[0]), str(protections[1]))
                         try:  # This could probably be refactored into a single common function at some point
@@ -141,13 +140,8 @@ class RmtrClerking:
         return section_queue
 
     def contested_requests_f(self, section_queue: list) -> list:
-        requests = []
+        requests = [(i, line) for i, line in enumerate(section_queue) if any(template.name.matches("RMassist/core") for template in parse(line).filter_templates())]
         number_to_update_by = 0
-        for i, line in enumerate(section_queue):
-            parsed_text = parse(line)
-            for template in parsed_text.filter_templates():
-                if template.name.matches("RMassist/core"):
-                    requests.append((i, line))
         i = 0
         while i <= len(requests)-1:
             try:
@@ -181,11 +175,7 @@ class RmtrClerking:
     def add_to_notification_queue(self, requester: str, articles: tuple):
         #print("Notification queue:", requester, articles)
         try:  # The dictionary does not support mwparserfromhell wikicode as a key, even if it is human-readable
-            user_talk_page = pywikibot.Page(self.site, "User talk:{}".format(requester))
-            if user_talk_page.isRedirectPage():
-                requester = str(user_talk_page.getRedirectTarget().title()).replace("User talk:", "")
-            else:
-                requester = user_talk_page.title().replace("User talk:", "")
+            get_talk_page(requester).title(with_ns=False)
             pywikibot.Page(self.site, str(articles[0])), pywikibot.Page(self.site, str(articles[1]))
         except TypeError:
             return

@@ -5,7 +5,7 @@ site = pywikibot.Site()
 
 
 def fix_multiline_misnests(page: str, text: str) -> tuple:
-    text = regex.sub(r"(<\/?)(?:[Ss]trike)>", r"\1s>", text)
+    text = regex.sub(r"(?<!<nowiki>)(?<!<syntaxhighlight)(<\/?)(?:[Ss]trike)>(?!.*?<\/nowiki>)", r"\1s>", text)
     lines = text.split("\n")
     stop = False
     misnests = {"<s>": [], "</s>": []}

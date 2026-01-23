@@ -94,5 +94,6 @@ class NotificationSystem:
 class QueryError(Exception):
     pass
 
+
 def wiki_delinker(link: str):
     return link.replace("[[", "", 1).replace("]]", "", 1)
