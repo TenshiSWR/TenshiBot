@@ -202,7 +202,7 @@ class RmtrClerking:
 
 
 def get_mw_param_value(parsed_text: Wikicode, param: int or str):
-    return parsed_text.filter_templates()[0].get(param).value
+    return str(parsed_text.filter_templates()[0].get(param).value)
 
 
 RmtrClerking()
