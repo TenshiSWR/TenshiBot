@@ -38,7 +38,7 @@ regexes = {
 }
 
 
-def fix_misnests(page: str, text: str) -> tuple:
+def fix_misnests(page: str, text: str) -> str:
     lines = text.split("\n")
     fixes = []
     for i, line in enumerate(lines):
@@ -62,4 +62,4 @@ def fix_misnests(page: str, text: str) -> tuple:
     for fix in fixes:
         lines[fix[0]] = fix[1]
     text = "\n".join(lines)
-    return text, "6"
+    return text

@@ -4,7 +4,7 @@ from tools.misc import log_file, NoChange
 site = pywikibot.Site()
 
 
-def fix_multiline_misnests(page: str, text: str) -> tuple:
+def fix_multiline_misnests(page: str, text: str) -> str:
     text = regex.sub(r"(?<!<nowiki>)(?<!<syntaxhighlight)(<\/?)(?:[Ss]trike)>(?!.*?<\/nowiki>)", r"\1s>", text)
     lines = text.split("\n")
     stop = False
@@ -22,7 +22,7 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
         print("Skipping {}, something is wrong with the amount of <s> tags".format(page))
         print("<s>: {}, </s>: {}".format(misnests["<s>"], misnests["</s>"]))
         log_file("Skipped [[{}]], something is wrong with the amount of <s> tags".format(page), "skips.txt")
-        return text, "6"
+        return text
     i = 0
     while i < len(misnests["</s>"]):
         if misnests["</s>"][i][1] < misnests["<s>"][0][1]:
@@ -65,7 +65,7 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
     #for misnest in misnests["</s>"]:
     #    print("</s> ({})".format(misnest[1])+str(lines[misnest[1]]))
     if stop:
-        return text, "6"
+        return text
     fixes = []
     for i in range(len(misnests["<s>"])):
         if regex.search(r"==+.*=*", lines[misnests["<s>"][i][1]]):
@@ -108,7 +108,7 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
             print("(Post-post filtering) Unclosed html tag ({}): {}".format(fixes[i][0], fixes[i][1]))
         elif regex.search(r"<s>(?:(?!<\/s>).)*?<s>", fixes[i][1]) or regex.search(r"<\/s>(?:(?!<s>).)*?<\/s>", fixes[i][1]):
             print("(Post-post filtering) Double markup ({}): {}".format(fixes[i][0], fixes[i][1]))
-        elif regex.search(r"(?<!\[\[[^\]]*)]]", fixes[i][1]):
+        elif (len(regex.findall(r"\[\{", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\[\[.*<\/nowiki>", fixes[i][1]))) > (len(regex.findall(r"\]\]", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\]\].*<\/nowiki>", fixes[i][1]))):
             print("(Post-post filtering) Unclosed wikilink ({}): {}".format(fixes[i][0], fixes[i][1]))
         elif (len(regex.findall(r"\{\{", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\{\{.*<\/nowiki>", fixes[i][1]))) > (len(regex.findall(r"\}\}", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\}\}.*<\/nowiki>", fixes[i][1]))):
             print("(Post-post filtering) Unclosed template ({}): {}".format(fixes[i][0], fixes[i][1]))
@@ -141,4 +141,4 @@ def fix_multiline_misnests(page: str, text: str) -> tuple:
     text = "\n".join(lines)
     text = regex.sub(r"(?<!<nowiki>.*?)<s> *<\/s>(?!<\/nowiki>)", "", text)  # Final sanity check because it cannot remove on its own a single </s>
     #pywikibot.showDiff(pywikibot.Page(site, page).text, text)
-    return text, "6"
+    return text

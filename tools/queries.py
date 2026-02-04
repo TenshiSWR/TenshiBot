@@ -11,20 +11,22 @@ OAUTH_KEY = loads(getenv("OAUTH"))
 _AUTH = OAuth1(OAUTH_KEY[0], OAUTH_KEY[1], OAUTH_KEY[2], OAUTH_KEY[3])
 del OAUTH_KEY
 
+# Important note: Local account must exist on the wiki in order to use OAuth and the API.
 
-def get_lint_errors(lint_type: str or bool = None, namespaces: str or bool = None) -> list:
+
+def get_lint_errors(lint_type: str or bool = None, namespaces: str or bool = None, url: str = "https://en.wikipedia.org") -> list:
     if type(lint_type) is str:
         lint_type.replace("+", "%7C")
     if type(namespaces) is str:
         lint_type.replace("+", "%7C")
     if lint_type and not namespaces:
-        api_query = f"https://en.wikipedia.org/w/api.php?action=query&format=json&prop=&list=linterrors&formatversion=2&lntcategories={lint_type}&lntlimit=500"
+        api_query = f"{url}/w/api.php?action=query&format=json&prop=&list=linterrors&formatversion=2&lntcategories={lint_type}&lntlimit=500"
     elif not lint_type and namespaces:
-        api_query = f"https://en.wikipedia.org/w/api.php?action=query&format=json&prop=&list=linterrors&formatversion=2&lntlimit=500&lntnamespace={namespaces}"
+        api_query = f"{url}/w/api.php?action=query&format=json&prop=&list=linterrors&formatversion=2&lntlimit=500&lntnamespace={namespaces}"
     elif not lint_type and not namespaces:
-        api_query = f"https://en.wikipedia.org/w/api.php?action=query&format=json&prop=&list=linterrors&formatversion=2&lntlimit=500"
+        api_query = f"{url}/w/api.php?action=query&format=json&prop=&list=linterrors&formatversion=2&lntlimit=500"
     else:
-        api_query = f"https://en.wikipedia.org/w/api.php?action=query&format=json&prop=&list=linterrors&formatversion=2&lntcategories={lint_type}&lntlimit=500&lntnamespace={namespaces}"
+        api_query = f"{url}/w/api.php?action=query&format=json&prop=&list=linterrors&formatversion=2&lntcategories={lint_type}&lntlimit=500&lntnamespace={namespaces}"
     full_list = []
 
     lntfrom = None
