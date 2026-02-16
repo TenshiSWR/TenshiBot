@@ -19,10 +19,10 @@ def load_task(task: str, task_number: int or str):
         print("Task {} ({}) ended at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
 
 
-def log_error(error: str, task_number: int or str, error_page: str = "User:TenshiBot/Errors"):
+def log_error(error: str, task_number: int or str, error_page: str = "User:TenshiBot/Errors", site_name: str = "wikipedia:en"):
     from datetime import datetime
     import pywikibot
-    site = pywikibot.Site()
+    site = pywikibot.Site(site_name)
     error_page = pywikibot.Page(site, error_page)
     error_text = "\n# {} (Task {}): {}\n".format(datetime.utcnow().strftime("[%Y-%m-%d %H:%M]"), str(task_number), error)
     error_page.text += error_text
