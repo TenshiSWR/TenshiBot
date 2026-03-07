@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from json import loads
+from json import JSONDecodeError, loads
 from os import getenv
 import requests
 from requests_oauthlib import OAuth1
@@ -45,9 +45,15 @@ def get_lint_errors(lint_type: str | bool = None, namespaces: str | bool = None,
         if lntfrom:
             r = S.get(api_query+"&lntfrom={}".format(lntfrom))
         else:
-        decoded = loads(r.text)
-        full_list += decoded["query"]["linterrors"]
             r = S.get(api_query)
+        try:
+            decoded = loads(r.text)
+        except JSONDecodeError:
+            print()
+        try:
+            full_list += decoded["query"]["linterrors"]
+        except Exception as e:
+            print(e)
         try:
             decoded["warnings"]
         except KeyError:
