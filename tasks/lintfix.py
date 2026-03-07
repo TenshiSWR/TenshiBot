@@ -108,5 +108,5 @@ for page in lint_list:
     try:
         page.save(summary=summary, minor=True, tags=tags, force=IGNORE_EXCLUSION_COMPLIANCE)
     except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
-        log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name)
+        log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name, soft=True)
     del summary, text

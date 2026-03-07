@@ -19,7 +19,7 @@ def load_task(task: str, task_number: int or str):
         print("Task {} ({}) ended at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
 
 
-def log_error(error: str, task_number: int or str, error_page: str = "User:TenshiBot/Errors", site_name: str = "wikipedia:en"):
+def log_error(error: str, task_number: int or str, error_page: str = "User:TenshiBot/Errors", site_name: str = "wikipedia:en", soft: bool = False):
     from datetime import datetime
     import pywikibot
     site = pywikibot.Site(site_name)
@@ -27,6 +27,8 @@ def log_error(error: str, task_number: int or str, error_page: str = "User:Tensh
     error_text = "\n# {} (Task {}): {}\n".format(datetime.utcnow().strftime("[%Y-%m-%d %H:%M]"), str(task_number), error)
     error_page.text += error_text
     print(error_text[3:])
+    if soft and error_text in error_page.text:
+        return
     error_page.save(summary="Logging error during task {}".format(str(task_number)), minor=False, quiet=True)
 
 
