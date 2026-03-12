@@ -21,16 +21,16 @@ function_to_summary = {
     "fix_misnests":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
     "fix_multi_colon_escape":{},
     "fix_multiline_misnests":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
-    "fix_obsolete_HTML_tags":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikisource:sv":[0, 0]},
-    "fix_self_closed_tags":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"]},
+    "fix_obsolete_HTML_tags":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
+    "fix_self_closed_tags":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
     "fix_tidy_font_bug":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"]},
     "fix_wikilinks_in_extlinks":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"]}
 }
 # Lint errors, manual, exclusion compliance
 wikis_config = {"wikipedia:en":[{"misnested-tag": [fix_misnests, fix_multiline_misnests]}, False, True],
                 "incubator":[{"tidy-font-bug": [fix_tidy_font_bug]}, True, False],
-                "wikisource:sv":[{"obsolete-tag": [fix_obsolete_HTML_tags]}, True, False]}
-site_name = "wikipedia:en"
+                "wikisource:sv":[{"obsolete-tag": [fix_self_closed_tags, fix_obsolete_HTML_tags]}, False, False]}
+site_name = "wikisource:sv"
 errors_to_fixes = wikis_config[site_name][0]
 site = pywikibot.Site(site_name)
 MANUAL = wikis_config[site_name][1]

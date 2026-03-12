@@ -64,6 +64,7 @@ def get_lint_errors(lint_type: str | bool = None, namespaces: str | bool = None,
             lntfrom = decoded["continue"]["lntfrom"]
         except KeyError:
             break
+    bar.close()
     return full_list
 
 
