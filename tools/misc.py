@@ -7,19 +7,19 @@ def get_talk_page(user: str):
     return user_talk_page
 
 
-def load_task(task: str, task_number: int or str):
+def load_task(task: str, task_number: int | str, site_name: str = "wikipedia:en"):
     from datetime import datetime
     from importlib import import_module
     print("Task {} ({}) started at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
     try:
         import_module(task)
     except Exception as exception:
-        log_error("Fatal exception: {}".format(exception), task_number)
+        log_error("Fatal exception: {}".format(exception), task_number, site_name=site_name)
     finally:
         print("Task {} ({}) ended at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
 
 
-def log_error(error: str, task_number: int or str, error_page: str = "User:TenshiBot/Errors", site_name: str = "wikipedia:en", soft: bool = False):
+def log_error(error: str, task_number: int | str, error_page: str = "User:TenshiBot/Errors", site_name: str = "wikipedia:en", soft: bool = False):
     from datetime import datetime
     import pywikibot
     site = pywikibot.Site(site_name)

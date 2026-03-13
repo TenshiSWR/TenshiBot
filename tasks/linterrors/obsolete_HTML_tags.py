@@ -2,7 +2,7 @@ import regex
 
 
 def fix_obsolete_HTML_tags(page: str, text: str) -> str:
-    text = regex.sub(r"<(\/)font>", r"<\1span>", text)
+    text = regex.sub(r"<(\/)font[^>]*>", r"<\1span>", text)
     if regex.search(r"<\/?font[^>]*>", text):
         tags = list(set(regex.findall(r"<\/?font[^>]*>", text, flags=regex.DOTALL)))
         for font in tags:
