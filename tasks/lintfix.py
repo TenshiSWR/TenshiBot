@@ -28,9 +28,9 @@ function_to_summary = {
 }
 # Lint errors, manual, exclusion compliance
 wikis_config = {"wikipedia:en":[{"misnested-tag": [fix_misnests, fix_multiline_misnests]}, False, True],
-                "incubator":[{"tidy-font-bug": [fix_tidy_font_bug]}, True, False],
+                "incubator":[{"obsolete-tag": [fix_self_closed_tags, fix_obsolete_HTML_tags]}, False, False],
                 "wikisource:sv":[{"obsolete-tag": [fix_self_closed_tags, fix_obsolete_HTML_tags]}, False, False]}
-site_name = "wikisource:sv"
+site_name = "incubator"
 errors_to_fixes = wikis_config[site_name][0]
 site = pywikibot.Site(site_name)
 MANUAL = wikis_config[site_name][1]
@@ -65,6 +65,7 @@ for param, value in params.items():
     print(param+": "+str(value))
 """
 
+#lint_list = ["Wikipedia:Requests for comment/Biographies of living people/Phase I"]
 lint_list = list(set(lint_list))  # To remove duplicates of any pages
 for page in lint_list:
     print("Lintfix: {} ({})".format(page, lint_list.index(page)))
