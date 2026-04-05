@@ -27,6 +27,8 @@ def full_category_members(categories: list):
     return sorted(list(set(pages)))
 
 
+pages = full_category_members(player_cats)
+
 print("Pages: "+str(len(pages)))
 
 excluded_pages = full_category_members(excluded_cats)
