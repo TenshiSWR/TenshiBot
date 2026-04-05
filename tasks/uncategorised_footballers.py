@@ -44,7 +44,7 @@ for page in pages:
         if position_cat in page.text and not search(r"Category:(?:[Ww]o)?[Mm]en's association football players not categorized by position", page.text):
             break
         elif position_cat in page.text and search(r"Category:(?:[Ww]o)?[Mm]en's association football players not categorized by position", page.text):
-            page.text = sub(r"\n[[Category:(?:[Ww]o)?[Mm]en's association football players not categorized by position]]", "", page.text)
+            page.text = sub(r"\n\[\[Category:(?:[Ww]o)?[Mm]en's association football players not categorized by position\]\]", "", page.text)
             if search(r"Category:.*[Ww]omen's", page.text):
                 _ = "Women's"
             elif search(r"Category:.*(?<!o)[Mm]en's", page.text):
