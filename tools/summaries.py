@@ -1,3 +1,4 @@
+EDIT_FAIL_SUMMARY = "Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]"
 TASK1_NOTIFICATION = "[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]]."
 TASK1_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests."
 TASK2_NOTIFICATION = "[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Notification]]: Your Articles for Creation review(s) has been marked as ongoing for over forty-eight hours."
@@ -5,3 +6,4 @@ TASK2_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Task 2]]: Ma
 TASK8_CREATE_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8]]: Creating [[Wikipedia:WikiCup|WikiCup]] contestant page"
 TASK8_RESET_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8]]: Reset [[Wikipedia:WikiCup|WikiCup]] contestant pages for Round {}"
 TASK10_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 10|Task 10]]: Remove do not archive tags from closed cases"
+TASK11_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 11|Bot trial]]: {} of [[:Category:{} association football players not categorized by position]]"

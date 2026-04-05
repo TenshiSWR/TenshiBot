@@ -10,6 +10,7 @@ from tasks.linterrors.tidy_font_bug import fix_tidy_font_bug
 from tasks.linterrors.wikilinks_in_extlinks import fix_wikilinks_in_extlinks
 from tools.misc import log_error, NoChange
 from tools.queries import get_lint_errors
+from tools.summaries import EDIT_FAIL_SUMMARY
 
 
 lint_list = []
@@ -109,5 +110,5 @@ for page in lint_list:
     try:
         page.save(summary=summary, minor=True, tags=tags, force=IGNORE_EXCLUSION_COMPLIANCE)
     except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
-        log_error("Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]".format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name, soft=True)
+        log_error(EDIT_FAIL_SUMMARY.format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name, soft=True)
     del summary, text
