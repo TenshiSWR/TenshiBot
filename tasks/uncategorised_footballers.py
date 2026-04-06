@@ -22,8 +22,6 @@ def full_category_members(categories: list):
         del categories[0]
         if not len(categories):
             break
-        #elif len(pages) >= 100:
-        #    break
     return sorted(list(set(pages)))
 
 
@@ -52,7 +50,7 @@ for page in pages:
             try:
                 #print("Would edit {} (removal)".format(page.title()))
                 i += 1
-                # page.save(summary=TASK11_SUMMARY.format("Removal", _), minor=False)
+                page.save(summary=TASK11_SUMMARY.format("Removal", _), minor=False)
             except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
                 log_error(EDIT_FAIL_SUMMARY.format(page.title()), 11, soft=True)
             break
@@ -67,7 +65,7 @@ for page in pages:
         try:
             #print("Would edit {} (addition)".format(page.title()))
             i += 1
-            #page.save(summary=TASK11_SUMMARY.format("Addition", _), minor=False)
+            page.save(summary=TASK11_SUMMARY.format("Addition", _), minor=False)
         except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
             log_error(EDIT_FAIL_SUMMARY.format(page.title()), 11, soft=True)
 
