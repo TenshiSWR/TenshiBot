@@ -68,5 +68,7 @@ for page in pages:
             page.save(summary=TASK11_SUMMARY.format("Addition", _), minor=False)
         except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
             log_error(EDIT_FAIL_SUMMARY.format(page.title()), 11, soft=True)
+    if i >= 100:
+        break
 
 print("Edits: "+str(i))
