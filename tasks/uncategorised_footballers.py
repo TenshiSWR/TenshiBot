@@ -55,7 +55,7 @@ for page in pages:
                 log_error(EDIT_FAIL_SUMMARY.format(page.title()), 11, soft=True)
             break
     else:
-        if not search(r"(?:is|was) an? .*?(?:footballer|(?:football|soccer) player).*?\." page.text):
+        if not search(r"(?:is|was) an? .*?(?:footballer|(?:football|soccer) player).*?\.", page.text):
             continue
         if search(r"Category:.*[Ww]omen's", page.text):
             _ = "Women's"
