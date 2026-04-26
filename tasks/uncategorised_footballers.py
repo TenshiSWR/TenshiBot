@@ -48,9 +48,9 @@ for page in pages:
             elif search(r"Category:.*(?<!o)[Mm]en's", page.text):
                 _ = "Men's"
             try:
-                print("Would edit {} (removal)".format(page.title()))
+                #print("Would edit {} (removal)".format(page.title()))
                 i += 1
-                #page.save(summary=TASK11_SUMMARY.format("Removal", _), minor=False)
+                page.save(summary=TASK11_SUMMARY.format("Removal", _), minor=False)
             except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
                 log_error(EDIT_FAIL_SUMMARY.format(page.title()), 11, soft=True)
             break
@@ -65,9 +65,9 @@ for page in pages:
             continue
         page.text += "\n[[Category:"+_+" association football players not categorized by position]]"
         try:
-            print("Would edit {} (addition)".format(page.title()))
+            #print("Would edit {} (addition)".format(page.title()))
             i += 1
-            #page.save(summary=TASK11_SUMMARY.format("Addition", _), minor=False)
+            page.save(summary=TASK11_SUMMARY.format("Addition", _), minor=False)
         except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
             log_error(EDIT_FAIL_SUMMARY.format(page.title()), 11, soft=True)
     if i >= 100:
