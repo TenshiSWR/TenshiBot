@@ -67,7 +67,7 @@ for page in pages:
         else:
             continue
         if regex.search(r"{{.*?-stub}}", page.text):
-            page.text = regex.sub(r"(\[\[Category:[^]]*?\]\])([^[]*?)(\{\{.*?-stub\}\})", r"\1\n[[Category:"+_+" association football players not categorized by position]]\2\3", flags=regex.DOTALL)
+            page.text = regex.sub(r"(\[\[Category:[^]]*?\]\])([^[]*?)(\{\{.*?-stub\}\})", r"\1\n[[Category:"+_+" association football players not categorized by position]]\2\3", page.text, flags=regex.DOTALL)
         else:
             page.text += "\n[[Category:"+_+" association football players not categorized by position]]"
         try:
