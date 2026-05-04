@@ -6,4 +6,4 @@ TASK2_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Task 2]]: Ma
 TASK8_CREATE_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8]]: Creating [[Wikipedia:WikiCup|WikiCup]] contestant page"
 TASK8_RESET_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8]]: Reset [[Wikipedia:WikiCup|WikiCup]] contestant pages for Round {}"
 TASK10_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 10|Task 10]]: Remove do not archive tags from closed cases"
-TASK11_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 11|Bot trial]]: {} of [[:Category:{} association football players not categorized by position]]"
+TASK11_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 11|Task 11]]: {} of [[:Category:{} association football players not categorized by position]]"
