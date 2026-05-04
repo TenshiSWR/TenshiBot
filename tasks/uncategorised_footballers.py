@@ -49,9 +49,7 @@ for page in pages:
                 _ = "Men's"
             try:
                 i += 1
-                if i >= 100:
-                    print("Would edit {} (removal)".format(page.title()))
-                #page.save(summary=TASK11_SUMMARY.format("Removal", _), minor=False)
+                page.save(summary=TASK11_SUMMARY.format("Removal", _), minor=False)
             except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
                 log_error(EDIT_FAIL_SUMMARY.format(page.title()), 11, soft=True)
             break
@@ -72,12 +70,8 @@ for page in pages:
             page.text += "\n[[Category:"+_+" association football players not categorized by position]]"
         try:
             i += 1
-            if i >= 100:
-                print("Would edit {} (addition)".format(page.title()))
-            #page.save(summary=TASK11_SUMMARY.format("Addition", _), minor=False)
+            page.save(summary=TASK11_SUMMARY.format("Addition", _), minor=False)
         except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError, pywikibot.exceptions.OtherPageSaveError):
             log_error(EDIT_FAIL_SUMMARY.format(page.title()), 11, soft=True)
-    #if i >= 100:
-    #    break
 
 print("Edits: "+str(i))
