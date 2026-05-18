@@ -54,7 +54,7 @@ for page in pages:
                 log_error(EDIT_FAIL_SUMMARY.format(page.title()), 11, soft=True)
             break
     else:
-        if not regex.search(r"(?:is|was) an? .*?(?:footballer|(?:football|soccer) player).*?\.", page.text):
+        if not regex.search(r"(?:is|was) an? (?:\w* )?(?:footballer|(?:football|soccer) player).*?\.", page.text):
             continue
         elif regex.search(r"\[\[Category:(?:[Ww]o)?[Mm]en's association football players not categorized by position\]\]", page.text):
             continue
