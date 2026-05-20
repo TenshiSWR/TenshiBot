@@ -19,10 +19,10 @@ class RmtrClerking:
 
             # Find where each section starts
             try:
-                section_indexes = [split_text_by_line.index("==== Uncontroversial technical requests ===="),
-                                   split_text_by_line.index("==== Requests to revert undiscussed moves ===="),
-                                   split_text_by_line.index("==== Contested technical requests ===="),
-                                   split_text_by_line.index("==== Administrator needed ====")]
+                section_indexes = [split_text_by_line.index('==== <span class="anchor" id="UNCONTROVERSIAL"></span>Uncontroversial technical requests ===='),
+                                   split_text_by_line.index('==== <span class="anchor" id="Rtrum"></span>Requests to revert undiscussed moves ===='),
+                                   split_text_by_line.index('==== <span class="anchor" id="CONTESTED"></span><span class="anchor" id="CONTROVERSIAL"></span>Contested technical requests ===='),
+                                   split_text_by_line.index('==== <span class="anchor" id="ADMIN"></span>Administrator needed ====')]
             except ValueError:
                 log_error("Section headings not found, check {} for possible problems".format(rmtr_page.title()), 1)
                 exit("Section headings not found, check {} for possible problems".format(rmtr_page.title()))
