@@ -4,6 +4,7 @@ from mwparserfromhell import parse
 from mwparserfromhell.wikicode import Wikicode
 import pywikibot
 from pywikibot.exceptions import EditConflictError, InvalidTitleError, NoMoveTargetError
+from regex import search
 from sys import exit
 from tools.misc import get_talk_page, log_error, NotificationSystem, wiki_delinker
 from tools.summaries import TASK1_NOTIFICATION, TASK1_SUMMARY
@@ -18,12 +19,16 @@ class RmtrClerking:
             split_text_by_line = rmtr_page.text.split("\n")  # Convert the page text into a list of lines
 
             # Find where each section starts
-            try:
-                section_indexes = [split_text_by_line.index('==== <span class="anchor" id="UNCONTROVERSIAL"></span>Uncontroversial technical requests ===='),
-                                   split_text_by_line.index('==== <span class="anchor" id="Rtrum"></span>Requests to revert undiscussed moves ===='),
-                                   split_text_by_line.index('==== <span class="anchor" id="CONTESTED"></span><span class="anchor" id="CONTROVERSIAL"></span>Contested technical requests ===='),
-                                   split_text_by_line.index('==== <span class="anchor" id="ADMIN"></span>Administrator needed ====')]
-            except ValueError:
+            search_strings = [r'=+.*?Uncontroversial technical requests.*?=+',
+                              r'=+.*?Requests to revert undiscussed moves.*?=+',
+                              r'=+.*?Contested technical requests.*?=+',
+                              r'=+.*?Administrator needed.*?=+']
+            section_indexes = [None, None, None, None]
+            for i, line in enumerate(split_text_by_line):
+                for _, string in enumerate(search_strings):
+                    if search(search_strings[_], line):
+                        section_indexes[_] = i
+            if any([x == None for x in section_indexes]):
                 log_error("Section headings not found, check {} for possible problems".format(rmtr_page.title()), 1)
                 exit("Section headings not found, check {} for possible problems".format(rmtr_page.title()))
 
