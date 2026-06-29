@@ -21,11 +21,11 @@ def fix_multiline_misnests(page: str, text: str) -> str:
         if s < closing_s:
             misnests["</s>"].append((len(regex.findall(r"[\*#:]*", line)[0]), i))
     # This whole segment is a big sprawling mess and needs to be cut down and simplified.
-    print("Misnests: "+str(misnests))
+    #print("Misnests: "+str(misnests))
     if len(misnests["<s>"]) < 1 or len(misnests["</s>"]) < 1:
-        print("Skipping {}, something is wrong with the amount of <s> tags".format(page))
-        print("<s>: {}, </s>: {}".format(misnests["<s>"], misnests["</s>"]))
-        log_file("Skipped [[{}]], something is wrong with the amount of <s> tags".format(page), "skips.txt")
+        #print("Skipping {}, something is wrong with the amount of <s> tags".format(page))
+        #print("<s>: {}, </s>: {}".format(misnests["<s>"], misnests["</s>"]))
+        #log_file("Skipped [[{}]], something is wrong with the amount of <s> tags".format(page), "skips.txt")
         return text
     i = 0
     while i < len(misnests["</s>"]):
@@ -126,6 +126,8 @@ def fix_multiline_misnests(page: str, text: str) -> str:
             print("(Post-post filtering) Block content template or similar ({}): {}".format(fixes[i][0], fixes[i][1]))
         elif regex.search(r"<br *\/?>", fixes[i][1]):
             print("(Post-post filtering) Lone br tag")
+        elif regex.search(r"(?<!.*''.*)''(?:(?:(?!(?:'')).)*)$", fixes[i][1]):
+            print("(Post-post filtering) Unclosed italic tag")
         else:
             i += 1
             continue

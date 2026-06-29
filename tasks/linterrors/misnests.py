@@ -56,13 +56,14 @@ loop_cap = 100
 def fix_misnests(page: str, text: str) -> str:
     lines = text.split("\n")
     fixes = []
+    consecutive_tags_count = 0
     for i, line in enumerate(lines):
         new_line = line
         _ = new_line
         loop_count = 0
         while True:
             if regex.search(r"(?:<[^\/>]+>[^<>]*?){4,}", _) or regex.search(r"(?:<\/[^\/>]+>[^<>]*?){4,}", _):
-                print("(Pre-filtering) Consecutive 4+ tags")
+                consecutive_tags_count += 1
                 break
             for find, replace in regexes.items():
                 if not regex.search(r"<(?:nowiki|syntaxhighlight)>.*"+find+r".*<\/(?:nowiki|syntaxhighlight)>", line):
@@ -77,6 +78,10 @@ def fix_misnests(page: str, text: str) -> str:
                 break
         if new_line != line:
             fixes.append((i, new_line))
+    if consecutive_tags_count > 1:
+        print("(Pre-filtering) Consecutive 4+ tags x{}".format(consecutive_tags_count))
+    elif consecutive_tags_count:
+        print("(Pre-filtering) Consecutive 4+ tags")
     i = 0
     while i < len(fixes):
         if regex.search(r"\{\{.*\}\}", fixes[i][1]) and not regex.search(r"(?:\{\{(?:(?!(?:'''?|<\/?[^ >]*>)).)*\}\})", fixes[i][1]):

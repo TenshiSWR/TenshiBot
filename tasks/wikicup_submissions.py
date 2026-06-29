@@ -1,10 +1,13 @@
 import pywikibot
 import regex
+from tools.misc import get_database
 from tools.summaries import TASK8_CREATE_SUMMARY, TASK8_RESET_SUMMARY
 
 site = pywikibot.Site()
 
-wikicup_round = 3
+db, cursor = get_database()
+cursor.execute("SELECT wikicup_round FROM misc;")
+wikicup_round = cursor.fetchone()[0]
 usernames = regex.findall(r"\# ?\{.*User: *(?! *Your username)([^|]*)(?:\||]])", pywikibot.Page(site, "Wikipedia:WikiCup/2026 signups").text)
 usernames = [username[0].upper()+username[1:] for username in usernames if pywikibot.User(site, username).isRegistered()]
 pages = ["Wikipedia:WikiCup/History/2026/Submissions/"+username for username in usernames]

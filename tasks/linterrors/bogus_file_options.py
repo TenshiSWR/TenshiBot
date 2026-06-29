@@ -2,9 +2,9 @@ import regex
 
 regexes = {
     #r"(?<!(?:\[\[|\|.*))(?:([A-z]+:[^|]*)(?:\|thumb|\|\d{1,4}px|\|left|\|right)(.*))(?!\]\])": r"\1\2",
-    r"\| *(\|.*)": r"\1",
+    r"(?<!\{\{[^|}]*)\| *(\|.*)(?![^{}]*?\}\})": r"\1",
     r"pxpx": r"px",
-    r"\|((?:thumb(?:nail)?|\d{1,4}px|left|right|center)+)(?=.*\|\1\|)": r"",
+    r"(?<!(?:\{\{|<imagemap>).*)\|((?:thumb(?:nail)?|\d{1,4}px|left|right|center)+)(?=.*\|\1\|)": r"",
     r"\|((?:link=[^|]+)+)(?=.*\|\1)": r"",
     r"\|((?:link=\|)+)(?=.*\|\1)": r"",
     r"\|((?:link=)+)(?=.*\1)": r""
@@ -27,8 +27,8 @@ def fix_bogus_file_options(page: str, text: str) -> str:
                         break
             new_line = regex.sub(regex.escape(file), new_file_wikitext.replace("\\", "\\\\"), new_line)
         while True:
-            if regex.search(r"(?:[^|]+)(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(?:\|.*)", new_line) and not regex.search(r"(?:\[\[|\{\{).*"+r"(?:[^|]+)(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(?:\|.*)"+r".*(?:\]\]|\}\})", new_line):
-                new_line = regex.sub(r"(?:([^|]+))(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(\|.*)", r"\1\2", new_line)
+            if regex.search(r"(?<!\{\{.*)(?<=File\:.*)(?:[^|]+)(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(?:\|.*)", new_line) and not regex.search(r"(?:\[\[|\{\{).*"+r"(?:[^|]+)(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(?:\|.*)"+r".*(?:\]\]|\}\})", new_line):
+                new_line = regex.sub(r"(?<!\{\{.*)(?<=File\:.*)(?:([^|]+))(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(\|.*)", r"\1\2", new_line)
             else:
                 break
         if new_line != line:
@@ -39,6 +39,8 @@ def fix_bogus_file_options(page: str, text: str) -> str:
             print("(Filtering) Unclosed file markup")
         elif regex.search(r"^ *\|", fixes[i][1]):
             print("(Filtering) Table or template territory")
+        elif regex.search(r"\{\{.*\}\}", fixes[i][1]) and not regex.search(r"(?:\{\{(?:(?!(?:'''?|<\/?[^ >]*>)).)*\}\})", fixes[i][1]):
+            print("(Filtering) Illegal combination in template invocation")
         else:
             i += 1
             continue
