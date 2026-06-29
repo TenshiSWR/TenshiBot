@@ -7,7 +7,7 @@ from pwiki.wiki import Wiki
 import re
 from tools.misc import mediawikitimestamp_to_datetime
 mquery, wiki = MQuery(), Wiki()
-transclusions = wiki.what_transcludes_here("Template:Copyvio", ns=NS.MAIN)
+transclusions = wiki.what_transcludes_here("Template:Copyvio", ns=[NS.MAIN, NS.FILE, 118])
 
 # 1. Check if template has timestamp, if not go to 4
 # 2. Check relevant subpage if the article is listed, if not go to 4
