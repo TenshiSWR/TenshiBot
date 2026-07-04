@@ -96,5 +96,3 @@ for file in files:
         cursor.execute("INSERT INTO task_status(task, status) VALUES(%(task)s, 'N/A');", {"task": file})
         db.commit()
 db.close()
-
-app.run()
