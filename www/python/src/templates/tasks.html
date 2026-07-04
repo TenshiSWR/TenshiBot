@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block head %}
+    <title>Tasks - TenshiBot</title>
+{% endblock %}
+{% block body %}
+    <h1>TenshiBot tasks:</h1>
+    <div style="display: inline-grid;">
+        <table class="table" data-toggle="table" style="margin: auto;">
+            <thead>
+                <tr>
+                    <th>Task number:</th>
+                    <th>Task:</th>
+                    <th>Last activity:</th>
+                    <th>Status:</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if not empty %}
+                    {% for task, task_number, start, end, status in data %}
+                        {% if status != "N/A" %}
+                            <tr>
+                                <td>{{task_number}}</td>
+                                <td>{{task}}</td>
+                                {% if time_elapsed[task] != None and activity[task] != "?" and status == "Running" %}
+                                    <td>{{activity[task]}} ({{time_elapsed[task]}})</td>
+                                {% elif time_elapsed[task] != None and activity[task] != "?" and not status == "Running" %}
+                                    <td>{{activity[task]}} ({{time_elapsed[task]}} ago)</td>
+                                {% else %}
+                                    <td>{{activity[task]}}</td>
+                                {% endif %}
+                                {% if status == "Running" %}
+                                    <td style="background-color: yellow;">{{status}}</td>
+                                {% elif status == "Fatal exception" %}
+                                    <td style="background-color: red;">{{status}}</td>
+                                {% elif status == "Ended" %}
+                                    <td style="background-color: lightgreen;">{{status}}</td>
+                                {% endif %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td rowspan="3" style="text-align: center;">No task_status data.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div style="display: inline-grid;">
+        <table class="table" data-toggle="table" style="margin: auto;">
+            <thead>
+                <tr>
+                    <th>Status key:</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="background-color: yellow;">Running</td>
+                </tr>
+                <tr>
+                    <td style="background-color: red;">Fatal exception</td>
+                </tr>
+                <tr>
+                    <td style="background-color: lightgreen;">Ended</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

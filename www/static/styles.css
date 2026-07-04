@@ -1,0 +1,11 @@
+table {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    table-layout: auto !important;
+}
+nav a {
+    color: white !important;
+}
+h1 {
+    text-align: center;
+}

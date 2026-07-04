@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://tools-static.wmflabs.org/tenshihinanawi-bot/styles.css" rel="stylesheet">
+    <link href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-table/1.24.2/bootstrap-table.min.css">
+    {% block head %}
+    <title>No title set</title>
+    {% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark border-bottom border-body navbar-expand-md" data-bs-theme="dark">
+        <a class="navbar-brand" href="/">TenshiBot</a>
+        <a class="nav-link" href="/tasks">Tasks</a>
+        <a class="nav-link" href="/wikicup">WikiCup</a>
+    </nav>
+    <div style="padding: 3em 15em; margin: auto; width: 100%;">
+        {% block body %}
+        {% endblock %}
+    </div>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/popper.js/1.13.0/esm/popper.min.js"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-table/1.24.2/bootstrap-table.min.js"></script>
+</body>
+</html>

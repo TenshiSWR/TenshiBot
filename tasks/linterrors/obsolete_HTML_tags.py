@@ -13,12 +13,12 @@ def fix_obsolete_HTML_tags(page: str, text: str) -> str:
             if regex.search(r"<font [^>]+>", font, flags=regex.I):
                 params = regex.search(r"<font ([^>]+)>", font, flags=regex.I).group(1)
                 new_params = params
-                if regex.search(r'color="?(\w+)"?', new_params, flags=regex.I):
-                    value = regex.search(r'color="?(\w+)"?', new_params, flags=regex.I).group(1)
+                if regex.search(r'color="?([^\s]+)"?', new_params, flags=regex.I):
+                    value = regex.search(r'color="?([^\s]+)"?', new_params, flags=regex.I).group(1)
                     if regex.search(r"[0-9A-Fa-f]{6}", value):
-                        new_params = regex.sub(r'color="?(\w+)"?', r"color: #{};".format(regex.search(r"#?([0-9A-Fa-f]{6})", value).group(1)), new_params, flags=regex.I)
+                        new_params = regex.sub(r'color="?([^\s]+)"?', r"color: #{};".format(regex.search(r"#?([0-9A-Fa-f]{3,6})", value).group(1)), new_params, flags=regex.I)
                     else:
-                        new_params = regex.sub(r'color="?(\w+)"?', r"color: \1;", new_params, flags=regex.I)
+                        new_params = regex.sub(r'color="?([^\s]+)"?', r"color: \1;", new_params, flags=regex.I)
                 if regex.search(r'size="?(.\d*)(?:px)?"?', new_params, flags=regex.I):
                     size = regex.search(r'size="? ?(.\d*)(?:px)?"?', new_params, flags=regex.I).group(1)
                     try:
