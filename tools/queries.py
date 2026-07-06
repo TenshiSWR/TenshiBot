@@ -17,7 +17,7 @@ del OAUTH_KEY
 # Important note: Local account must exist on the wiki in order to use OAuth and the API.
 
 
-def get_lint_errors(lint_type: str | bool = None, namespaces: str | bool = None, url: str = "https://en.wikipedia.org") -> list:
+def get_lint_errors(lint_type: str | bool = None, namespaces: str | bool = None, url: str = "https://en.wikipedia.org", limit: int = 0) -> list:
     if type(lint_type) is str:
         lint_type.replace("+", "%7C")
     if type(namespaces) is str:
@@ -63,6 +63,8 @@ def get_lint_errors(lint_type: str | bool = None, namespaces: str | bool = None,
         try:
             lntfrom = decoded["continue"]["lntfrom"]
         except KeyError:
+            break
+        if limit != 0 and len(full_list) >= limit:
             break
     bar.close()
     return full_list

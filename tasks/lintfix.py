@@ -18,11 +18,11 @@ ignored_pages = [r"\/Assessment\/.*\/\d{4}", r".*\/Archived nominations\/.*", r"
 #count = {page:0 for page in ignored_pages}
 #params = {}
 function_to_summary = {
-    "fix_bogus_file_options":{"commons":["Commons:Bots/Requests/TenshiBot", "1 (Trial)"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"]},
+    "fix_bogus_file_options":{"commons":["Commons:Bots/Requests/TenshiBot", "1 (Trial)"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"]},
     "fix_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1 (Trial)"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
     "fix_multi_colon_escape":{},
     "fix_multiline_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1 (Trial)"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
-    "fix_obsolete_HTML_tags":{"commons":["Commons:Bots/Requests/TenshiBot", "1 (Trial)"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
+    "fix_obsolete_HTML_tags":{"commons":["Commons:Bots/Requests/TenshiBot", "1 (Trial)"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"], "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
     "fix_self_closed_tags":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
     "fix_tidy_font_bug":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"]},
     "fix_wikilinks_in_extlinks":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"]}
@@ -31,8 +31,9 @@ function_to_summary = {
 wikis_config = {"wikipedia:en":[{"misnested-tag": [fix_misnests, fix_multiline_misnests]}, True, True],
                 "incubator":[{"bogus-image-options": [fix_bogus_file_options], "misnested-tag": [fix_misnests, fix_multiline_misnests], "obsolete-tag": [fix_self_closed_tags, fix_obsolete_HTML_tags]}, True, False],
                 "wikisource:sv":[{"obsolete-tag": [fix_self_closed_tags, fix_obsolete_HTML_tags]}, False, False],
-                "commons":[{"bogus-image-options": [fix_bogus_file_options], "misnested-tag": [fix_misnests, fix_multiline_misnests], "obsolete-tag": [fix_obsolete_HTML_tags]}, True, False]}
-site_name = "commons"
+                "commons":[{"bogus-image-options": [fix_bogus_file_options], "misnested-tag": [fix_misnests, fix_multiline_misnests], "obsolete-tag": [fix_obsolete_HTML_tags]}, True, False],
+                "wikibooks:en":[{"bogus-image-options": [fix_bogus_file_options], "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False]}
+site_name = "wikibooks:en"
 errors_to_fixes = wikis_config[site_name][0]
 site = pywikibot.Site(site_name)
 MANUAL = wikis_config[site_name][1]
@@ -72,7 +73,6 @@ for param, value in params.items():
     print(param+": "+str(value))
 """
 
-#lint_list = ["Wikipedia:Requests for comment/Biographies of living people/Phase I"]
 lint_list = list(set(lint_list))  # To remove duplicates of any pages
 for page in lint_list:
     print("Lintfix: {} ({}/{})".format(page, lint_list.index(page)+1, len(lint_list)))
