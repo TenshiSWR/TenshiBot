@@ -27,21 +27,17 @@ def get_talk_page(user: str):
 def load_task(task: str, task_number: int | str, site_name: str = "wikipedia:en"):
     from datetime import datetime
     from importlib import import_module
-    db, cursor = get_database()
     print("Task {} ({}) started at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
-    cursor.execute("UPDATE task_status SET task_number = %(task_number)s, start = %(start)s, status = 'Running' WHERE task = %(task)s;", {"task_number": task_number, "start": datetime.utcnow(), "task": task})
-    db.commit()
+    queryandclose("UPDATE task_status SET task_number = %(task_number)s, start = %(start)s, status = 'Running' WHERE task = %(task)s;", {"task_number": task_number, "start": datetime.utcnow(), "task": task})
     try:
         import_module(task)
     except Exception as exception:
         log_error("Fatal exception: {}".format(exception), task_number, site_name=site_name)
-        cursor.execute("UPDATE task_status SET end = %(end)s, status = 'Fatal exception' WHERE task = %(task)s;", {"end": datetime.utcnow(), "task": task})
+        queryandclose("UPDATE task_status SET end = %(end)s, status = 'Fatal exception' WHERE task = %(task)s;", {"end": datetime.utcnow(), "task": task})
     else:
-        cursor.execute("UPDATE task_status SET end = %(end)s, status = 'Ended' WHERE task = %(task)s;", {"end": datetime.utcnow(), "task": task})
+        queryandclose("UPDATE task_status SET end = %(end)s, status = 'Ended' WHERE task = %(task)s;", {"end": datetime.utcnow(), "task": task})
     finally:
         print("Task {} ({}) ended at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
-        db.commit()
-        db.close()
 
 
 class LintfixModuleError(Exception):
@@ -120,6 +116,16 @@ class NotificationSystem:
             print("Failed to notify {}".format(receiver))
         else:
             print("Notified {}".format(receiver))
+
+
+def queryandclose(query: str, params: dict | None = None) -> None:
+    db, cursor = get_database()
+    if params:
+        cursor.execute(query, params)
+    else:
+        cursor.execute(query)
+    db.commit()
+    db.close()
 
 
 class QueryError(Exception):
