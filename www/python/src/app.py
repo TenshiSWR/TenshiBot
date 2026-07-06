@@ -17,7 +17,7 @@ APP_TOKEN = loads(os.getenv("APP-OAUTH"))[0]
 
 @app.route("/")
 def index():
-    if "request_token" in session and not "access_token" in session:
+    if "request_token" in session and request.query_string and not "access_token" in session:
         access_token = mwoauth.complete("https://en.wikipedia.org/w/index.php", _AUTH, mwoauth.RequestToken(**session["request_token"]), request.query_string)
         identity = mwoauth.identify("https://en.wikipedia.org/w/index.php", _AUTH, access_token)
         session["access_token"], session["username"] = dict(zip(access_token._fields, access_token)), identity["username"]
