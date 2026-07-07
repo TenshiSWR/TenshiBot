@@ -38,7 +38,7 @@ def fix_obsolete_HTML_tags(page: str, text: str) -> str:
                 new_params = regex.sub(r'face="([A-z ,.-]+)"', r"font-family: \1;", new_params, flags=regex.I)
                 new_params = regex.sub(r'style="(.+)"', r"\1", new_params, flags=regex.I)
                 text = regex.sub(r'<font {}>'.format(regex.escape(params)), r'<span style="{}">'.format(new_params), text, flags=regex.I)
-    text = regex.sub(r"(?<!<nowiki>)(?<!<syntaxhighlight)(<\/?)(?:[Ss]trike)>(?!.*?<\/nowiki>)", r"\1s>", text, flags=regex.I)
+    text = regex.sub(r"(?<!(?:<(nowiki|syntaxhighlight)>(?!(?:(?:(?!(?:<\1>)).)*?)<\/\1>)|<\1>(?:(?:(?!(?:<\/?\1>|<\/?strike>)).)*?)<\/?strike>(?:(?:(?!(?:<\/?\1>)).)*?)<\/nowiki>))(<\/?)(?:[Ss]trike)>(?!(?!.*?<nowiki>).*?<\/nowiki>)", r"\2s>", text, flags=regex.I)
     while True:
         if text != regex.sub(r"<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>", r'<div style="text-align: center;">\1</div>', text, flags=regex.DOTALL|regex.I):
             text = regex.sub(r"<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>", r'<div style="text-align: center;">\1</div>', text, flags=regex.DOTALL|regex.I)
