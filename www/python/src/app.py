@@ -104,7 +104,7 @@ for file in files:
         cursor.execute("INSERT INTO task_status(task, status) VALUES(%(task)s, 'N/A');", {"task": file})
         db.commit()
 cursor.execute("SELECT wikicup_round FROM misc;")
-wikicup_round = cursor.fetchone()
+wikicup_round = cursor.fetchone()[0]
 db.close()
 
 if not os.path.exists("replica.my.cnf"):
