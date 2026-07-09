@@ -28,7 +28,7 @@ def load_task(task: str, task_number: int | str, site_name: str = "wikipedia:en"
     from datetime import datetime
     from importlib import import_module
     print("Task {} ({}) started at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
-    queryandclose("UPDATE task_status SET task_number = %(task_number)s, start = %(start)s, status = 'Running' WHERE task = %(task)s;", {"task_number": task_number, "start": datetime.utcnow(), "task": task})
+    queryandclose("UPDATE task_status SET task_number = %(task_number)s, start = %(start)s, site_name = %(site_name)s, status = 'Running' WHERE task = %(task)s;", {"task_number": task_number, "start": datetime.utcnow(), "site_name": site_name, "task": task})
     try:
         import_module(task)
     except Exception as exception:

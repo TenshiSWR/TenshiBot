@@ -11,12 +11,13 @@
                     <th>Task number:</th>
                     <th>Task:</th>
                     <th>Last activity:</th>
+                    <th>Site name:</th>
                     <th>Status:</th>
                 </tr>
             </thead>
             <tbody>
                 {% if not empty %}
-                    {% for task, task_number, start, end, status in data %}
+                    {% for task, task_number, start, end, site_name, status in data %}
                         {% if status != "N/A" %}
                             <tr>
                                 <td>{{task_number}}</td>
@@ -28,6 +29,7 @@
                                 {% else %}
                                     <td>{{activity[task]}}</td>
                                 {% endif %}
+                                <td>{{site_name}}</td>
                                 {% if status == "Running" %}
                                     <td style="background-color: yellow;">{{status}}</td>
                                 {% elif status == "Fatal exception" %}
