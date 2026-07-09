@@ -1,13 +1,19 @@
 import pywikibot
 import regex
 from tools.misc import get_database
-from tools.summaries import TASK8_CREATE_SUMMARY, TASK8_RESET_SUMMARY
+from tools.summaries import TASK8_CREATE_SUMMARY, TASK8_RESET_SUMMARY, TASK8_RESET_WEBTRIGGER_SUMMARY
 
 site = pywikibot.Site()
 
 db, cursor = get_database()
 cursor.execute("SELECT wikicup_round FROM misc;")
 wikicup_round = cursor.fetchone()[0]
+cursor.execute("SELECT wikicup_judge_username FROM misc;")
+_ = cursor.fetchone()
+if _ is None:
+    wikicup_judge_username = None
+else:
+    wikicup_judge_username = cursor.fetchone()[0]
 usernames = regex.findall(r"\# ?\{.*User: *(?! *Your username)([^|]*)(?:\||]])", pywikibot.Page(site, "Wikipedia:WikiCup/2026 signups").text)
 usernames = [username[0].upper()+username[1:] for username in usernames if pywikibot.User(site, username).isRegistered()]
 pages = ["Wikipedia:WikiCup/History/2026/Submissions/"+username for username in usernames]
@@ -17,7 +23,13 @@ for page in pages:
     summary = TASK8_CREATE_SUMMARY
     if page.exists() and int(regex.search(r"== *Round (-?\d) *==", page.text).group(1)) == wikicup_round:
         continue
+    elif page.exists() and wikicup_judge_username:
+        summary = TASK8_RESET_WEBTRIGGER_SUMMARY.format(str(wikicup_round), wikicup_judge_username)
     elif page.exists():
         summary = TASK8_RESET_SUMMARY.format(str(wikicup_round))
     page.text = "{{subst:User:TenshiBot/WikiCup setup template|"+str(wikicup_round)+"}}"
     page.save(summary=summary, minor=False)
+
+if wikicup_judge_username:
+    cursor.execute("UPDATE misc SET wikicup_judge_username = NULL;")
+db.close()

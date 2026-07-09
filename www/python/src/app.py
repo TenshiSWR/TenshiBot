@@ -2,9 +2,10 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from flask import abort, Flask, redirect, render_template, request, session, url_for
 from json import loads
+from multiprocess import Process
 import mwoauth
 import os
-from tools.misc import get_database
+from tools.misc import get_database, queryandclose
 
 app = Flask(__name__)
 data, last_query_time = None, None
@@ -75,13 +76,20 @@ def tasks():
     return render_template("tasks.html", activity=activity, data=data, empty=empty, time_elapsed=time_elapsed)
 
 
-@app.route("/wikicup")
+@app.route("/wikicup", methods=["GET", "POST"])
 def wikicup():
+    global wikicup_round
     if not "username" in session:
         return redirect(url_for("login"))
     elif not session["username"] in ["Cwmhiraeth", "Epicgenius", "Frostly", "Guerillero", "Lee Vilenski", "Tenshi Hinanawi"]:
         abort(403)
-    return render_template("wikicup.html")
+    if request.method == "GET":
+        return render_template("wikicup.html", started=False, wikicup_round=wikicup_round)
+    else:
+        wikicup_round = request.form.get("round")
+        queryandclose("UPDATE misc SET wikicup_round = %(wikicup_round)s, wikicup_judge_username = %(wikicup_judge_username)s;", {"wikicup_round": wikicup_round, "wikicup_judge_username": session["username"]})
+        Process(target=lambda: __import__("tasks/wikicup_submissions")).start()
+        return render_template("wikicup.html", started=True, wikicup_round=wikicup_round)
 
 
 os.chdir("../../../reports")
@@ -95,4 +103,9 @@ for file in files:
     if cursor.fetchone() is None:
         cursor.execute("INSERT INTO task_status(task, status) VALUES(%(task)s, 'N/A');", {"task": file})
         db.commit()
+cursor.execute("SELECT wikicup_round FROM misc;")
+wikicup_round = cursor.fetchone()
 db.close()
+
+if not os.path.exists("replica.my.cnf"):
+    app.run()

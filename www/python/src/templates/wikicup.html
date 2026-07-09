@@ -2,3 +2,17 @@
 {% block head %}
     <title>WikiCup - TenshiBot</title>
 {% endblock %}
+{% block body %}
+    <h1>WikiCup rounds:</h1>
+    <form method="POST">
+        <label for="round">Round number:</label><span style="padding-left: 5em;">Current round number: {{wikicup_round}}</span><br>
+        <input type="number" id="round" min="1" max="5" value="{{wikicup_round}}">
+        {% if not started %}
+            <input type="submit" value="Update">
+        {% else %}
+            <b>Running:</b> See <a href="https://en.wikipedia.org/wiki/Special:Contributions/TenshiBot">contribs</a>.
+        {% endif %}
+    </form>
+    <br>
+    <b>Note:</b> Your username will be included in the edit summary as required by <a href="https://en.wikipedia.org/wiki/WP:BOTMULTIOP">local policy</a>. The update button is live and there isn't a method for judges to stop it if accidentally pressed, so <u>don't do that</u>.
+{% endblock %}
