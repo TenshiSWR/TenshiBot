@@ -10,10 +10,10 @@ cursor.execute("SELECT wikicup_round FROM misc;")
 wikicup_round = cursor.fetchone()[0]
 cursor.execute("SELECT wikicup_judge_username FROM misc;")
 _ = cursor.fetchone()
-if _ is None:
+if _[0] is None:
     wikicup_judge_username = None
 else:
-    wikicup_judge_username = cursor.fetchone()[0]
+    wikicup_judge_username = _[0]
 usernames = regex.findall(r"\# ?\{.*User: *(?! *Your username)([^|]*)(?:\||]])", pywikibot.Page(site, "Wikipedia:WikiCup/2026 signups").text)
 usernames = [username[0].upper()+username[1:] for username in usernames if pywikibot.User(site, username).isRegistered()]
 pages = ["Wikipedia:WikiCup/History/2026/Submissions/"+username for username in usernames]
