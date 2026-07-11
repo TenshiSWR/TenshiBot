@@ -18,11 +18,11 @@ ignored_pages = [r"\/Assessment\/.*\/\d{4}", r".*\/Archived nominations\/.*", r"
 #count = {page:0 for page in ignored_pages}
 #params = {}
 function_to_summary = {
-    "fix_bogus_file_options":{"commons":["Commons:Bots/Requests/TenshiBot", "1 (Trial)"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"]},
-    "fix_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1 (Trial)"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
+    "fix_bogus_file_options":{"commons":["Commons:Bots/Requests/TenshiBot", "1"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"]},
+    "fix_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
     "fix_multi_colon_escape":{},
-    "fix_multiline_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1 (Trial)"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
-    "fix_obsolete_HTML_tags":{"commons":["Commons:Bots/Requests/TenshiBot", "1 (Trial)"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"], "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
+    "fix_multiline_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
+    "fix_obsolete_HTML_tags":{"commons":["Commons:Bots/Requests/TenshiBot", "1"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"], "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
     "fix_self_closed_tags":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
     "fix_tidy_font_bug":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"]},
     "fix_wikilinks_in_extlinks":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"]}
@@ -31,9 +31,9 @@ function_to_summary = {
 wikis_config = {"wikipedia:en":[{"misnested-tag": [fix_misnests, fix_multiline_misnests]}, True, True],
                 "incubator":[{"bogus-image-options": [fix_bogus_file_options], "misnested-tag": [fix_misnests, fix_multiline_misnests], "obsolete-tag": [fix_self_closed_tags, fix_obsolete_HTML_tags]}, True, False],
                 "wikisource:sv":[{"obsolete-tag": [fix_self_closed_tags, fix_obsolete_HTML_tags]}, False, False],
-                "commons":[{"bogus-image-options": [fix_bogus_file_options], "misnested-tag": [fix_misnests, fix_multiline_misnests], "obsolete-tag": [fix_obsolete_HTML_tags]}, True, False],
+                "commons":[{"bogus-image-options": [fix_bogus_file_options], "misnested-tag": [fix_misnests, fix_multiline_misnests], "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False],
                 "wikibooks:en":[{"bogus-image-options": [fix_bogus_file_options], "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False]}
-site_name = "wikibooks:en"
+site_name = "commons"
 errors_to_fixes = wikis_config[site_name][0]
 site = pywikibot.Site(site_name)
 MANUAL = wikis_config[site_name][1]
@@ -54,8 +54,10 @@ for error in errors:
         #pass
         continue
     else:
-        #if error["params"]["name"] == "s" or error["params"]["name"] == "strike":
-        lint_list.append(error["title"])
+        if error["category"] == "obsolete-tag" and error["params"]["name"] != "tt":
+            lint_list.append(error["title"])
+        elif error["category"] != "obsolete-tag":
+            lint_list.append(error["title"])
     """
     for key in count.keys():
         if search(key, error["title"]):
@@ -101,6 +103,10 @@ for page in lint_list:
         del text
         continue
     page = pywikibot.Page(site, page)
+    tasks = sorted(tasks.items())
+    if not "sysop" in site.userinfo["groups"] and (any([page.protection()[page_protection][0] == "sysop" for page_protection in page.protection() if page_protection == "edit"]) or "MediaWiki" in page.title()):
+        log_error(EDIT_FAIL_SUMMARY.format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name, soft=True)
+        continue
     if MANUAL:
         pywikibot.showDiff(page.text, text)
         q = input("Accept? (Y/N)")
@@ -110,7 +116,6 @@ for page in lint_list:
             print(site.base_url("wiki/{}".format(page.title())))
             continue
     page.text = text
-    tasks = sorted(tasks.items())
     if site_name == "wikipedia:en":
         lint_errors = "Fix [[Wikipedia:Linter|Linter]] errors"
         tags = ["fixed lint errors"]

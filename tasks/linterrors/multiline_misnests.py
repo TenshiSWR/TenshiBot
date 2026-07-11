@@ -93,7 +93,7 @@ def fix_multiline_misnests(page: str, text: str) -> str:
         # 1. Get a list of the tags
         # 2. Get a closing tag
         # 3. Compare it to all opening tags, remove the opening tag and closing tag in the list if they match and go back to step 2 starting over, else go back to step 2 for a new closing tag
-        tag, closing_tag = regex.findall(r"<(?:(?!(?:br *>|\!--|-+))[^\/<>])+>", fixes[i][1]), regex.findall(r"</[^<>]+>", fixes[i][1])
+        tag, closing_tag = regex.findall(r"<(?:(?!(?:br *>|\!--|--))[^\/<>])+>", fixes[i][1]), regex.findall(r"</[^<>]+>", fixes[i][1])
         while z < len(closing_tag):
             _ = regex.sub(r"<\/(.*)>", r"\1", closing_tag[z].lower())
             x = 0

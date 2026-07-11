@@ -1,6 +1,15 @@
 import regex
 from tools.misc import LintfixModuleError, log_error
 
+regexes = {
+    r"<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'<div style="text-align: center;">\1</div>',
+    r'<center>([\n\s]*?\{\|[^<>|!]*?style="[^\"]+)(?<!; )(?<!(?:margin|margin-(?:bottom|left|right|up)):.*); *("[^\}]+(?:(?:(?!(?:\|\})).)*)\|\})[\n\s]*?<\/center>': r"\1; margin: auto;\2",
+    r'<center>([\n\s]*?\{\|(?![^\n]*?style="[^\"]+")[^\n]*)((?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1 style="margin: auto;"\2',
+    r'<center>([\n\s]*?\{\|[^<>|!]*?style="(?:(?:(?!(?: "|")).)+?))(?<!;)(?<!(?:margin|margin-(?:bottom|left|right|up)):.*)("[^\}]+(?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1; margin: auto;\2',
+    r'<center>([\n\s]*?<gallery(?:(?:(?!(?: ?[<>])).)*?)(?<!(?:class|perrows)="))(>.*?<\/gallery>[\n\s]*?)<\/center>': r'\1 class="center"\2',
+    r'<center>([\n\s]*?<gallery[^<>]*(?<!(?:class|perrow)="))(?<! ) +(>.*?<\/gallery>[\n\s]*?)<\/center>': r'\1 class="center"\2'
+}
+
 
 def fix_obsolete_HTML_tags(page: str, text: str) -> str:
     text = regex.sub(r"(<font[^>]*?>[^<\n]*?)<font>(?!((?:(?!<\/font>(?![^<\n]*?<\/font>)).)*?)<\/font>)", r"\1</font\2>", text, flags=regex.DOTALL)  # Will pick up two opening tags even though they close twice
@@ -39,9 +48,10 @@ def fix_obsolete_HTML_tags(page: str, text: str) -> str:
                 new_params = regex.sub(r'style="(.+)"', r"\1", new_params, flags=regex.I)
                 text = regex.sub(r'<font {}>'.format(regex.escape(params)), r'<span style="{}">'.format(new_params), text, flags=regex.I)
     text = regex.sub(r"(?<!(?:<(nowiki|syntaxhighlight)>(?!(?:(?:(?!(?:<\1>)).)*?)<\/\1>)|<\1>(?:(?:(?!(?:<\/?\1>|<\/?strike>)).)*?)<\/?strike>(?:(?:(?!(?:<\/?\1>)).)*?)<\/nowiki>))(<\/?)(?:[Ss]trike)>(?!(?!.*?<nowiki>).*?<\/nowiki>)", r"\2s>", text, flags=regex.I)
-    while True:
-        if text != regex.sub(r"<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>", r'<div style="text-align: center;">\1</div>', text, flags=regex.DOTALL|regex.I):
-            text = regex.sub(r"<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>", r'<div style="text-align: center;">\1</div>', text, flags=regex.DOTALL|regex.I)
-        else:
-            break
+    for find, replace in regexes.items():
+        while True:
+            if text != regex.sub(find, replace, text, flags=regex.DOTALL|regex.I):
+                text = regex.sub(find, replace, text, flags=regex.DOTALL|regex.I)
+            else:
+                break
     return text
