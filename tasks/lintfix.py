@@ -104,7 +104,7 @@ for page in lint_list:
         continue
     page = pywikibot.Page(site, page)
     tasks = sorted(tasks.items())
-    if not "sysop" in site.userinfo["groups"] and (any([page.protection()[page_protection][0] == "sysop" for page_protection in page.protection() if page_protection == "edit"]) or "MediaWiki" in page.title()):
+    if not "sysop" in site.userinfo["groups"] and (any([page.protection()[page_protection][0] == "sysop" for page_protection in page.protection() if page_protection == "edit"]) or "MediaWiki:" in page.title()):
         log_error(EDIT_FAIL_SUMMARY.format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name, soft=True)
         continue
     if MANUAL:
