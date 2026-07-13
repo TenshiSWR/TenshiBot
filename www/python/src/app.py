@@ -65,9 +65,9 @@ def tasks():
             activity[item[0]] = "?"
         if activity[item[0]] != "?":
             time_elapsed[item[0]] = datetime.utcnow().replace(tzinfo=None)-activity[item[0]]
-            if time_elapsed[item[0]].days <= 1 and (time_elapsed[item[0]].seconds // 60) >= 60:
+            if time_elapsed[item[0]].days < 1 and (time_elapsed[item[0]].seconds // 60) >= 60:
                 time_elapsed[item[0]] = "{} hours, {} minutes".format(time_elapsed[item[0]].seconds // 3600, (time_elapsed[item[0]].seconds % 3600) // 60)
-            elif time_elapsed[item[0]].days <= 1 and (time_elapsed[item[0]].seconds // 60) < 60:
+            elif time_elapsed[item[0]].days < 1 and (time_elapsed[item[0]].seconds // 60) < 60:
                 time_elapsed[item[0]] = "{} minutes, {} seconds".format(time_elapsed[item[0]].seconds // 60, time_elapsed[item[0]].seconds % 60)
             else:
                 time_elapsed[item[0]] = None  # I'd prefer not to see unlisted copyright problems hasn't been run for 20,160 minutes
