@@ -6,8 +6,8 @@ regexes = {
     r'<center>([\n\s]*?\{\|[^<>|!]*?style *?= *?"[^\"]+)(?<!; )(?<!(?:margin|margin-(?:bottom|left|right|up)):.*); *("[^\}]+(?:(?:(?!(?:\|\})).)*)\|\})[\n\s]*?<\/center>': r"\1; margin: auto;\2",
     r'<center>([\n\s]*?\{\|(?![^\n]*?style *?= *?"[^\"]+")[^\n]*)((?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1 style="margin: auto;"\2',
     r'<center>([\n\s]*?\{\|[^<>|!]*?style *?= *?"(?:(?:(?!(?: "|")).)+?))(?<!;)(?<!(?:margin|margin-(?:bottom|left|right|up)):.*)("[^\}]+(?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1; margin: auto;\2',
-    r'<center>([\n\s]*?<gallery(?:(?:(?!(?: ?[<>])).)*?)(?<!(?:class|perrow)="))(>.*?<\/gallery>[\n\s]*?)<\/center>': r'\1 class="center"\2',
-    r'<center>([\n\s]*?<gallery[^<>]*(?<!(?:class|perrow)="))(?<! ) +(>.*?<\/gallery>[\n\s]*?)<\/center>': r'\1 class="center"\2'
+    r'<center>([\n\s]*?<gallery(?:(?:(?!(?: ?[<>]|(?:class|perrow)=)).)*?))(>.*?<\/gallery>[\n\s]*?)<\/center>': r'\1 class="center"\2',
+    r'<center>([\n\s]*?<gallery(?:(?:(?!(?:[<>]|(?:class|perrow)=)).)*?))(?<! ) +(>.*?<\/gallery>[\n\s]*?)<\/center>': r'\1 class="center"\2'
 }
 
 
