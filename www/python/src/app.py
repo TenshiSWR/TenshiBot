@@ -100,8 +100,7 @@ files = ["reports."+x[:-3] for x in os.listdir() if ".py" in x]
 os.chdir("../tasks")
 files = sorted(files+["tasks."+x[:-3] for x in os.listdir() if ".py" in x])
 os.chdir("../www/python/src")
-db, _ = get_database()
-cursor = db.cursor(buffered=True)
+db, cursor = get_database()
 for file in files:
     cursor.execute("SELECT task FROM task_status WHERE task = %(file)s;", {"file": file})
     if cursor.fetchone() is None:
