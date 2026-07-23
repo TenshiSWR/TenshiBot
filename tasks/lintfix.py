@@ -14,26 +14,50 @@ from tools.summaries import EDIT_FAIL_SUMMARY
 
 
 lint_list = []
-ignored_pages = [r"\/Assessment\/.*\/\d{4}", r".*\/Archived nominations\/.*", r".*Deletion sorting.*", r".*\/Failed log\/.*", r".*\/Featured log\/.*", r".*Featured picture candidates\/.*-\d{4}", r".*\/Log\/.*", r"Peer review\/", r"Wn\/"]
+ignored_pages = [r"\/Assessment\/.*\/\d{4}", r".*\/Archived nominations\/.*", r".*Deletion sorting.*", r".*\/Failed log\/.*", r".*\/Featured log\/.*", r".*Featured picture candidates\/.*-\d{4}", r".*\/Log\/.*", r"Peer review\/", r"Wikisource:Main Page\/Interlingua\/51500 parolas", r"Wn\/"]
 #count = {page:0 for page in ignored_pages}
 #params = {}
 function_to_summary = {
-    "fix_bogus_file_options":{"commons":["Commons:Bots/Requests/TenshiBot", "1"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"]},
-    "fix_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
+    "fix_bogus_file_options":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
+                              "incubator":["Special:Permalink/7019591#TenshiBot", "1"],
+                              "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"],
+                              "wikisource:mul":["Special:Permalink/1346222#Request for bot flag", "1 (Trial)"]},
+    "fix_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
+                    "incubator":["Special:Permalink/7019591#TenshiBot", "1"],
+                    "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"],
+                    "wikisource:mul":["Special:Permalink/1346222#Request for bot flag", "1 (Trial)"]},
     "fix_multi_colon_escape":{},
-    "fix_multiline_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
-    "fix_obsolete_HTML_tags":{"commons":["Commons:Bots/Requests/TenshiBot", "1"], "incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"], "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
-    "fix_self_closed_tags":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"], "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
+    "fix_multiline_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
+                              "incubator":["Special:Permalink/7019591#TenshiBot", "1"],
+                              "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"],
+                              "wikisource:mul":["Special:Permalink/1346222#Request for bot flag", "1 (Trial)"]},
+    "fix_obsolete_HTML_tags":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
+                              "incubator":["Special:Permalink/7019591#TenshiBot", "1"],
+                              "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"],
+                              "wikisource:mul":["Special:Permalink/1346222#Request for bot flag", "1 (Trial)"],
+                              "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
+    "fix_self_closed_tags":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"],
+                            "wikisource:mul":["Special:Permalink/1346222#Request for bot flag", "1 (Trial)"],
+                            "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]},
     "fix_tidy_font_bug":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"]},
     "fix_wikilinks_in_extlinks":{"incubator":["Special:Permalink/7019591#TenshiBot", "1"]}
 }
 # Lint errors, manual, exclusion compliance
 wikis_config = {"wikipedia:en":[{"misnested-tag": [fix_misnests, fix_multiline_misnests]}, True, True],
-                "incubator":[{"bogus-image-options": [fix_bogus_file_options], "misnested-tag": [fix_misnests, fix_multiline_misnests], "obsolete-tag": [fix_self_closed_tags, fix_obsolete_HTML_tags]}, True, False],
+                "incubator":[{"bogus-image-options": [fix_bogus_file_options],
+                              "misnested-tag": [fix_misnests, fix_multiline_misnests],
+                              "obsolete-tag": [fix_self_closed_tags, fix_obsolete_HTML_tags]}, True, False],
                 "wikisource:sv":[{"obsolete-tag": [fix_self_closed_tags, fix_obsolete_HTML_tags]}, False, False],
-                "commons":[{"bogus-image-options": [fix_bogus_file_options], "misnested-tag": [fix_misnests, fix_multiline_misnests], "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False],
-                "wikibooks:en":[{"bogus-image-options": [fix_bogus_file_options], "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False]}
-site_name = "commons"
+                "commons":[{"bogus-image-options": [fix_bogus_file_options],
+                            "misnested-tag": [fix_misnests, fix_multiline_misnests],
+                            "obsolete-tag": [fix_obsolete_HTML_tags]}, True, False],
+                "wikibooks:en":[{"bogus-image-options": [fix_bogus_file_options],
+                                 "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False],
+                "wikisource:mul":[{"bogus-image-options": [fix_bogus_file_options],
+                                   "misnested-tag": [fix_misnests, fix_multiline_misnests],
+                                   "self-closed-tag": [fix_self_closed_tags],
+                                   "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False]}
+site_name = "wikisource:mul"
 errors_to_fixes = wikis_config[site_name][0]
 site = pywikibot.Site(site_name)
 MANUAL = wikis_config[site_name][1]

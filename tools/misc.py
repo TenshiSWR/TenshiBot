@@ -28,14 +28,18 @@ def load_task(task: str, task_number: int | str, site_name: str = "wikipedia:en"
     from datetime import datetime
     from importlib import import_module
     print("Task {} ({}) started at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
-    queryandclose("UPDATE task_status SET task_number = %(task_number)s, start = %(start)s, site_name = %(site_name)s, status = 'Running' WHERE task = %(task)s;", {"task_number": task_number, "start": datetime.utcnow(), "site_name": site_name, "task": task})
+    _ = queryandfetchone("SELECT * FROM task_status WHERE task = %(task)s;", {"task": task})[4]
+    if _ is None or _ == site_name:
+        queryandclose("UPDATE task_status SET task_number = %(task_number)s, start = %(start)s, site_name = %(site_name)s, status = 'Running' WHERE task = %(task)s AND site_name = %(site_name)s;", {"task_number": task_number, "start": datetime.utcnow(), "site_name": site_name, "task": task})
+    else:
+        queryandclose("INSERT INTO task_status(task, task_number, start, site_name, status) VALUES(%(task)s, %(task_number)s, %(start)s, %(site_name)s, 'Running');", {"task": task, "task_number": task_number, "start": datetime.utcnow(), "site_name": site_name})
     try:
         import_module(task)
     except Exception as exception:
         log_error("Fatal exception: {}".format(exception), task_number, site_name=site_name)
-        queryandclose("UPDATE task_status SET end = %(end)s, status = 'Fatal exception' WHERE task = %(task)s;", {"end": datetime.utcnow(), "task": task})
+        queryandclose("UPDATE task_status SET end = %(end)s, status = 'Fatal exception' WHERE task = %(task)s AND site_name = %(site_name)s;", {"end": datetime.utcnow(), "task": task})
     else:
-        queryandclose("UPDATE task_status SET end = %(end)s, status = 'Ended' WHERE task = %(task)s;", {"end": datetime.utcnow(), "task": task})
+        queryandclose("UPDATE task_status SET end = %(end)s, status = 'Ended' WHERE task = %(task)s AND site_name = %(site_name)s;", {"end": datetime.utcnow(), "task": task})
     finally:
         print("Task {} ({}) ended at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
 
@@ -126,6 +130,17 @@ def queryandclose(query: str, params: dict | None = None) -> None:
         cursor.execute(query)
     db.commit()
     db.close()
+
+
+def queryandfetchone(query: str, params: dict | None = None) -> dict:
+    db, cursor = get_database()
+    if params:
+        cursor.execute(query, params)
+    else:
+        cursor.execute(query)
+    db.commit()
+    db.close()
+    return cursor.fetchone()
 
 
 class QueryError(Exception):

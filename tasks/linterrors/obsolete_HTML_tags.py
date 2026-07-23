@@ -13,10 +13,10 @@ regexes = {
 
 def fix_obsolete_HTML_tags(page: str, text: str) -> str:
     text = regex.sub(r"(<font[^>]*?>[^<\n]*?)<font>(?!((?:(?!<\/font>(?![^<\n]*?<\/font>)).)*?)<\/font>)", r"\1</font\2>", text, flags=regex.DOTALL)  # Will pick up two opening tags even though they close twice
-    text = regex.sub(r"<(\/)font[^>]*>", r"<\1span>", text, flags=regex.I)
+    text = regex.sub(r"(?<!<!--(?:(?!(?:-->)).)*)<(\/)font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", r"<\1span>", text, flags=regex.I)
     #(<span[^>]*>)((?:(?!(?:<font(?: [^>\/]*)?>[^<]*(?!<\/font>)|(?<!<span[^>]*>[^<]*(?!<span[^>]*>))[^<]*)<\/span>).)*)<font>(?![^<]*<\/font>)
-    if regex.search(r"<\/?font[^>]*>", text, flags=regex.I):
-        tags = list(set(regex.findall(r"<\/?font[^>]*>", text, flags=regex.DOTALL|regex.I)))
+    if regex.search(r"(?<!<!--(?:(?!(?:-->)).)*)<\/?font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", text, flags=regex.I):
+        tags = list(set(regex.findall(r"(?<!<!--(?:(?!(?:-->)).)*)<\/?font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", text, flags=regex.DOTALL|regex.I)))
         for font in tags:
             if regex.search(r"(?:\{\{\{|\}\}\})", font):
                 raise LintfixModuleError("Template parameter within font tag", "fix_obsolete_HTML_tags")
@@ -42,14 +42,14 @@ def fix_obsolete_HTML_tags(page: str, text: str) -> str:
                     elif number < 1:
                         number = 1
                     new_size = ["x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"][number-1]
-                    new_params = regex.sub(r'size="?(.\d*)(?:px)?"?', r"font-size: {};".format(new_size), new_params, flags=regex.I)
-                elif regex.search(r'size *?= *?"?[^\s"]+"?', new_params, flags=regex.I):
-                    new_params = regex.sub(r'size *?= *?"?([^\s"]+)"?', r"font-size: \1", new_params, flags=regex.I)
-                new_params = regex.sub(r'face *?= *?"([A-z ,.-]+)"', r"font-family: \1;", new_params, flags=regex.I)
-                if regex.search(r'style *?= *?"[^"]+;"', new_params, flags=regex.I):
-                    new_params = regex.sub(r'style *?= *?"([^"]+)"', r"\1", new_params, flags=regex.I)
+                    new_params = regex.sub(r'size *= *"?([A-z#-+]?\d*)(?:px)?"?', r"font-size: {};".format(new_size), new_params, flags=regex.I)
+                elif regex.search(r'size *= *"?[^\s"]+"?', new_params, flags=regex.I):
+                    new_params = regex.sub(r'size *= *"?([^\s"]+)"?', r"font-size: \1", new_params, flags=regex.I)
+                new_params = regex.sub(r'face *= *"([A-z ,.-\d_]+)"', r"font-family: \1;", new_params, flags=regex.I)
+                if regex.search(r'style *= *"[^"]+;"', new_params, flags=regex.I):
+                    new_params = regex.sub(r'style *= *"([^"]+)"', r"\1", new_params, flags=regex.I)
                 else:
-                    new_params = regex.sub(r'style *?= *?"([^"]+)"', r"\1;", new_params, flags=regex.I)
+                    new_params = regex.sub(r'style *= *"([^"]+)"', r"\1;", new_params, flags=regex.I)
                 text = regex.sub(r'<font {}>'.format(regex.escape(params)), r'<span style="{}">'.format(new_params), text, flags=regex.I)
     text = regex.sub(r"(?<!(?:<(nowiki|syntaxhighlight)>(?!(?:(?:(?!(?:<\1>)).)*?)<\/\1>)|<\1>(?:(?:(?!(?:<\/?\1>|<\/?strike>)).)*?)<\/?strike>(?:(?:(?!(?:<\/?\1>)).)*?)<\/nowiki>))(<\/?)(?:[Ss]trike)>(?!(?!.*?<nowiki>).*?<\/nowiki>)", r"\2s>", text, flags=regex.I)
     for find, replace in regexes.items():

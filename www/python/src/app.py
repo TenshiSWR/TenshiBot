@@ -40,7 +40,7 @@ def tasks():
     global data, last_query_time
     if (not data or not last_query_time) or (datetime.utcnow().replace(tzinfo=None)-timedelta(seconds=5)) > last_query_time.replace(tzinfo=None):
         db, cursor = get_database()
-        cursor.execute("SELECT * FROM task_status;")
+        cursor.execute("SELECT * FROM task_status ORDER BY task ASC;")
         data = cursor.fetchall()
         last_query_time = datetime.utcnow()
         db.close()
@@ -65,7 +65,10 @@ def tasks():
             activity[item[0]] = "?"
         if activity[item[0]] != "?":
             time_elapsed[item[0]] = datetime.utcnow().replace(tzinfo=None)-activity[item[0]]
-            if time_elapsed[item[0]].days < 1 and (time_elapsed[item[0]].seconds // 60) >= 60:
+            if time_elapsed[item[0]].days > 31:
+                data[data.index(item)][5] = "N/A"  # Likewise with below, these should be removed after a while
+                queryandclose("UPDATE task_status SET status = 'N/A' WHERE task = %(task)s AND site_name = %(site_name)s;", {"task": item[0], "site_name": item[4]})
+            elif time_elapsed[item[0]].days < 1 and (time_elapsed[item[0]].seconds // 60) >= 60:
                 time_elapsed[item[0]] = "{} hours, {} minutes".format(time_elapsed[item[0]].seconds // 3600, (time_elapsed[item[0]].seconds % 3600) // 60)
             elif time_elapsed[item[0]].days < 1 and (time_elapsed[item[0]].seconds // 60) < 60:
                 time_elapsed[item[0]] = "{} minutes, {} seconds".format(time_elapsed[item[0]].seconds // 60, time_elapsed[item[0]].seconds % 60)
@@ -97,7 +100,8 @@ files = ["reports."+x[:-3] for x in os.listdir() if ".py" in x]
 os.chdir("../tasks")
 files = sorted(files+["tasks."+x[:-3] for x in os.listdir() if ".py" in x])
 os.chdir("../www/python/src")
-db, cursor = get_database()
+db, _ = get_database()
+cursor = db.cursor(buffered=True)
 for file in files:
     cursor.execute("SELECT task FROM task_status WHERE task = %(file)s;", {"file": file})
     if cursor.fetchone() is None:
