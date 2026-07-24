@@ -4,10 +4,11 @@ regexes = {
     #r"(?<!(?:\[\[|\|.*))(?:([A-z]+:[^|]*)(?:\|thumb|\|\d{1,4}px|\|left|\|right)(.*))(?!\]\])": r"\1\2",
     r"(?<!\{\{[^|}]*)\| *(\|.*)(?![^{}]*?\}\})": r"\1",
     r"pxpx": r"px",
-    r"(?<!(?:\{\{|<imagemap>).*)\|((?:thumb(?:nail)?|\d{1,4}px|left|right|center)+)(?=.*\|\1\|)": r"",
-    r"\|((?:link=[^|]+)+)(?=.*\|\1)": r"",
-    r"\|((?:link=\|)+)(?=.*\|\1)": r"",
-    r"\|((?:link=)+)(?=.*\1)": r"",
+    #r"(?<!(?:\{\{|<imagemap>).*)\|((?:thumb(?:nail)?|\d{1,4}px|left|right|center)+)(?=.*\|\1\|)": r"",
+    #r"\|((?:link=[^|]+)+)(?=.*\|\1)": r"",
+    #r"\|((?:link=\|)+)(?=.*\|\1)": r"",
+    #r"\|((?:link=)+)(?=.*\1)": r"",
+    #r"\|mini[^|\]]*([|\]])": r"|small\1",
     r"\|[Tt]h?[iu][mn][bnp]?s?(?<!\|thumb)([|\]])": r"|thumb\1"
 }
 
@@ -18,6 +19,8 @@ def fix_bogus_file_options(page: str, text: str) -> str:
     for i, line in enumerate(lines):
         new_line = line
         files = regex.findall(r"[A-Za-z]+:(?:(?!\[\[[^\[\]]*(?!.*?\]\])).)+", new_line)
+        #\[\[[A-z]+:(?:(?!\[\[[^\[\]]*(?!.*?\]\])).)+\]\]
+        files = regex.findall(r"(?:File|Image):(?:(?!\[\[[^\[\]]*(?!.*?\]\])).)+", new_line)
         for file in files:
             new_file_wikitext = file
             for find, replace in regexes.items():
@@ -28,8 +31,8 @@ def fix_bogus_file_options(page: str, text: str) -> str:
                         break
             new_line = regex.sub(regex.escape(file), new_file_wikitext.replace("\\", "\\\\"), new_line)
         while True:
-            if regex.search(r"(?<!\{\{.*)(?<=File\:.*)(?:[^|]+)(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(?:\|.*)", new_line) and not regex.search(r"(?:\[\[|\{\{).*"+r"(?:[^|]+)(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(?:\|.*)"+r".*(?:\]\]|\}\})", new_line):
-                new_line = regex.sub(r"(?<!\{\{.*)(?<=File\:.*)(?:([^|]+))(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(\|.*)", r"\1\2", new_line)
+            if regex.search(r"(?<!\{\{.*)(?<=File\:.*)(?:[^|\]]+)(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(?:\|.*)", new_line) and not regex.search(r"(?:\[\[|\{\{).*"+r"(?:[^|\]]+)(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(?:\|.*)"+r".*(?:\]\]|\}\})", new_line):
+                new_line = regex.sub(r"(?<!\{\{.*)(?<=File\:.*)(?:([^|\]]+))(?:\|thumb(?:nail)?|\|\d{1,4}px|\|left|\|right|center)(\|.*)", r"\1\2", new_line)
             else:
                 break
         if new_line != line:
