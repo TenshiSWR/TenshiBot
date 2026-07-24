@@ -7,7 +7,8 @@ regexes = {
     r"(?<!(?:\{\{|<imagemap>).*)\|((?:thumb(?:nail)?|\d{1,4}px|left|right|center)+)(?=.*\|\1\|)": r"",
     r"\|((?:link=[^|]+)+)(?=.*\|\1)": r"",
     r"\|((?:link=\|)+)(?=.*\|\1)": r"",
-    r"\|((?:link=)+)(?=.*\1)": r""
+    r"\|((?:link=)+)(?=.*\1)": r"",
+    r"\|[Tt]h?[iu][mn][bnp]?s?(?<!\|thumb)([|\]])": r"|thumb\1"
 }
 
 
@@ -16,7 +17,7 @@ def fix_bogus_file_options(page: str, text: str) -> str:
     fixes = []
     for i, line in enumerate(lines):
         new_line = line
-        files = regex.findall(r"\[\[[A-z]+:(?:(?!\[\[[^\[]*(?!\]\])).)+\]\]", new_line)
+        files = regex.findall(r"[A-Za-z]+:(?:(?!\[\[[^\[\]]*(?!.*?\]\])).)+", new_line)
         for file in files:
             new_file_wikitext = file
             for find, replace in regexes.items():
