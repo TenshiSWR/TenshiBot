@@ -37,9 +37,9 @@ def load_task(task: str, task_number: int | str, site_name: str = "wikipedia:en"
         import_module(task)
     except Exception as exception:
         log_error("Fatal exception: {}".format(exception), task_number, site_name=site_name)
-        queryandclose("UPDATE task_status SET end = %(end)s, status = 'Fatal exception' WHERE task = %(task)s AND site_name = %(site_name)s;", {"end": datetime.utcnow(), "task": task})
+        queryandclose("UPDATE task_status SET end = %(end)s, status = 'Fatal exception' WHERE task = %(task)s AND site_name = %(site_name)s;", {"end": datetime.utcnow(), "task": task, "site_name": site_name})
     else:
-        queryandclose("UPDATE task_status SET end = %(end)s, status = 'Ended' WHERE task = %(task)s AND site_name = %(site_name)s;", {"end": datetime.utcnow(), "task": task})
+        queryandclose("UPDATE task_status SET end = %(end)s, status = 'Ended' WHERE task = %(task)s AND site_name = %(site_name)s;", {"end": datetime.utcnow(), "task": task, "site_name": site_name})
     finally:
         print("Task {} ({}) ended at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
 
