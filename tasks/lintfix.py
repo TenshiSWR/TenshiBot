@@ -14,7 +14,7 @@ from tools.summaries import EDIT_FAIL_SUMMARY
 
 
 lint_list = []
-ignored_pages = [r"\/Assessment\/.*\/\d{4}", r".*\/Archived nominations\/.*", r".*Deletion sorting.*", r".*\/Failed log\/.*", r".*\/Featured log\/.*", r".*Featured picture candidates\/.*-\d{4}", r".*\/Log\/.*", r"Peer review\/", r"Wikisource:Main Page\/Interlingua\/51500 parolas", r"Wn\/"]
+ignored_pages = [r"\/Assessment\/.*\/\d{4}", r".*\/Archived nominations\/.*", r".*Deletion sorting.*", r".*\/Failed log\/.*", r".*\/Featured log\/.*", r".*Featured picture candidates\/.*-\d{4}", r".*\/Log\/.*", r"Peer review\/", r"Wikisource:Main Page\/Interlingua\/51500 parolas", r"Wn\/", r"\/[a-z]{2,3}$"]
 #count = {page:0 for page in ignored_pages}
 #params = {}
 function_to_summary = {

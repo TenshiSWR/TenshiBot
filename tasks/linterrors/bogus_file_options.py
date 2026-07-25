@@ -9,7 +9,10 @@ regexes = {
     #r"\|((?:link=\|)+)(?=.*\|\1)": r"",
     #r"\|((?:link=)+)(?=.*\1)": r"",
     #r"\|mini[^|\]]*([|\]])": r"|small\1",
-    r"\|[Tt]h?[iu][mn][bnp]?s?(?<!\|thumb)([|\]])": r"|thumb\1"
+    r"\|[Tt]h?[iu][mn][bnp]?s?(?<!\|thumb)([|\]])": r"|thumb\1",
+    r"\|[lt]eft(?<!\|left)([|\]])": r"|left\1",
+    r"\|r?ig[ht]{1,2}s?(?<!\|right)([|\]])": r"|right\1",
+    r"\|px(\d+)([|\]])": r"|\1px\2"
 }
 
 
@@ -18,8 +21,6 @@ def fix_bogus_file_options(page: str, text: str) -> str:
     fixes = []
     for i, line in enumerate(lines):
         new_line = line
-        files = regex.findall(r"[A-Za-z]+:(?:(?!\[\[[^\[\]]*(?!.*?\]\])).)+", new_line)
-        #\[\[[A-z]+:(?:(?!\[\[[^\[\]]*(?!.*?\]\])).)+\]\]
         files = regex.findall(r"(?:File|Image):(?:(?!\[\[[^\[\]]*(?!.*?\]\])).)+", new_line)
         for file in files:
             new_file_wikitext = file
