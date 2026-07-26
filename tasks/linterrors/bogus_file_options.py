@@ -42,7 +42,7 @@ def fix_bogus_file_options(page: str, text: str) -> str:
     while i < len(fixes):
         if (len(regex.findall(r"\[\[", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\[\[.*<\/nowiki>", fixes[i][1]))) > (len(regex.findall(r"\]\]", fixes[i][1]))-len(regex.findall(r"<nowiki>.*\]\].*<\/nowiki>", fixes[i][1]))):
             print("(Filtering) Unclosed file markup")
-        elif regex.search(r"^ *\|", fixes[i][1]):
+        elif regex.search(r"^ *[|!]", fixes[i][1]):
             print("(Filtering) Table or template territory")
         elif regex.search(r"\{\{.*\}\}", fixes[i][1]) and not regex.search(r"(?:\{\{(?:(?!(?:'''?|<\/?[^ >]*>)).)*\}\})", fixes[i][1]):
             print("(Filtering) Illegal combination in template invocation")

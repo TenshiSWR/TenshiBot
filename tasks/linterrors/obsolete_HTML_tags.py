@@ -2,7 +2,8 @@ import regex
 from tools.misc import LintfixModuleError, log_error
 
 regexes = {
-    r"<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'<div style="text-align: center;">\1</div>',
+    r"(?<!\{\{[^|]*\|(?:(?!\}\}).)*?)<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'<div style="text-align: center;">\1</div>',
+    r"(\{\{[^|]*\|)((?:(?!\||\}\}).)*?)<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'\11=\2<div style="text-align: center;">\3</div>',
     r'<center>([\n\s]*?\{\|[^<>|!]*?style *?= *?"[^\"]+)(?<!; )(?<!(?:margin|margin-(?:bottom|left|right|up)):.*); *("[^\}]+(?:(?:(?!(?:\|\})).)*)\|\})[\n\s]*?<\/center>': r"\1; margin: auto;\2",
     r'<center>([\n\s]*?\{\|(?![^\n]*?style *?= *?"[^\"]+")[^\n]*)((?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1 style="margin: auto;"\2',
     r'<center>([\n\s]*?\{\|[^<>|!]*?style *?= *?"(?:(?:(?!(?: "|")).)+?))(?<!;)(?<!(?:margin|margin-(?:bottom|left|right|up)):.*)("[^\}]+(?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1; margin: auto;\2',
