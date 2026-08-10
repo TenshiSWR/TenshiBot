@@ -22,12 +22,12 @@
                             <tr>
                                 <td>{{task_number}}</td>
                                 <td>{{task}}</td>
-                                {% if time_elapsed[task] != None and activity[task] != "?" and status == "Running" %}
-                                    <td>{{activity[task]}} ({{time_elapsed[task]}})</td>
-                                {% elif time_elapsed[task] != None and activity[task] != "?" and not status == "Running" %}
-                                    <td>{{activity[task]}} ({{time_elapsed[task]}} ago)</td>
+                                {% if time_elapsed[task+":"+site_name] != None and activity[task+":"+site_name] != "?" and status == "Running" %}
+                                    <td>{{activity[task+":"+site_name]}} ({{time_elapsed[task+":"+site_name]}})</td>
+                                {% elif time_elapsed[task+":"+site_name] != None and activity[task+":"+site_name] != "?" and not status == "Running" %}
+                                    <td>{{activity[task+":"+site_name]}} ({{time_elapsed[task+":"+site_name]}} ago)</td>
                                 {% else %}
-                                    <td>{{activity[task]}}</td>
+                                    <td>{{activity[task+":"+site_name]}}</td>
                                 {% endif %}
                                 <td>{{site_name}}</td>
                                 {% if status == "Running" %}

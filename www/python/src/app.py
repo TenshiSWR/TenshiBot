@@ -43,6 +43,7 @@ def tasks():
         cursor.execute("SELECT * FROM task_status ORDER BY task ASC;")
         data = cursor.fetchall()
         last_query_time = datetime.utcnow()
+        data = [list(item) for item in data]
         db.close()
     if any([True for x in data if x[4] != "N/A"]):
         empty = False
@@ -52,30 +53,34 @@ def tasks():
     time_elapsed = {}
     for item in data:
         start, end = item[2], item[3]
+        key = "{}:{}".format(item[0], item[4])
+        if item[4] is None:
+            data[data.index(item)][4], item[4] = "None", "None"
         if start and end:
             if start > end:
-                activity[item[0]] = start
+                activity[key] = start
             else:
-                activity[item[0]] = end
+                activity[key] = end
         elif start and not end:
-            activity[item[0]] = start
+            activity[key] = start
         elif not start and end:
-            activity[item[0]] = end
+            activity[key] = end
         else:
-            activity[item[0]] = "?"
-        if activity[item[0]] != "?":
-            time_elapsed[item[0]] = datetime.utcnow().replace(tzinfo=None)-activity[item[0]]
-            if time_elapsed[item[0]].days > 31:
+            activity[key] = "?"
+        if activity[key] != "?":
+            time_elapsed[key] = datetime.utcnow().replace(tzinfo=None)-activity[key]
+            if time_elapsed[key].days > 31:
                 data[data.index(item)][5] = "N/A"  # Likewise with below, these should be removed after a while
                 queryandclose("UPDATE task_status SET status = 'N/A' WHERE task = %(task)s AND site_name = %(site_name)s;", {"task": item[0], "site_name": item[4]})
-            elif time_elapsed[item[0]].days < 1 and (time_elapsed[item[0]].seconds // 60) >= 60:
-                time_elapsed[item[0]] = "{} hours, {} minutes".format(time_elapsed[item[0]].seconds // 3600, (time_elapsed[item[0]].seconds % 3600) // 60)
-            elif time_elapsed[item[0]].days < 1 and (time_elapsed[item[0]].seconds // 60) < 60:
-                time_elapsed[item[0]] = "{} minutes, {} seconds".format(time_elapsed[item[0]].seconds // 60, time_elapsed[item[0]].seconds % 60)
+            elif time_elapsed[key].days < 1 and (time_elapsed[key].seconds // 60) >= 60:
+                time_elapsed[key] = "{} hours, {} minutes".format(time_elapsed[key].seconds // 3600, (time_elapsed[key].seconds % 3600) // 60)
+            elif time_elapsed[key].days < 1 and (time_elapsed[key].seconds // 60) < 60:
+                time_elapsed[key] = "{} minutes, {} seconds".format(time_elapsed[key].seconds // 60, time_elapsed[key].seconds % 60)
             else:
-                time_elapsed[item[0]] = None  # I'd prefer not to see unlisted copyright problems hasn't been run for 20,160 minutes
+                time_elapsed[key] = None  # I'd prefer not to see unlisted copyright problems hasn't been run for 20,160 minutes
         else:
-            time_elapsed[item[0]] = "?"
+            time_elapsed[key] = "?"
+    _ = data
     return render_template("tasks.html", activity=activity, data=data, empty=empty, time_elapsed=time_elapsed)
 
 

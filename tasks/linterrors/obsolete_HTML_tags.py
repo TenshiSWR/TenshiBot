@@ -3,7 +3,7 @@ from tools.misc import LintfixModuleError, log_error
 
 regexes = {
     r"(?<!\{\{[^|]*\|(?:(?!\}\}).)*?)<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'<div style="text-align: center;">\1</div>',
-    r"(\{\{[^|]*\|)((?:(?!\||\}\}).)*?)<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'\11=\2<div style="text-align: center;">\3</div>',
+    r"(?P<a>\{\{[^|]*\|)(?P<b>(?:(?!\||\}\}).)*?)<center>(?P<c>(?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'(?P=a)1=(?P=b)<div style="text-align: center;">(?P=c)</div>',
     r'<center>([\n\s]*?\{\|[^<>|!]*?style *?= *?"[^\"]+)(?<!; )(?<!(?:margin|margin-(?:bottom|left|right|up)):.*); *("[^\}]+(?:(?:(?!(?:\|\})).)*)\|\})[\n\s]*?<\/center>': r"\1; margin: auto;\2",
     r'<center>([\n\s]*?\{\|(?![^\n]*?style *?= *?"[^\"]+")[^\n]*)((?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1 style="margin: auto;"\2',
     r'<center>([\n\s]*?\{\|[^<>|!]*?style *?= *?"(?:(?:(?!(?: "|")).)+?))(?<!;)(?<!(?:margin|margin-(?:bottom|left|right|up)):.*)("[^\}]+(?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1; margin: auto;\2',
@@ -16,7 +16,7 @@ def fix_obsolete_HTML_tags(page: str, text: str) -> str:
     text = regex.sub(r"(<font[^>]*?>[^<\n]*?)<font>(?!((?:(?!<\/font>(?![^<\n]*?<\/font>)).)*?)<\/font>)", r"\1</font\2>", text, flags=regex.DOTALL)  # Will pick up two opening tags even though they close twice
     text = regex.sub(r"(?<!<!--(?:(?!(?:-->)).)*)<(\/)font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", r"<\1span>", text, flags=regex.I)
     #(<span[^>]*>)((?:(?!(?:<font(?: [^>\/]*)?>[^<]*(?!<\/font>)|(?<!<span[^>]*>[^<]*(?!<span[^>]*>))[^<]*)<\/span>).)*)<font>(?![^<]*<\/font>)
-    if regex.search(r"(?<!<!--(?:(?!(?:-->)).)*)<\/?font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", text, flags=regex.I):
+    if regex.search(r"(?<!<!--(?:(?!(?:-->)).)*)<\/?font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", text, flags=regex.DOTALL|regex.I):
         tags = list(set(regex.findall(r"(?<!<!--(?:(?!(?:-->)).)*)<\/?font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", text, flags=regex.DOTALL|regex.I)))
         for font in tags:
             if regex.search(r"(?:\{\{\{|\}\}\})", font):
@@ -52,6 +52,8 @@ def fix_obsolete_HTML_tags(page: str, text: str) -> str:
                 else:
                     new_params = regex.sub(r'style *= *"([^"]+)"', r"\1;", new_params, flags=regex.I)
                 text = regex.sub(r'<font {}>'.format(regex.escape(params)), r'<span style="{}">'.format(new_params), text, flags=regex.I)
+            else:
+                text = regex.sub(r"(?<!<nowiki>.*?)<font>(?!<\/nowiki>)", r"<span>", text, flags=regex.I)
     text = regex.sub(r"(?<!(?:<(nowiki|syntaxhighlight)>(?!(?:(?:(?!(?:<\1>)).)*?)<\/\1>)|<\1>(?:(?:(?!(?:<\/?\1>|<\/?strike>)).)*?)<\/?strike>(?:(?:(?!(?:<\/?\1>)).)*?)<\/nowiki>))(<\/?)(?:[Ss]trike)>(?!(?!.*?<nowiki>).*?<\/nowiki>)", r"\2s>", text, flags=regex.I)
     for find, replace in regexes.items():
         while True:
