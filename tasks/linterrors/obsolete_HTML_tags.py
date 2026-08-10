@@ -3,7 +3,7 @@ from tools.misc import LintfixModuleError, log_error
 
 regexes = {
     r"(?<!\{\{[^|]*\|(?:(?!\}\}).)*?)<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'<div style="text-align: center;">\1</div>',
-    r"(?P<a>\{\{[^|]*\|)(?P<b>(?:(?!\||\}\}).)*?)<center>(?P<c>(?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'(?P=a)1=(?P=b)<div style="text-align: center;">(?P=c)</div>',
+    r"(?P<a>\{\{[^|]*\|)(?P<b>(?:(?!\||\}\}).)*?)<center>(?P<c>(?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'\g<a>1=\g<b><div style="text-align: center;">\g<c></div>',
     r'<center>([\n\s]*?\{\|[^<>|!]*?style *?= *?"[^\"]+)(?<!; )(?<!(?:margin|margin-(?:bottom|left|right|up)):.*); *("[^\}]+(?:(?:(?!(?:\|\})).)*)\|\})[\n\s]*?<\/center>': r"\1; margin: auto;\2",
     r'<center>([\n\s]*?\{\|(?![^\n]*?style *?= *?"[^\"]+")[^\n]*)((?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1 style="margin: auto;"\2',
     r'<center>([\n\s]*?\{\|[^<>|!]*?style *?= *?"(?:(?:(?!(?: "|")).)+?))(?<!;)(?<!(?:margin|margin-(?:bottom|left|right|up)):.*)("[^\}]+(?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1; margin: auto;\2',
