@@ -30,7 +30,7 @@ custom_function_to_summary = {
                     "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
     "fix_missing_end_tag":{"wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 12", "12"]},
     "fix_multiline_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
-                              "wikipedia:en":["Wikipediia:Bots/Requests for approval/TenshiBot 6", "6"]},
+                              "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
     "fix_obsolete_HTML_tags":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
                               "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"]}
 }
