@@ -28,9 +28,11 @@ def load_task(task: str, task_number: int | str, site_name: str = "wikipedia:en"
     from datetime import datetime
     from importlib import import_module
     print("Task {} ({}) started at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
-    _ = queryandfetchone("SELECT * FROM task_status WHERE task = %(task)s;", {"task": task})[4]
-    if _ is None or _ == site_name:
-        queryandclose("UPDATE task_status SET task_number = %(task_number)s, start = %(start)s, site_name = %(site_name)s, status = 'Running' WHERE task = %(task)s AND site_name = %(site_name)s;", {"task_number": task_number, "start": datetime.utcnow(), "site_name": site_name, "task": task})
+    _ = queryandfetchall("SELECT * FROM task_status WHERE task = %(task)s;", {"task": task})
+    for item in _:
+        if item[4] is None or item[4] == site_name:
+            queryandclose("UPDATE task_status SET task_number = %(task_number)s, start = %(start)s, site_name = %(site_name)s, status = 'Running' WHERE task = %(task)s AND site_name = %(site_name)s;", {"task_number": task_number, "start": datetime.utcnow(), "site_name": site_name, "task": task})
+            break
     else:
         queryandclose("INSERT INTO task_status(task, task_number, start, site_name, status) VALUES(%(task)s, %(task_number)s, %(start)s, %(site_name)s, 'Running');", {"task": task, "task_number": task_number, "start": datetime.utcnow(), "site_name": site_name})
     try:
@@ -132,15 +134,26 @@ def queryandclose(query: str, params: dict | None = None) -> None:
     db.close()
 
 
+def queryandfetchall(query: str, params: dict | None = None) -> dict:
+    db, cursor = get_database()
+    if params:
+        cursor.execute(query, params)
+    else:
+        cursor.execute(query)
+    _ = cursor.fetchall()
+    db.close()
+    return _
+
+
 def queryandfetchone(query: str, params: dict | None = None) -> dict:
     db, cursor = get_database()
     if params:
         cursor.execute(query, params)
     else:
         cursor.execute(query)
-    db.commit()
+    _ = cursor.fetchone()
     db.close()
-    return cursor.fetchone()
+    return _
 
 
 class QueryError(Exception):
