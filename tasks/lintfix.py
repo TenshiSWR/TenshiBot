@@ -28,7 +28,7 @@ custom_function_to_summary = {
                               "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"]},
     "fix_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
                     "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
-    "fix_missing_end_tag":{"wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 12", "12 (Trial)"]},
+    "fix_missing_end_tag":{"wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 12", "12"]},
     "fix_multiline_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
                               "wikipedia:en":["Wikipediia:Bots/Requests for approval/TenshiBot 6", "6"]},
     "fix_obsolete_HTML_tags":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
@@ -58,7 +58,7 @@ DEFAULT_LINT_CONFIG = {"bogus-image-options": [fix_bogus_file_options],
                        "tidy-font-bug": [fix_tidy_font_bug]}
 
 # Lint errors, manual, exclusion compliance
-wikis_config = {"wikipedia:en":[{"missing-end-tag": [fix_missing_end_tag], "misnested-tag": [fix_misnests, fix_multiline_misnests]}, True, True],
+wikis_config = {"wikipedia:en":[{"missing-end-tag": [fix_missing_end_tag], "misnested-tag": [fix_misnests, fix_multiline_misnests]}, False, True],
                 "incubator":[DEFAULT_LINT_CONFIG, False, False],
                 "wikisource:sv":[DEFAULT_LINT_CONFIG, False, False],
                 "commons":[{"bogus-image-options": [fix_bogus_file_options],
@@ -68,7 +68,7 @@ wikis_config = {"wikipedia:en":[{"missing-end-tag": [fix_missing_end_tag], "misn
                                  "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False],
                 "wikisource:mul":[DEFAULT_LINT_CONFIG, False, False],
                 "wikisource:fr":[DEFAULT_LINT_CONFIG, True, False]}
-site_name = "wikisource:fr"
+site_name = "wikipedia:en"
 errors_to_fixes = wikis_config[site_name][0]
 site = pywikibot.Site(site_name)
 MANUAL = wikis_config[site_name][1]
@@ -79,7 +79,7 @@ incubator_testwikis_to_avoid = cursor.fetchall()
 ignored_pages += [escape(x[0]) for x in incubator_testwikis_to_avoid]
 ignored_pages = set(ignored_pages)
 
-errors = get_lint_errors("%7C".join(errors_to_fixes.keys()), url=site.base_url(""), limit=10000)
+errors = get_lint_errors("%7C".join(errors_to_fixes.keys()), url=site.base_url(""))
 for error in errors:
     try:
         for page in ignored_pages:
