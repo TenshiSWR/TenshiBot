@@ -21,7 +21,8 @@ ignored_pages = [r"\/Assessment\/.*\/\d{4}", r".*\/Archived nominations\/.*", r"
 functions = ["fix_bogus_file_options", "fix_misnests", "fix_missing_end_tag", "fix_multi_colon_escape", "fix_multiline_misnests", "fix_obsolete_HTML_tags", "fix_self_closed_tags", "fix_tidy_font_bug", "fix_wikilinks_in_extlinks"]
 projects = {"incubator":["Special:Permalink/7019591#TenshiBot", "1"],
             "wikisource:mul": ["Special:Permalink/1356970#Request for bot flag", "1"],
-            "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"]}
+            "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"],
+            "wikisource:fr":["Special:Permalink/15976124#Utilisateur:TenshiBot", "1 (Test)"]}
 custom_function_to_summary = {
     "fix_bogus_file_options":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
                               "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"]},
@@ -62,11 +63,12 @@ wikis_config = {"wikipedia:en":[{"missing-end-tag": [fix_missing_end_tag], "misn
                 "wikisource:sv":[DEFAULT_LINT_CONFIG, False, False],
                 "commons":[{"bogus-image-options": [fix_bogus_file_options],
                             "misnested-tag": [fix_misnests, fix_multiline_misnests],
-                            "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False],
+                            "obsolete-tag": [fix_obsolete_HTML_tags]}, True, False],
                 "wikibooks:en":[{"bogus-image-options": [fix_bogus_file_options],
                                  "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False],
-                "wikisource:mul":[DEFAULT_LINT_CONFIG, False, False]}
-site_name = "incubator"
+                "wikisource:mul":[DEFAULT_LINT_CONFIG, False, False],
+                "wikisource:fr":[DEFAULT_LINT_CONFIG, True, False]}
+site_name = "wikisource:fr"
 errors_to_fixes = wikis_config[site_name][0]
 site = pywikibot.Site(site_name)
 MANUAL = wikis_config[site_name][1]
@@ -77,7 +79,7 @@ incubator_testwikis_to_avoid = cursor.fetchall()
 ignored_pages += [escape(x[0]) for x in incubator_testwikis_to_avoid]
 ignored_pages = set(ignored_pages)
 
-errors = get_lint_errors("%7C".join(errors_to_fixes.keys()), url=site.base_url(""))
+errors = get_lint_errors("%7C".join(errors_to_fixes.keys()), url=site.base_url(""), limit=10000)
 for error in errors:
     try:
         for page in ignored_pages:
@@ -150,15 +152,18 @@ for page in lint_list:
             continue
     page.text = text
     if site_name == "wikipedia:en":
-        lint_errors = "Fix [[Wikipedia:Linter|Linter]] errors"
+        lint_errors = ("[[{}|Task {}]]: Fix [[Wikipedia:Linter|Linter]] errors", "Tasks {}: Fix [[Wikipedia:Linter|Linter]] errors")
         tags = ["fixed lint errors"]
+    elif site_name == "wikisource:fr":
+        lint_errors = ("[[{}|Tâche {}]]: Se reparér les erreurs de [[mw:Help:Extension:Linter|Linter]]", "Tâches {}: Se reparér les erreurs de [[mw:Help:Extension:Linter|Linter]]")
+        tags = []
     else:
-        lint_errors = "Fix [[mw:Help:Extension:Linter|Linter]] errors"
+        lint_errors = ("[[{}|Task {}]]: Fix [[mw:Help:Extension:Linter|Linter]] errors", "Tasks {}: Fix [[mw:Help:Extension:Linter|Linter]] errors")
         tags = []
     if len(tasks) == 1:
-        summary = "[[{}|Task {}]]: {}".format(tasks[0][0], tasks[0][1], lint_errors)
+        summary = lint_errors[0].format(tasks[0][0], tasks[0][1])
     else:
-        summary = "Tasks "+"+".join(["[[{}|{}]]".format(link, task) for link, task in tasks]) + ": {}".format(lint_errors)
+        summary = lint_errors[1].format("+".join(["[[{}|{}]]".format(link, task) for link, task in tasks]))
     try:
         page.save(summary=summary, minor=True, tags=tags, force=IGNORE_EXCLUSION_COMPLIANCE)
     except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError):
