@@ -2,8 +2,8 @@ import regex
 from tools.misc import LintfixModuleError, log_error
 
 regexes = {
-    r"(?<!\{\{[^|]*\|(?:(?!(?:\}\}|1=)).)*?)<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'<div style="text-align: center;">\1</div>',
-    r"(?P<a>\{\{[^|]*\|)(?P<b>(?:(?!\||\}\}|1=).)*?)<center>(?P<c>(?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'\g<a>1=\g<b><div style="text-align: center;">\g<c></div>',
+    r"(?<!\{\{[^|]*\|(?:(?!(?:\}\}|=)).)*?)<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'<div style="text-align: center;">\1</div>',
+    r"(?P<a>\{\{[^|]*\|)(?P<b>(?:(?!\||\}\}|=).)*?)<center>(?P<c>(?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'\g<a>1=\g<b><div style="text-align: center;">\g<c></div>',
     r'<center>([\n\s]*?\{\|[^<>|!]*?style *?= *?"[^\"]+)(?<!; )(?<!(?:margin|margin-(?:bottom|left|right|up)):.*); *("[^\}]+(?:(?:(?!(?:\|\})).)*)\|\})[\n\s]*?<\/center>': r"\1; margin: auto;\2",
     r'<center>([\n\s]*?\{\|(?![^\n]*?style *?= *?"[^\"]+")[^\n]*)((?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1 style="margin: auto;"\2',
     r'<center>([\n\s]*?\{\|[^<>|!]*?style *?= *?"(?:(?:(?!(?: "|")).)+?))(?<!;)(?<!(?:margin|margin-(?:bottom|left|right|up)):.*)("[^\}]+(?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1; margin: auto;\2',
@@ -16,8 +16,8 @@ def fix_obsolete_HTML_tags(page: str, text: str) -> str:
     text = regex.sub(r"(<font[^>]*?>[^<\n]*?)<font>(?!((?:(?!<\/font>(?![^<\n]*?<\/font>)).)*?)<\/font>)", r"\1</font\2>", text, flags=regex.DOTALL)  # Will pick up two opening tags even though they close twice
     text = regex.sub(r"(?<!<!--(?:(?!(?:-->)).)*)<(\/)font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", r"<\1span>", text, flags=regex.I)
     #(<span[^>]*>)((?:(?!(?:<font(?: [^>\/]*)?>[^<]*(?!<\/font>)|(?<!<span[^>]*>[^<]*(?!<span[^>]*>))[^<]*)<\/span>).)*)<font>(?![^<]*<\/font>)
-    if regex.search(r"(?<!<!--(?:(?!(?:-->)).)*)<\/?font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", text, flags=regex.DOTALL|regex.I):
-        tags = list(set(regex.findall(r"(?<!<!--(?:(?!(?:-->)).)*)<\/?font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", text, flags=regex.DOTALL|regex.I)))
+    if regex.search(r"(?<!<!--(?:(?!(?:-->)).)*)<\/?font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", text, flags=regex.DOTALL|regex.I) or regex.search(r"(?<!<!--(?:(?!(?:-->)).)*)<\/?font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", text, flags=regex.I):
+        tags = list(set(regex.findall(r"(?<!<!--(?:(?!(?:-->)).)*)<\/?font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", text, flags=regex.DOTALL|regex.I)+regex.findall(r"(?<!<!--(?:(?!(?:-->)).)*)<\/?font[^>]*>(?!(?:(?!(?:<!--)).)*-->)", text, flags=regex.I)))
         for font in tags:
             if regex.search(r"(?:\{\{\{|\}\}\})", font):
                 raise LintfixModuleError("Template parameter within font tag", "fix_obsolete_HTML_tags")
