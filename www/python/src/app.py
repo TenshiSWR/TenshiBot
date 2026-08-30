@@ -5,7 +5,7 @@ from json import loads
 from multiprocess import Process
 import mwoauth
 import os
-from tools.misc import get_database, queryandclose
+from tools.misc import get_database, queryandclose, queryandfetchone
 
 app = Flask(__name__)
 data, last_query_time = None, None
@@ -92,6 +92,7 @@ def wikicup():
     elif not session["username"] in ["Cwmhiraeth", "Epicgenius", "Frostly", "Guerillero", "Lee Vilenski", "Tenshi Hinanawi"]:
         abort(403)
     if request.method == "GET":
+        wikicup_round = queryandfetchone("SELECT wikicup_round FROM misc;")[0]
         return render_template("wikicup.html", started=False, wikicup_round=wikicup_round)
     else:
         wikicup_round = request.form.get("round")
@@ -100,7 +101,7 @@ def wikicup():
         print("WikiCup round now {}".format(wikicup_round))
         queryandclose("UPDATE misc SET wikicup_round = %(wikicup_round)s, wikicup_judge_username = %(wikicup_judge_username)s;", {"wikicup_round": wikicup_round, "wikicup_judge_username": session["username"]})
         os.chdir("tasks")
-        Process(target=lambda: __import__("tasks/wikicup_submissions")).start()
+        Process(target=lambda: __import__("wikicup_submissions")).start()
         os.chdir("..")
         return render_template("wikicup.html", started=True, wikicup_round=wikicup_round)
 
