@@ -100,9 +100,7 @@ def wikicup():
             abort(400)
         print("WikiCup round now {}".format(wikicup_round))
         queryandclose("UPDATE misc SET wikicup_round = %(wikicup_round)s, wikicup_judge_username = %(wikicup_judge_username)s;", {"wikicup_round": wikicup_round, "wikicup_judge_username": session["username"]})
-        os.chdir("tasks")
         Process(target=lambda: __import__("wikicup_submissions")).start()
-        os.chdir("..")
         return render_template("wikicup.html", started=True, wikicup_round=wikicup_round)
 
 
