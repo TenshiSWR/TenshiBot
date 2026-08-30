@@ -1,6 +1,6 @@
 import pywikibot
 import regex
-from tools.misc import get_database
+from tools.misc import get_database, queryandclose
 from tools.summaries import TASK8_CREATE_SUMMARY, TASK8_RESET_SUMMARY, TASK8_RESET_WEBTRIGGER_SUMMARY
 
 site = pywikibot.Site()
@@ -10,6 +10,7 @@ cursor.execute("SELECT wikicup_round FROM misc;")
 wikicup_round = cursor.fetchone()[0]
 cursor.execute("SELECT wikicup_judge_username FROM misc;")
 _ = cursor.fetchone()
+db.close()
 if _[0] is None:
     wikicup_judge_username = None
 else:
@@ -31,5 +32,5 @@ for page in pages:
     page.save(summary=summary, minor=False)
 
 if wikicup_judge_username:
-    cursor.execute("UPDATE misc SET wikicup_judge_username = NULL;")
-db.close()
+    queryandclose("UPDATE misc SET wikicup_judge_username = NULL;")
+

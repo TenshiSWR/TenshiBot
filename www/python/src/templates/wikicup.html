@@ -6,7 +6,7 @@
     <h1>WikiCup rounds:</h1>
     <form method="POST">
         <label for="round">Round number:</label><span style="padding-left: 5em;">Current round number: {{wikicup_round}}</span><br>
-        <input type="number" id="round" min="1" max="5" value="{{wikicup_round}}">
+        <input type="number" name="round" min="1" max="5" value="{{wikicup_round}}">
         {% if not started %}
             <input type="submit" value="Update">
         {% else %}
