@@ -47,10 +47,10 @@ regexes = {
     r"<(?!(?:nowiki|syntaxhighlight))([^ >]*)( [^>\/]*)?>( *)<(?!(?:nowiki|syntaxhighlight))([^ >]*)( [^>\/]*)?>( *)<(?!(?:nowiki|syntaxhighlight))([^ >]*)( [^>\/]*)?>((?:(?!(?:<\/\4>|<\1(?:[^>]*)?>|<(?!(?:nowiki|syntaxhighlight))([^ >]*)(?: [^>\/]*)?>[^<]*(?!<\/\10>))).)*)<\/\7>((?:(?!<(?!(?:nowiki|syntaxhighlight))([^ >]*)(?: [^>\/]*)?>[^<]*(?!<\/\12>)).)+)<\/\1>((?:(?!<(?!(?:nowiki|syntaxhighlight))([^ >]*)(?: [^>\/]*)?>[^<]*(?!<\/\14>)).)+)<\/\4>": r"<\4\5>\3<\1\2>\6<\7\8>\9</\7>\11</\1>\13</\4>",
 
     # Wikilinks
-    r"(<(?!(?:nowiki|syntaxhighlight))([^ >]+)(?: [^>\/]*)?>)\[\[((?:(?!(?:\]\]|[\|:])).)+)\|((?:(?!(?:\]\]|<\2[^>]*>)).)*)<\/\2>((?:(?!(?:\[\[|[<])).)*)\]\]": r"[[\3|\1\4</\2>\5]]",
-    r"\[\[((?:(?!(?:\]\]|[\|:])).)+)\|((?:(?!(?:\]\]|<)).)*)(<(?!(?:nowiki|syntaxhighlight))([^ >]+)(?: [^>\/]*)?>)((?:(?!(?:\]\]|<\/\4>)).)*)\]\]<\/\4>": r"[[\1|\2\3\5</\4>]]",
-    r"(<(?!(?:nowiki|syntaxhighlight))([^ >]+)(?: [^>\/]*)?>)\[\[((?:Commons|Help|Help talk|MediaWiki|MediaWiki talk|Meta|Meta talk|Module|Module talk|Project|Project talk|Talk|Template|Template talk|User|User talk|Wik(?:i(?:books|data|functions|news|pedia|quote|source|versity|voyage)|tionary)):[^|]+)\|((?:(?!(?:\]\]|<\2[^>]*>)).)*)<\/\2>((?:(?!(?:\[\[|[<])).)*)\]\]": r"[[\3|\1\4</\2>\5]]",
-    r"\[\[((?:Commons|Help|Help talk|MediaWiki|MediaWiki talk|Meta|Meta talk|Module|Module talk|Project|Project talk|Talk|Template|Template talk|User|User talk|Wik(?:i(?:books|data|functions|news|pedia|quote|source|versity|voyage)|tionary)):[^|]+)\|((?:(?!(?:\]\]|<)).)*)(<(?!(?:nowiki|syntaxhighlight))([^ >]+)(?: [^>\/]*)?>)((?:(?!(?:\]\]|<\/\4>)).)*)\]\]<\/\4>": r"[[\1|\2\3\5</\4>]]"
+    r"(<(?!(?:nowiki|syntaxhighlight))([^ >]+)(?: [^>\/]*)?>)\[\[((?:(?!(?:\[\[|\]\]|[\|:])).)+)\|((?:(?!(?:\]\]|<\2[^>]*>)).)*)<\/\2>((?:(?!(?:\[\[|\]\]|[<])).)*)\]\]": r"[[\3|\1\4</\2>\5]]",
+    r"\[\[((?:(?!(?:\[\[|\]\]|[\|:])).)+)\|((?:(?!(?:\]\]|<)).)*)(<(?!(?:nowiki|syntaxhighlight))([^ >]+)(?: [^>\/]*)?>)((?:(?!(?:\[\[|\]\]|<\/\4>)).)*)\]\]<\/\4>": r"[[\1|\2\3\5</\4>]]",
+    r"(<(?!(?:nowiki|syntaxhighlight))([^ >]+)(?: [^>\/]*)?>)\[\[((?:Commons|Help|Help talk|MediaWiki|MediaWiki talk|Meta|Meta talk|Module|Module talk|Project|Project talk|Talk|Template|Template talk|User|User talk|Wik(?:i(?:books|data|functions|news|pedia|quote|source|versity|voyage)|tionary)):[^|]+)\|((?:(?!(?:\[\[|\]\]|<\2[^>]*>)).)*)<\/\2>((?:(?!(?:\[\[|\]\]|[<])).)*)\]\]": r"[[\3|\1\4</\2>\5]]",
+    r"\[\[((?:Commons|Help|Help talk|MediaWiki|MediaWiki talk|Meta|Meta talk|Module|Module talk|Project|Project talk|Talk|Template|Template talk|User|User talk|Wik(?:i(?:books|data|functions|news|pedia|quote|source|versity|voyage)|tionary)):[^|]+)\|((?:(?!(?:\[\[|\]\]|<)).)*)(<(?!(?:nowiki|syntaxhighlight))([^ >]+)(?: [^>\/]*)?>)((?:(?!(?:\[\[|\]\]|<\/\4>)).)*)\]\]<\/\4>": r"[[\1|\2\3\5</\4>]]"
 }
 loop_cap = 100
 
