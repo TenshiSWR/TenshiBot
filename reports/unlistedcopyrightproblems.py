@@ -19,6 +19,8 @@ transclusions = wiki.what_transcludes_here("Template:Copyvio", ns=[NS.MAIN, NS.F
 copyright_problems = wiki.page_text("Wikipedia:Copyright problems")
 subpages = mquery.page_text(wiki, re.findall(r"Wikipedia:Copyright problems\/\d{4}\s[A-z]*\s\d*", copyright_problems))
 unlisted_copyright_problems, unlisted_subpages = [], []
+site = pywikibot.Site()
+redirects = ["Copyvio"]+[redirect.title(with_ns=False) for redirect in pywikibot.Page(site, "Template:Copyvio").backlinks(filter_redirects=True, namespaces="Template")]
 
 
 def check_subpages():
@@ -34,17 +36,21 @@ def check_subpages():
 for page in transclusions:
     page_regex = re.compile(r'<span class="anchor" id="{}"><\/span>\[\[{}\]\]'.format(re.escape(page), re.escape(page)))
     parsed_text = mwparserfromhell.parse(wiki.page_text(page))
-    result, subpage, time = None, None, None
+    result, subpage, time, skip = None, None, None, None
     for template in parsed_text.filter_templates():
-        if template.name.matches("Copyvio"):
-            try:
-                time = mediawikitimestamp_to_datetime(template.get("timestamp").value)
-            except ValueError:
+        for redirect in redirects:
+            if template.name.matches(redirect):
+                try:
+                    time = mediawikitimestamp_to_datetime(template.get("timestamp").value)
+                except ValueError:
+                    break
+                day = str(int(time.strftime("%d")))
+                subpage_name = "Wikipedia:Copyright problems/"+time.strftime("%Y %B")+" {}".format(day)
+                subpage = wiki.page_text(subpage_name)
+                result = page_regex.search(subpage)
+                skip = True
                 break
-            day = str(int(time.strftime("%d")))
-            subpage_name = "Wikipedia:Copyright problems/"+time.strftime("%Y %B")+" {}".format(day)
-            subpage = wiki.page_text(subpage_name)
-            result = page_regex.search(subpage)
+        if skip:
             break
     if not time:
         pass
