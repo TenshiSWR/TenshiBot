@@ -22,7 +22,7 @@ functions = ["fix_bogus_file_options", "fix_misnests", "fix_missing_end_tag", "f
 projects = {"incubator":["Special:Permalink/7019591#TenshiBot", "1"],
             "wikisource:mul": ["Special:Permalink/1356970#Request for bot flag", "1"],
             "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"],
-            "wikisource:fr":["Special:Permalink/15976124#Utilisateur:TenshiBot", "1 (Test)"]}
+            "wikisource:fr":["Special:Permalink/15976124#Utilisateur:TenshiBot", "1"]}
 custom_function_to_summary = {
     "fix_bogus_file_options":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
                               "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"]},
@@ -155,7 +155,7 @@ for page in lint_list:
         lint_errors = ("[[{}|Task {}]]: Fix [[Wikipedia:Linter|Linter]] errors", "Tasks {}: Fix [[Wikipedia:Linter|Linter]] errors")
         tags = ["fixed lint errors"]
     elif site_name == "wikisource:fr":
-        lint_errors = ("[[{}|Tâche {}]]: Se reparér les erreurs de [[mw:Help:Extension:Linter|Linter]]", "Tâches {}: Se reparér les erreurs de [[mw:Help:Extension:Linter|Linter]]")
+        lint_errors = ("[[{}|Tâche {}]]: Corriger une [[Spécial:LintErrors|erreur détectée par Linter]]", "Tâches {}: Corriger une [[Spécial:LintErrors|erreur détectée par Linter]]")
         tags = []
     else:
         lint_errors = ("[[{}|Task {}]]: Fix [[mw:Help:Extension:Linter|Linter]] errors", "Tasks {}: Fix [[mw:Help:Extension:Linter|Linter]] errors")
