@@ -155,7 +155,7 @@ for page in lint_list:
         lint_errors = ("[[{}|Task {}]]: Fix [[Wikipedia:Linter|Linter]] errors", "Tasks {}: Fix [[Wikipedia:Linter|Linter]] errors")
         tags = ["fixed lint errors"]
     elif site_name == "wikisource:fr":
-        lint_errors = ("[[{}|Tâche {}]]: Corriger une [[Spécial:LintErrors|erreur détectée par Linter]]", "Tâches {}: Corriger une [[Spécial:LintErrors|erreur détectée par Linter]]")
+        lint_errors = ("[[{}|Tâche {}]]: Corrige une [[Spécial:LintErrors|erreur détectée par Linter]]", "Tâches {}: Corriger une [[Spécial:LintErrors|erreur détectée par Linter]]")
         tags = []
     else:
         lint_errors = ("[[{}|Task {}]]: Fix [[mw:Help:Extension:Linter|Linter]] errors", "Tasks {}: Fix [[mw:Help:Extension:Linter|Linter]] errors")

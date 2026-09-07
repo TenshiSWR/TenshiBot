@@ -1,5 +1,5 @@
 import regex
-from tools.misc import LintfixModuleError, log_error
+from tools.misc import LintfixModuleError
 
 regexes = {
     r"(?<!\{\{[^|]*\|(?:(?!(?:\}\}|=)).)*?)<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'<div style="text-align: center;">\1</div>',
