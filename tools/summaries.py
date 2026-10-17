@@ -8,3 +8,4 @@ TASK8_RESET_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8
 TASK8_RESET_WEBTRIGGER_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8]]: Reset [[Wikipedia:WikiCup|WikiCup]] contestant pages for Round {} (web trigger - {})"
 TASK10_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 10|Task 10]]: Remove do not archive tags from closed cases"
 TASK11_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 11|Task 11]]: {} of [[:Category:{} association football players not categorized by position]]"
+TASK13_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 13|Bot trial]]: Fix [[Wikipedia:Linter|Linter]] errors based on [[Wikipedia:Linter/Signature submissions|signature submissions]]"

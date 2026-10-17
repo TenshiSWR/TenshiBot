@@ -1,6 +1,7 @@
 import pywikibot
 from regex import escape, search
 from tasks.linterrors.bogus_file_options import fix_bogus_file_options
+from tasks.linterrors.italics_misnests import fix_italics_misnests
 from tasks.linterrors.misnests import fix_misnests
 from tasks.linterrors.missing_end_tag import fix_missing_end_tag
 from tasks.linterrors.multi_colon_escape import fix_multi_colon_escape
@@ -10,7 +11,7 @@ from tasks.linterrors.self_closed_tags import fix_self_closed_tags
 from tasks.linterrors.tidy_font_bug import fix_tidy_font_bug
 from tasks.linterrors.wikilinks_in_extlinks import fix_wikilinks_in_extlinks
 from tools.misc import get_database, LintfixModuleError, log_error, NoChange
-from tools.queries import get_lint_errors
+from tools.queries import get_lint_errors, get_lint_errors_page
 from tools.summaries import EDIT_FAIL_SUMMARY
 
 
@@ -18,7 +19,7 @@ lint_list = []
 ignored_pages = [r"\/Assessment\/.*\/\d{4}", r".*\/Archived nominations\/.*", r".*Deletion sorting.*", r".*\/Failed log\/.*", r".*\/Featured log\/.*", r".*Featured picture candidates\/.*-\d{4}", r".*\/Log\/.*", r"Peer review\/", r"Commons:Deletion requests\/Archive\/\d{4}\/\d{2}\/\d{2}", r"Wikisource:Main Page\/Interlingua", r"Wn\/", r"\/[a-z]{2,3}$"]
 #count = {page:0 for page in ignored_pages}
 #params = {}
-functions = ["fix_bogus_file_options", "fix_misnests", "fix_missing_end_tag", "fix_multi_colon_escape", "fix_multiline_misnests", "fix_obsolete_HTML_tags", "fix_self_closed_tags", "fix_tidy_font_bug", "fix_wikilinks_in_extlinks"]
+functions = ["fix_bogus_file_options", "fix_italics_misnests", "fix_misnests", "fix_missing_end_tag", "fix_multi_colon_escape", "fix_multiline_misnests", "fix_obsolete_HTML_tags", "fix_self_closed_tags", "fix_tidy_font_bug", "fix_wikilinks_in_extlinks"]
 projects = {"incubator":["Special:Permalink/7019591#TenshiBot", "1"],
             "wikisource:mul": ["Special:Permalink/1356970#Request for bot flag", "1"],
             "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"],
@@ -26,6 +27,7 @@ projects = {"incubator":["Special:Permalink/7019591#TenshiBot", "1"],
 custom_function_to_summary = {
     "fix_bogus_file_options":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
                               "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"]},
+    "fix_italics_misnests":{"wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
     "fix_misnests":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
                     "wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 6", "6"]},
     "fix_missing_end_tag":{"wikipedia:en":["Wikipedia:Bots/Requests for approval/TenshiBot 12", "12"]},
@@ -58,7 +60,8 @@ DEFAULT_LINT_CONFIG = {"bogus-image-options": [fix_bogus_file_options],
                        "tidy-font-bug": [fix_tidy_font_bug]}
 
 # Lint errors, manual, exclusion compliance
-wikis_config = {"wikipedia:en":[{"missing-end-tag": [fix_missing_end_tag], "misnested-tag": [fix_misnests, fix_multiline_misnests]}, False, True],
+wikis_config = {"wikipedia:en":[{"missing-end-tag": [fix_missing_end_tag],
+                                 "misnested-tag": [fix_italics_misnests, fix_misnests, fix_multiline_misnests]}, False, True],
                 "incubator":[DEFAULT_LINT_CONFIG, False, False],
                 "wikisource:sv":[DEFAULT_LINT_CONFIG, False, False],
                 "commons":[{"bogus-image-options": [fix_bogus_file_options],
@@ -119,7 +122,14 @@ for page in lint_list:
         continue
     changed = False
     tasks = {}
+    page_error_types = get_lint_errors_page(page, site.base_url(""))
+    try:
+        page_error_types = page_error_types["query"]["linterrors"]
+    except KeyError:
+        continue
     for key in errors_to_fixes.keys():
+        if not any([True for x in page_error_types if x["category"] == key]):
+            continue
         for fix in errors_to_fixes[key]:
             try:
                 # Each function will return a tuple, text & task number, else they raise an Exception if they won't.

@@ -5,6 +5,7 @@ import requests
 from requests_oauthlib import OAuth1
 from tqdm import tqdm
 from tools.misc import QueryError
+import urllib
 
 load_dotenv()
 USER_AGENT = loads(getenv("USER-AGENT"))
@@ -69,4 +70,21 @@ def get_lint_errors(lint_type: str | bool = None, namespaces: str | bool = None,
     bar.close()
     return full_list
 
+
+def get_lint_errors_page(page: str, url: str = "https://en.wikipedia.org"):
+    i = 0
+    while i <= 10:
+        r = S.get(f"{url}/w/api.php?action=query&format=json&list=linterrors&formatversion=2&lnttitle={urllib.parse.quote(page)}")
+        try:
+            loads(r.text)["query"]["linterrors"][0]
+        except KeyError:
+            print(loads(r.text))
+            print(f"{url}/w/api.php?action=query&format=json&list=linterrors&formatversion=2&lnttitle={urllib.parse.quote(page)}")
+            i += 1
+            continue
+        else:
+            break
+    else:
+        raise KeyboardInterrupt
+    return loads(r.text)
 
