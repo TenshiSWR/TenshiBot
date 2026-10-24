@@ -23,7 +23,7 @@ functions = ["fix_bogus_file_options", "fix_italics_misnests", "fix_misnests", "
 projects = {"incubator":["Special:Permalink/7019591#TenshiBot", "1"],
             "wikisource:mul": ["Special:Permalink/1356970#Request for bot flag", "1"],
             "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"],
-            "wikisource:fr":["Special:Permalink/15976124#Utilisateur:TenshiBot", "1"]}
+            "wikisource:fr":["Wikisource:Scriptorium/Août 2026#Demande de statut de bot pour TenshiBot", "1"]}
 custom_function_to_summary = {
     "fix_bogus_file_options":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
                               "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"]},
@@ -70,8 +70,8 @@ wikis_config = {"wikipedia:en":[{"missing-end-tag": [fix_missing_end_tag],
                 "wikibooks:en":[{"bogus-image-options": [fix_bogus_file_options],
                                  "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False],
                 "wikisource:mul":[DEFAULT_LINT_CONFIG, False, False],
-                "wikisource:fr":[DEFAULT_LINT_CONFIG, True, False]}
-site_name = "wikipedia:en"
+                "wikisource:fr":[DEFAULT_LINT_CONFIG, False, False]}
+site_name = "wikisource:fr"
 errors_to_fixes = wikis_config[site_name][0]
 site = pywikibot.Site(site_name)
 MANUAL = wikis_config[site_name][1]
