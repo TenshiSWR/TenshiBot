@@ -78,13 +78,11 @@ def get_lint_errors_page(page: str, url: str = "https://en.wikipedia.org"):
         try:
             loads(r.text)["query"]["linterrors"][0]
         except KeyError:
-            print(loads(r.text))
-            print(f"{url}/w/api.php?action=query&format=json&list=linterrors&formatversion=2&lnttitle={urllib.parse.quote(page)}")
             i += 1
             continue
         else:
             break
     else:
-        raise KeyboardInterrupt
+        return {"query":{"linterrors":[]}}
     return loads(r.text)
 
