@@ -57,8 +57,8 @@ def fix_obsolete_HTML_tags(page: str, text: str) -> str:
     text = regex.sub(r"(?<!(?:<(nowiki|syntaxhighlight)>(?!(?:(?:(?!(?:<\1>)).)*?)<\/\1>)|<\1>(?:(?:(?!(?:<\/?\1>|<\/?strike>)).)*?)<\/?strike>(?:(?:(?!(?:<\/?\1>)).)*?)<\/nowiki>))(<\/?)(?:[Ss]trike)>(?!(?!.*?<nowiki>).*?<\/nowiki>)", r"\2s>", text, flags=regex.I)
     for find, replace in regexes.items():
         while True:
-            if text != regex.sub(find, replace, text, flags=regex.DOTALL|regex.I):
-                text = regex.sub(find, replace, text, flags=regex.DOTALL|regex.I)
+            if text != regex.sub(find, replace, text, flags=regex.DOTALL|regex.I|regex.MULTILINE):
+                text = regex.sub(find, replace, text, flags=regex.DOTALL|regex.I|regex.MULTILINE)
             else:
                 break
     return text
