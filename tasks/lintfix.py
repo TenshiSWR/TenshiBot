@@ -10,7 +10,7 @@ from tasks.linterrors.obsolete_HTML_tags import fix_obsolete_HTML_tags
 from tasks.linterrors.self_closed_tags import fix_self_closed_tags
 from tasks.linterrors.tidy_font_bug import fix_tidy_font_bug
 from tasks.linterrors.wikilinks_in_extlinks import fix_wikilinks_in_extlinks
-from tools.misc import get_database, LintfixModuleError, log_error, NoChange
+from tools.misc import get_database, LintfixModuleError, log_error, NoChange, queryandclose
 from tools.queries import get_lint_errors, get_lint_errors_page
 from tools.summaries import EDIT_FAIL_SUMMARY
 
@@ -79,6 +79,7 @@ IGNORE_EXCLUSION_COMPLIANCE = wikis_config[site_name][2]
 db, cursor = get_database()
 cursor.execute("SELECT * from incubator_testwikis_to_avoid;")
 incubator_testwikis_to_avoid = cursor.fetchall()
+db.close()
 ignored_pages += [escape(x[0]) for x in incubator_testwikis_to_avoid]
 ignored_pages = set(ignored_pages)
 
@@ -181,8 +182,7 @@ for page in lint_list:
     except pywikibot.exceptions.OtherPageSaveError as error:
         if search(r"wminc-error-wiki-exists", error.args):
             incubator_testwikis_to_avoid.append([search(r"W[a-z]\/[^/]+", page.title()).group()])
-            cursor.execute("INSERT INTO incubator_testwikis_to_avoid(testwiki) VALUES(%(testwiki)s);", {"testwiki":search(r"W[a-z]\/[^/]+", page.title()).group()})
-            db.commit()
+            queryandclose("INSERT INTO incubator_testwikis_to_avoid(testwiki) VALUES(%(testwiki)s);", {"testwiki":search(r"W[a-z]\/[^/]+", page.title()).group()})
         else:
             log_error(EDIT_FAIL_SUMMARY.format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name, soft=True)
     except pywikibot.exceptions.TitleblacklistError as error:
