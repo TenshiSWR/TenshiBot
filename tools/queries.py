@@ -11,14 +11,14 @@ load_dotenv()
 USER_AGENT = loads(getenv("USER-AGENT"))
 OAUTH_KEY = loads(getenv("OAUTH"))
 _AUTH = OAuth1(OAUTH_KEY[0], OAUTH_KEY[1], OAUTH_KEY[2], OAUTH_KEY[3])
-S = requests.Session()
-S.auth, S.headers = _AUTH, USER_AGENT
 del OAUTH_KEY
 
 # Important note: Local account must exist on the wiki in order to use OAuth and the API.
 
 
 def get_lint_errors(lint_type: str | bool = None, namespaces: str | bool = None, url: str = "https://en.wikipedia.org", limit: int = 0) -> list:
+    S = requests.Session()
+    S.auth, S.headers = _AUTH, USER_AGENT
     if type(lint_type) is str:
         lint_type.replace("+", "%7C")
     if type(namespaces) is str:
@@ -72,6 +72,8 @@ def get_lint_errors(lint_type: str | bool = None, namespaces: str | bool = None,
 
 
 def get_lint_errors_page(page: str, url: str = "https://en.wikipedia.org"):
+    S = requests.Session()
+    S.auth, S.headers = _AUTH, USER_AGENT
     i = 0
     while i <= 10:
         r = S.get(f"{url}/w/api.php?action=query&format=json&list=linterrors&formatversion=2&lnttitle={urllib.parse.quote(page)}")
