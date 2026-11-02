@@ -14,3 +14,8 @@
   mem: 2000Mi
   emails: onfailure
   schedule: "@monthly"
+- command: /data/project/tenshihinanawi-bot/pwbvenv/bin/python3 /data/project/tenshihinanawi-bot/yearly.py
+  image: python3.11
+  name: yearly
+  emails: onfailure
+  schedule: 0 0 1 1 *
