@@ -1,3 +1,20 @@
+def full_category_members(categories: list):
+    import pywikibot
+    pages = []
+    while True:
+        for item in pywikibot.Category(pywikibot.Site(), categories[0]).members():
+            print(item)
+            if "Category:" in item.title():
+                categories.append(item.title())
+            else:
+                pages.append(item.title())
+        print(categories[0]+" ("+str(len(categories))+", "+str(len(pages))+")")
+        del categories[0]
+        if not len(categories):
+            break
+    return sorted(list(set(pages)))
+
+
 def get_database():
     from dotenv import load_dotenv
     from os.path import exists

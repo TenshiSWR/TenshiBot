@@ -1,4 +1,6 @@
-EDIT_FAIL_SUMMARY = "Either edit conflicted on page, the page is protected, or stopped by exclusion compliance, failed to edit [[{}]]"
+EDIT_FAIL_EDITCONFLICT_SUMMARY = "Edit conflicted on [[:{}]]"
+EDIT_FAIL_PROTECTED_SUMMARY = "[[:{}]] is protected"
+EDIT_FAIL_WTF_SUMMARY = "Either stopped by exclusion compliance or something else happened, failed to edit [[:{}]]"
 TASK1_NOTIFICATION = "[[Wikipedia:Bots/Requests for approval/TenshiBot|Notification]]: Your contested technical move request(s) has been removed from [[Wikipedia:Requested moves/Technical requests]]."
 TASK1_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot|Task 1]]: Clerk [[Wikipedia:Requested moves/Technical requests|RM/TR]]. Processed {} requests."
 TASK2_NOTIFICATION = "[[Wikipedia:Bots/Requests for approval/TenshiBot 2|Notification]]: Your Articles for Creation review(s) has been marked as ongoing for over forty-eight hours."
@@ -8,4 +10,4 @@ TASK8_RESET_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8
 TASK8_RESET_WEBTRIGGER_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 8|Task 8]]: Reset [[Wikipedia:WikiCup|WikiCup]] contestant pages for Round {} (web trigger - {})"
 TASK10_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 10|Task 10]]: Remove do not archive tags from closed cases"
 TASK11_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 11|Task 11]]: {} of [[:Category:{} association football players not categorized by position]]"
-TASK13_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 13|Bot trial]]: Fix [[Wikipedia:Linter|Linter]] errors based on [[Wikipedia:Linter/Signature submissions|signature submissions]]"
+TASK13_SUMMARY = "[[Wikipedia:Bots/Requests for approval/TenshiBot 13|Bot trial]]: Fix [[Wikipedia:Linter|Linter]] errors/broken substitutions/other issues based on [[Wikipedia:Linter/Signature submissions|signature submissions]]"

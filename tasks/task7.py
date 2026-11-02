@@ -2,7 +2,7 @@ import mwparserfromhell
 import pywikibot
 import regex
 site = pywikibot.Site()
-talk_pages = [pywikibot.Page(site, match) for match in regex.findall(r"\* \[\[(.*)\]\]", pywikibot.Page(site, "User:WhatamIdoing/Sandbox").getOldVersion(1319315316))]
+talk_pages = [pywikibot.Page(site, match) for match in regex.findall(r"\* \[\[(.*)\]\]", pywikibot.Page(site, "User:WhatamIdoing/Sandbox").getOldVersion(1382908954))]
 template = "WikiProject Medicine"
 redirects = [template]+[redirect.title(with_ns=False) for redirect in pywikibot.Page(site, "Template:"+template).backlinks(filter_redirects=True, namespaces="Template")]
 for talk_page in talk_pages:

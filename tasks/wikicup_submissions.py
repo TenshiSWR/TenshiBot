@@ -1,3 +1,4 @@
+from datetime import datetime
 import pywikibot
 import regex
 from tools.misc import get_database, queryandclose
@@ -15,9 +16,9 @@ if _[0] is None:
     wikicup_judge_username = None
 else:
     wikicup_judge_username = _[0]
-usernames = regex.findall(r"\# ?\{.*User: *(?! *Your username)([^|]*)(?:\||]])", pywikibot.Page(site, "Wikipedia:WikiCup/2026 signups").text)
+usernames = regex.findall(r"\# ?\{.*User: *(?! *Your username)([^|]*)(?:\||]])", pywikibot.Page(site, "Wikipedia:WikiCup/{} signups".format(datetime.utcnow().year)).text)
 usernames = [username[0].upper()+username[1:] for username in usernames if pywikibot.User(site, username).isRegistered()]
-pages = ["Wikipedia:WikiCup/History/2026/Submissions/"+username for username in usernames]
+pages = ["Wikipedia:WikiCup/History/{}/Submissions/".format(datetime.utcnow().year)+username for username in usernames]
 
 for page in pages:
     page = pywikibot.Page(site, page)

@@ -12,7 +12,7 @@ from tasks.linterrors.tidy_font_bug import fix_tidy_font_bug
 from tasks.linterrors.wikilinks_in_extlinks import fix_wikilinks_in_extlinks
 from tools.misc import get_database, LintfixModuleError, log_error, NoChange, queryandclose
 from tools.queries import get_lint_errors, get_lint_errors_page
-from tools.summaries import EDIT_FAIL_SUMMARY
+from tools.summaries import EDIT_FAIL_EDITCONFLICT_SUMMARY, EDIT_FAIL_PROTECTED_SUMMARY, EDIT_FAIL_WTF_SUMMARY
 
 
 lint_list = []
@@ -97,6 +97,8 @@ for error in errors:
             lint_list.append(error["title"])
         elif error["category"] != "obsolete-tag":
             lint_list.append(error["title"])
+        if "name" in error["templateInfo"].keys():
+            lint_list.append(error["templateInfo"]["name"])
     """
     for key in count.keys():
         if search(key, error["title"]):
@@ -177,14 +179,16 @@ for page in lint_list:
         summary = lint_errors[1].format("+".join(["[[{}|{}]]".format(link, task) for link, task in tasks]))
     try:
         page.save(summary=summary, minor=True, tags=tags, force=IGNORE_EXCLUSION_COMPLIANCE)
-    except (pywikibot.exceptions.EditConflictError, pywikibot.exceptions.LockedPageError):
-        log_error(EDIT_FAIL_SUMMARY.format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name, soft=True)
+    except pywikibot.exceptions.EditConflictError:
+        log_error(EDIT_FAIL_EDITCONFLICT_SUMMARY.format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name, soft=True)
+    except pywikibot.exceptions.LockedPageError:
+        log_error(EDIT_FAIL_PROTECTED_SUMMARY.format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name, soft=True)
     except pywikibot.exceptions.OtherPageSaveError as error:
         if search(r"wminc-error-wiki-exists", error.args):
             incubator_testwikis_to_avoid.append([search(r"W[a-z]\/[^/]+", page.title()).group()])
             queryandclose("INSERT INTO incubator_testwikis_to_avoid(testwiki) VALUES(%(testwiki)s);", {"testwiki":search(r"W[a-z]\/[^/]+", page.title()).group()})
         else:
-            log_error(EDIT_FAIL_SUMMARY.format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name, soft=True)
+            log_error(EDIT_FAIL_WTF_SUMMARY.format(page.title()), "+".join([task[1] for task in tasks]), site_name=site_name, soft=True)
     except pywikibot.exceptions.TitleblacklistError as error:
         print("TitleblacklistError: {}".format(error))
     del summary, text
