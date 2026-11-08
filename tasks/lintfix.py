@@ -97,7 +97,7 @@ for error in errors:
             lint_list.append(error["title"])
         elif error["category"] != "obsolete-tag":
             lint_list.append(error["title"])
-        if "name" in error["templateInfo"].keys():
+        if "name" in error["templateInfo"].keys() and not search(r"^#", error["templateInfo"]["name"]):
             lint_list.append(error["templateInfo"]["name"])
     """
     for key in count.keys():
