@@ -144,7 +144,7 @@ for page in lint_list:
                     text = new_text
                 del new_text, task
             except LintfixModuleError as error:
-                log_error(error.args[0]+" ([[{}]])".format(page), function_to_summary[error.args[1]][site_name][1], site_name=site_name, soft=True)
+                log_error(error.args[0]+" ([[:{}]])".format(page), function_to_summary[error.args[1]][site_name][1], site_name=site_name, soft=True)
             except NoChange:
                 pass
     if not changed:
