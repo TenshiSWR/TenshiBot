@@ -24,7 +24,7 @@ projects = {"incubator":["Special:Permalink/7019591#TenshiBot", "1"],
             "wikisource:mul": ["Special:Permalink/1356970#Request for bot flag", "1"],
             "wikisource:sv":["Special:Permalink/631220#Request for bot flag", "1"],
             "wikisource:fr":["Wikisource:Scriptorium/Août 2026#Demande de statut de bot pour TenshiBot", "1"],
-            "wikisource:ru":["Викитека:Заявки на изменение прав#TenshiBot ( обс | вклад ботовод — Tenshi Hinanawi)", "1"]}
+            "wikisource:ru":["Викитека:Заявки на изменение прав#TenshiBot ( обс &#124; вклад ботовод — Tenshi Hinanawi)", "1"]}
 custom_function_to_summary = {
     "fix_bogus_file_options":{"commons":["Commons:Bots/Requests/TenshiBot", "1"],
                               "wikibooks:en":["Wikibooks:Requests for permissions/TenshiBot", "1"]},
