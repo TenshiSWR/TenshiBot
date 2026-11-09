@@ -71,7 +71,8 @@ wikis_config = {"wikipedia:en":[{"missing-end-tag": [fix_missing_end_tag],
                 "wikibooks:en":[{"bogus-image-options": [fix_bogus_file_options],
                                  "obsolete-tag": [fix_obsolete_HTML_tags]}, False, False],
                 "wikisource:mul":[DEFAULT_LINT_CONFIG, False, False],
-                "wikisource:fr":[DEFAULT_LINT_CONFIG, False, False]}
+                "wikisource:fr":[DEFAULT_LINT_CONFIG, False, False],
+                "wikisource:ru":[DEFAULT_LINT_CONFIG, False, False]}
 site_name = "commons"
 errors_to_fixes = wikis_config[site_name][0]
 site = pywikibot.Site(site_name)
