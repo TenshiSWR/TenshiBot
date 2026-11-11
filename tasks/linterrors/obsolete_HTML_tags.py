@@ -52,7 +52,7 @@ def fix_obsolete_HTML_tags(page: str, text: str) -> str:
                     new_params = regex.sub(r'style *= *"([^"]+)"', r"\1", new_params, flags=regex.I)
                 else:
                     new_params = regex.sub(r'style *= *"([^"]+)"', r"\1;", new_params, flags=regex.I)
-                text = regex.sub(r'<font {}>'.format(regex.escape(params)), r'<span style="{}">'.format(new_params), text, flags=regex.I)
+                text = regex.sub(r'<font {}>'.format(regex.escape(params)), lambda _: r'<span style="{}">'.format(new_params), text, flags=regex.I)
             else:
                 text = regex.sub(r"(?<!<nowiki>.*?)<font>(?!<\/nowiki>)", r"<span>", text, flags=regex.I)
     text = regex.sub(r"(?<!(?:<(nowiki|syntaxhighlight)>(?!(?:(?:(?!(?:<\1>)).)*?)<\/\1>)|<\1>(?:(?:(?!(?:<\/?\1>|<\/?strike>)).)*?)<\/?strike>(?:(?:(?!(?:<\/?\1>)).)*?)<\/nowiki>))(<\/?)(?:[Ss]trike)>(?!(?!.*?<nowiki>).*?<\/nowiki>)", r"\2s>", text, flags=regex.I)
