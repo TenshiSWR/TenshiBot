@@ -75,7 +75,7 @@ def fix_misnests(page: str, text: str) -> str:
                 loop_count += 1
             else:
                 break
-            if loop_count > 100:
+            if loop_count > loop_cap:
                 print("misnests: Loop count exceeded cap ({})".format(loop_cap))
                 break
         if new_line != line:

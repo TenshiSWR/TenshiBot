@@ -10,6 +10,7 @@ regexes = {
     r'^<center>[\n\s]*?(^<gallery(?:(?:(?!(?: ?[<>]|(?:class|perrow)=)).)*?))(>.*?<\/gallery>)[\n\s]*?<\/center>': r'\1 class="center"\2',
     r'^<center>[\n\s]*?(^<gallery(?:(?:(?!(?:[<>]|(?:class|perrow)=)).)*?))(?<! ) +(>.*?<\/gallery>)[\n\s]*?<\/center>': r'\1 class="center"\2'
 }
+loop_cap = 100
 
 
 def fix_obsolete_HTML_tags(page: str, text: str) -> str:
@@ -55,10 +56,21 @@ def fix_obsolete_HTML_tags(page: str, text: str) -> str:
             else:
                 text = regex.sub(r"(?<!<nowiki>.*?)<font>(?!<\/nowiki>)", r"<span>", text, flags=regex.I)
     text = regex.sub(r"(?<!(?:<(nowiki|syntaxhighlight)>(?!(?:(?:(?!(?:<\1>)).)*?)<\/\1>)|<\1>(?:(?:(?!(?:<\/?\1>|<\/?strike>)).)*?)<\/?strike>(?:(?:(?!(?:<\/?\1>)).)*?)<\/nowiki>))(<\/?)(?:[Ss]trike)>(?!(?!.*?<nowiki>).*?<\/nowiki>)", r"\2s>", text, flags=regex.I)
-    for find, replace in regexes.items():
-        while True:
-            if text != regex.sub(find, replace, text, flags=regex.DOTALL|regex.I|regex.MULTILINE):
-                text = regex.sub(find, replace, text, flags=regex.DOTALL|regex.I|regex.MULTILINE)
-            else:
-                break
+    loop_count = 0
+    new_text = text
+    while True:
+        for find, replace in regexes.items():
+            while True:
+                if new_text != regex.sub(find, replace, new_text, flags=regex.DOTALL|regex.I|regex.MULTILINE):
+                    new_text = regex.sub(find, replace, new_text, flags=regex.DOTALL|regex.I|regex.MULTILINE)
+                else:
+                    break
+        if new_text != text:
+            text = new_text
+            loop_count += 1
+        else:
+            break
+        if loop_count > loop_cap:
+            print("obsolete HTML tags: Loop count exceeded cap ({})".format(loop_cap))
+            break
     return text
