@@ -58,7 +58,7 @@ for cci in ccis.keys():
             except (IndexError, KeyError):
                 continue
             for page in _:
-                pages.append(page["full_page_title"].replace("_", " "))
+                pages.append(str(page["full_page_title"]).replace("_", " "))
         pages = list(set(pages))
         for page in pages:
             if not pywikibot.Page(site, page).exists():
