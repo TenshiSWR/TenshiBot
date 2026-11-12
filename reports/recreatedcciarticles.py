@@ -112,7 +112,7 @@ for year in years:
                 continue
             try:
                 comments[_[4]]
-            except IndexError:
+            except KeyError:
                 report_page.text += "* [[Special:Permalink/{}|{}]] {} [[Special:History/{}|{}]] | [[Special:Redirect/logid/{}|{} (deleted {})]]: \n".format(_[1], _[0].strftime("%Y-%m-%d %H:%M"), _[2], _[4], _[4], _[5], _[6], _[7][0:10]+" "+_[7][11:16])
             else:
                 report_page.text += "* [[Special:Permalink/{}|{}]] {} [[Special:History/{}|{}]] | [[Special:Redirect/logid/{}|{} (deleted {})]]: {}\n".format(_[1], _[0].strftime("%Y-%m-%d %H:%M"), _[2], _[4], _[4], _[5], _[6], _[7][0:10]+" "+_[7][11:16], comments[_[4]])
