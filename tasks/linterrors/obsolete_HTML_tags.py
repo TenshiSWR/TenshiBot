@@ -3,10 +3,11 @@ from tools.misc import LintfixModuleError
 
 regexes = {
     r"(?<!\{\{[^|]*\|(?:(?!(?:\}\}|=)).)*?)<center>((?:(?!(?:{\||\|}(?!\})|(?<!<center[^>]*?>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center[^>]*?>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>(?!.*?\}\}(?:(?!(?:\{\{|\}\})).)*?(?:\| *\w+ *=|\}\}))": r'<div style="text-align: center;">\1</div>',
-    r"(?P<a>\{\{[^|}]*\|)(?P<b>(?:(?!\||\}\}|=).)*?)<center>(?P<c>(?:(?!(?:{\||\|}(?!\})|(?<!<center[^>]*?>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center[^>]*?>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'\g<a>1=\g<b><div style="text-align: center;">\g<c></div>',
+    r"(?P<a>\{\{[^|}]*\|)(?P<b>(?:(?!\}\}|=).)*?)<center>(?P<c>(?:(?!(?:{\||\|}(?!\})|(?<!<center[^>]*?>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center[^>]*?>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>": r'\g<a>\g<b><div style{{=}}"text-align: center;">\g<c></div>',
+    r'(?P<a>\{\{[^|}]*\|)(?P<b>(?:(?!\}\}|=).)*?)<div style="text-align: center;">(?P<c>(?:(?!(?:{\||\|}(?!\})|(?<!<div[^>]*?>)<\/div>|<\/div>(?=<\/div>)|<\/?gallery>|<div[^>]*?>[^<]*?(?!<\/div>[^<]*?<\/div>))).)*?)<\/div>': r'\g<a>\g<b><div style{{=}}"text-align: center;">\g<c></div>',
     r'^<center>[\n\s]*?(^\{\|[^<>|!]*?style *?= *?\"[^\n\"]+?)(?<!; )(?<!(?:margin|margin-(?:bottom|left|right|up)):[^\n]*?); *?(\"[^\}]+(?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r"\1; margin: auto;\2",
     r'^<center>[\n\s]*?(^\{\|(?![^\n]*?style *?= *?\"[^\"]+?\")[^\n]*?)((?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1 style="margin: auto;"\2',
-    r'^<center>[\n\s]*?(^\{\|[^<>|!]*?style *?= *?\"(?:(?:(?!(?: \"|\")).)+?))(?<!;)(?<!(?:margin|margin-(?:bottom|left|right|up)):[^\n]*?)(\"[^\}]+?(?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1; margin: auto;\2',
+    r'^<center>[\n\s]*?(^\{\|[^<>|!]*?style *?= *?\"(?:(?:(?!(?: \"|\"|\n)).)+?))(?<!;)(?<!(?:margin|margin-(?:bottom|left|right|up)):[^\n]*?)(\"[^\}]+?(?:(?:(?!(?:\|\})).)*?)\|\})[\n\s]*?<\/center>': r'\1; margin: auto;\2',
     r'^<center>[\n\s]*?(^<gallery(?:(?:(?!(?: ?[<>]|(?:class|perrow)=)).)*?))(>.*?<\/gallery>)[\n\s]*?<\/center>': r'\1 class="center"\2',
     r'^<center>[\n\s]*?(^<gallery(?:(?:(?!(?:[<>]|(?:class|perrow)=)).)*?))(?<! ) +?(>.*?<\/gallery>)[\n\s]*?<\/center>': r'\1 class="center"\2',
     r'<center style="([^"]+)(?<!(?:text-align: *center[^\n]*?|;))">((?:(?!(?:{\||\|}(?!\})|(?<!<center[^>]*?>)<\/center>|<\/center>(?=<\/center>)|<\/?gallery>|<center[^>]*?>[^<]*?(?!<\/center>[^<]*?<\/center>))).)*?)<\/center>': r'<div style="\1; text-align: center;">\2</div>',

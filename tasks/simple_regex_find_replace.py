@@ -5,6 +5,7 @@ import regex
 from tools.misc import log_error
 
 site = pywikibot.Site()
+results_search_regex = input("Results search regex: ")
 search_regex = input("Search regex: ")
 replace_regex = input("Replace regex: ")
 summary = input("Edit summary to use: ")
@@ -13,14 +14,15 @@ minor = {"yes": True, "y": True, "no": False, "n": False}[input("Mark edits as m
 
 if input("Restrict namespaces?: ").lower() == ("Y".lower() or "Yes".lower()):
     namespaces = [int(namespace) for namespace in input("Namespaces to restrict (demarcate by using ,): ").split(",")]
-    results = site.search(r"insource:/{}/".format(search_regex), namespaces=namespaces)
+    results = site.search(r"{}".format(results_search_regex), namespaces=namespaces)
 else:
     namespaces = []
-    results = site.search(r"insource:/{}/".format(search_regex))
+    results = site.search(r"{}".format(results_search_regex))
 
 string = "".join([chr(random.randint(65, 90)) for i in range(0, 10)])
 
 print("\nSettings:\n"+
+      "Results search regex: {}\n".format(results_search_regex)+
       "Search regex: {}\n".format(search_regex)+
       "Replace regex: {}\n".format(replace_regex)+
       "Edit summary: {}\n".format(summary)+

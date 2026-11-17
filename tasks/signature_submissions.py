@@ -13,6 +13,8 @@ regexes = {
                                                                                     [r"""<center>(<small>''Ichthus'' is published by.*?</small>)</center>""", r"""{{center|1=\1}}"""]],
     r"insource:/\[\[User:PotatoNinja\|\<span style=\"color:\#fa0;font-family: sans-serif;\"\>'''Potato\<\/span\>\<span style=\"color:\#000080;font-family: helvetica\"\>Ninja\<\/span\>\]\]/":[[r"""(\[\[User:PotatoNinja\|)(<span[^\n]*)'''([^\n]*?)(\]\])""", r"""\1'''\2\3'''\4"""]],
     r"insource:/>Jreferee\]\]/":[[r"""<font face="Kristen ITC">([^\n]*?\|)<font color="Blue">([^\n]*?)(\][^\n]*?)(<\/font>)\4""", r"""<span style="font-family: Kristen ITC;">\1<span style="color: Blue;">\2</span>\3</span>"""]],
+    r"insource:/\'\'\'\<span style=\"font-family:times new roman;\"\>\[\[User:hmwith\|/":[[r"""(''')(<span style="font-family:times new roman;">)(\[\[User:hmwith\|[^\n]+?\]\]''')""", r"""\2\1\3"""]],
+    r"insource:/\'\'\'\<small\>\[\[User_talk:NottNott/":[[r"""(''')(<small>)(\[\[User_talk:NottNott\|[^\n]+?\]\]''')""", r"""\2\1\3"""]],
 
     # Stripped tags
     r"insource:/font style\=\"arial: ridge/":[[r"""<font( style="arial: ridge[^\n]*#000000)" color=#FF0000([^\n]*?)<font color=#ff0000><font face="arial">([^\n]*?)<\/font><\/font>([^\n]*?)<\/font>([^\n]*?)<font color=#FF0000><font face="arial">([^\n]*?)<\/font><\/font>([^\n]*?)<font color=#000000><font face="arial">([^\n]*?)<\/font><\/font>""", r"""<span\1; color: #FF0000"\2<span style="color:#ff0000; font-family: arial">\3</span>\4</span>\5<span style="color:#FF0000; font-family: arial">\6</span>\7<span style="color:#000000; font-family: arial">\8</span>"""],
@@ -20,7 +22,7 @@ regexes = {
     r"insource:/help out!\n\<\/font>/":[[r"""(Visit the \[\[Wikipedia:WikiProject Articles for creation\/March 2013 Backlog Elimination Drive\|drive's page\]\] and help out!)\n<\/font>""", r"""\1"""]],
     r"insource:/You can find more information on the case subpage/ insource:/\]\]\.\<\/center>\<br>/":[[r"""(, \[\[Wikipedia:Requests for mediation\/.*?\]\]\.)<\/center>""", r"""\1"""]],
     r"insource:/''\<sup\>\[\[User:sillybillypiggy\/guestbook\|''\¡SIGN NOW OR ELSE\!''\]\]\<\/sup\>[^']/":[[r"""(gy'''<\/span>\]\])''""", r"""\1"""]],
-    r"insource:/\[\[User talk:Intesvensk\|\<span style=\"color:gold;\"\>'''sv\&\#603;nsk'''''\<\/span\>\]\]/":[[r"""(User talk:Intesvensk\|[^\n]*?nsk''')''<\/span>""", r"""\1\2"""]],
+    r"insource:/\[\[User talk:Intesvensk\|\<span style=\"color:gold;\"\>'''sv\&\#603;nsk'''''\<\/span\>\]\]/":[[r"""(User talk:Intesvensk\|[^\n]*?nsk''')''(<\/span>)""", r"""\1\2"""]],
     r"insource:/\[\[User talk:Kinaro\|\(talk\)'''\]\]/":[[r"""(\|\(talk\))'''""", r"""\1"""]],
     r"insource:/\[\[User talk:Neranei\|\<span / insource:/\(talk\)\<\/span>\<\/font>\]\]/":[[r"""(>\(talk\)[^\n]*?)<\/font>""", r"""\1"""]],
     r"insource:/e\<\/small\>!\<\/span\>\]\]\<\/sup\>\<\/span\> /":[[r"""(<\/small>!<\/span>\]\]<\/sup>)<\/span>""", r"""\1"""]],
@@ -31,6 +33,7 @@ regexes = {
     r"insource:/August 2014 \(UTC\)\<\/div>\<\!\-\-Template:Afc decline\-\->\<\/div>/":[[r"""(<div.*?File:AFC-Logo_Decline\.svg.*?,\s\d{1,2}\sAugust\s2014\s\(UTC\))<\/div>(<!--Template:Afc decline)""", r"""\1\2"""]],
     r"insource:/September 2014 \(UTC\)\<\/div>\<\!\-\-Template:Afc decline\-\->\<\/div>/":[[r"""(<div.*?File:AFC-Logo_Decline\.svg.*?,\s\d{1,2}\sSeptember\s2014\s\(UTC\))<\/div>(<!--Template:Afc decline)""", r"""\1\2"""]],
     r"insource:/October 2014 \(UTC\)\<\/div>\<\!\-\-Template:Afc decline\-\->\<\/div>/":[[r"""(<div.*?File:AFC-Logo_Decline\.svg.*?,\s(?:[1-9]|1[0-9]|2[0-9])\sOctober\s2014\s\(UTC\))<\/div>(<!--Template:Afc decline)""", r"""\1\2"""]],
+    r"insource:/Complete list of Wikipedias\]\]\<\/strong\>'''\<\/div\>/":[[r"""^(<div[^\n]*?list of Wikipedias\]\]<\/strong>)'''(<\/div>)""", r"""\1\2"""]],
 
     # Missing end tags
     r"insource:/\|\<center\>..Image\:AnimWIKISTAR-laurier-WT\.gif\|AnimWIKISTAR-laurier-WT\.gif...\<big\>\<center\>/":[[r"""<center>\[\[Image:AnimWIKISTAR-laurier-WT.gif\|AnimWIKISTAR-laurier-WT.gif\]\]""", r"""[[Image:AnimWIKISTAR-laurier-WT.gif|AnimWIKISTAR-laurier-WT.gif|center]]"""],
@@ -63,6 +66,7 @@ regexes = {
     r"insource:/\'\'\'\'\'\[\[User\:Chill\ doubt\|\<span\ style\=\"background\:\#008\;color\:\#fff\"\>•C\<span\ style\=\"background\:\#206\"\>H\<span\ style\=\"background\:\#504\"\>ILL\<span\ style\=\"background\:\#702\"\>DO\<span\ style\=\"background\:\#a00\"\>UBT•\<\/span\>\<\/span\>\<\/span\>\<\/span\>\<\/span\>\]\]\'\'\'\ /":[[r"""('{5}\[\[User:Chill doubt\|[^\n]*\]\]''')(?!'')""", r"""\1''"""]],
     r"insource:/\[\[User:Linguisticgeek\|\<span style=\"color:\#AA22CC;\"\>Linguistic\<\/span\>\]\]'''\[\[User_ talk:Linguisticgeek\|\<span style=\"color:\#2B18BA;\"\>Geek\<\/span\>\]\][^']/":[[r"""(\[\[User:Linguisticgeek\|<span[^\n]*?\]\]'''[^\n]*?<\/span>\]\])(?!''')""", r"""\1'''"""]],
     r"insource:/\<\/small>\<p>\<\/div>\<\!\-\- Template:Blocked talk\-revoked\-notice \-\->/":[[r"""(<\/small>)<p>(<\/div><!-- Template:Blocked talk-revoked-notice -->)""", r"""\1\2"""]],
+    r"insource:/\<center>A friendly reminder from the Adopt\-a\-User project \=\)\n\|\-/":[[r"""<center>(A friendly reminder from the Adopt[^\n]+=\))(\n\|-)""", r"""{{center|1=\1}}\2"""]],
 
     # Obsolete center tags
     r"insource:/\<center>\<big>Please join us in[^\n]*?\<\/big>\<\/center>/":[[r"""<center>(<big>Please join us in[^\n]*?<\/big>)<\/center>""", r"""{{center|1=\1}}"""]],
@@ -72,6 +76,8 @@ regexes = {
     r"insource:/\<center\>\{\{Quote frame\|The City of Chula Vista Public Library does not advocate nor endorse the views or positions expressed by the users of its facilities.\|Chula Vista Public Library Meeting Room Policy\}\}\<\/center\>/":[[r"""<center>([^\n]*?Policy\}\})<\/center>""", r"""{{center|1=\1}}"""]],
     r"insource:/\<center\>\<small\>Got any suggestions\?/":[[r"""(<br \/>)<center>(<small>Got any suggestions\?[^\n]*?)<\/center>""", r"""\1{{center|1=\2}}"""]],
     r"insource:/featured picture\]\] status\'\'\'\<\/center\>/":[[r"""<center>(\[\[Image:Cscr-featured\.svg.*?)<\/center>""", r"""{{center|1=\1}}"""]],
+    r"insource:/\<center\>\<span style\=\"font-size: 85%;\"\>/":[[r"""('''\[\[Wikipedia:WikiProject Military history\|)<font color=(darkslategray)>([^\n]+?)<\/font>(\]\]''')""", r"""\1<span style="color: \2;">\3</span>\4"""],
+                                                                 [r"""<center>(<span style="font-size: 85%;">)\n(.*?<\/span>)<\/center>""", r"""{{center|1=\1\2}}"""]],
 
     # Invalid font tags
     r"insource:/\<font *\= *[+\-\d]\d*\>/":[[r"""<font *\= *([+\-\d]\d*)\>""", r"""<font size="\1">"""]],
