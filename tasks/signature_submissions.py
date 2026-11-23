@@ -20,14 +20,13 @@ regexes = {
     r"insource:/font style\=\"arial: ridge/":[[r"""<font( style="arial: ridge[^\n]*#000000)" color=#FF0000([^\n]*?)<font color=#ff0000><font face="arial">([^\n]*?)<\/font><\/font>([^\n]*?)<\/font>([^\n]*?)<font color=#FF0000><font face="arial">([^\n]*?)<\/font><\/font>([^\n]*?)<font color=#000000><font face="arial">([^\n]*?)<\/font><\/font>""", r"""<span\1; color: #FF0000"\2<span style="color:#ff0000; font-family: arial">\3</span>\4</span>\5<span style="color:#FF0000; font-family: arial">\6</span>\7<span style="color:#000000; font-family: arial">\8</span>"""],
                                               [r"""<font( style="arial: ridge 2px #FF0000;")>(.*?)(<font color=#FF0000><font face="arial">)(.*?)(<\/font><\/font>)(.*?)<\/font>(.*?)\3(.*?)\5(.*?)<font color=#000000><font face="arial">(.*?)\5""", r"""<span\1>\2<span style="color: #FF0000; font-family: arial;">\4</span>\6</span>\7<span style="color: #FF0000; font-family: arial;">\8</span>\9<span style="color: #000000; font-family: arial;">\10</span>"""]],
     r"insource:/help out!\n\<\/font>/":[[r"""(Visit the \[\[Wikipedia:WikiProject Articles for creation\/March 2013 Backlog Elimination Drive\|drive's page\]\] and help out!)\n<\/font>""", r"""\1"""]],
-    r"insource:/You can find more information on the case subpage/ insource:/\]\]\.\<\/center>\<br>/":[[r"""(, \[\[Wikipedia:Requests for mediation\/.*?\]\]\.)<\/center>""", r"""\1"""]],
+    r"insource:/You can find more information on the case subpage/ insource:/\]\]\.\<\/center>\<br>/":[[r"""(, \[\[Wikipedia:Requests for mediation\/[^\n]*?\]\]\.)<\/center>""", r"""\1"""]],
     r"insource:/''\<sup\>\[\[User:sillybillypiggy\/guestbook\|''\¡SIGN NOW OR ELSE\!''\]\]\<\/sup\>[^']/":[[r"""(gy'''<\/span>\]\])''""", r"""\1"""]],
     r"insource:/\[\[User talk:Intesvensk\|\<span style=\"color:gold;\"\>'''sv\&\#603;nsk'''''\<\/span\>\]\]/":[[r"""(User talk:Intesvensk\|[^\n]*?nsk''')''(<\/span>)""", r"""\1\2"""]],
     r"insource:/\[\[User talk:Kinaro\|\(talk\)'''\]\]/":[[r"""(\|\(talk\))'''""", r"""\1"""]],
-    r"insource:/\[\[User talk:Neranei\|\<span / insource:/\(talk\)\<\/span>\<\/font>\]\]/":[[r"""(>\(talk\)[^\n]*?)<\/font>""", r"""\1"""]],
+    r"insource:/\[\[User talk:Neranei\|\<span / insource:/\(talk\)\<\/span>\<\/font>\]\]/":[[r"""(<span[^\n>]*?>\(talk\)<\/span>)<\/font>""", r"""\1"""]],
     r"insource:/e\<\/small\>!\<\/span\>\]\]\<\/sup\>\<\/span\> /":[[r"""(<\/small>!<\/span>\]\]<\/sup>)<\/span>""", r"""\1"""]],
-    r"insource:/Ankit Maity\'\'\'\<\/span\>\]\]\<\/font\>/":[[r"""(ity'''.*)<\/font>""", r"""\1"""]],
-    r"""insource:"Directory of species" insource:/\<\/tr\>\<tr\>/ insource:/sister\-projects\-list/""":[[r"""(<div id="sister-projects-list" class="layout plainlinks">.*?)(<\/tr><tr>\n)(.*?)\2(.*?)\2""", r"""\1\3\4"""]],
+    r"insource:/Ankit Maity\'\'\'\<\/span\>\]\]\<\/font\>/":[[r"""(Maity'''<\/span>\]\])<\/font>""", r"""\1"""]],
     r"insource:/June 2014 \(UTC\)\<\/div>\<\!\-\-Template:Afc decline\-\->\<\/div>/":[[r"""(<div.*?File:AFC-Logo_Decline\.svg.*?,\s(?:[6-9]|1[0-9]|2[0-9]|30)\sJune\s2014\s\(UTC\))<\/div>(<!--Template:Afc decline)""", r"""\1\2"""]],
     r"insource:/July 2014 \(UTC\)\<\/div>\<\!\-\-Template:Afc decline\-\->\<\/div>/":[[r"""(<div.*?File:AFC-Logo_Decline\.svg.*?,\s\d{1,2}\sJuly\s2014\s\(UTC\))<\/div>(<!--Template:Afc decline)""", r"""\1\2"""]],
     r"insource:/August 2014 \(UTC\)\<\/div>\<\!\-\-Template:Afc decline\-\->\<\/div>/":[[r"""(<div.*?File:AFC-Logo_Decline\.svg.*?,\s\d{1,2}\sAugust\s2014\s\(UTC\))<\/div>(<!--Template:Afc decline)""", r"""\1\2"""]],
@@ -44,10 +43,9 @@ regexes = {
     r"insource:/\[\[Special:Contributions\/Gilo1969\|\<span style=\"color: white; background: red; font-family: 'Arial Rounded MT Bold',Arial,Sans-serif\"\>\&nbsp;A\&\]\]/":[[r"""(Special:Contributions\/Gilo1969.*?A&)""", r"""\1</span>"""]],
     r"insource:/\'\'\'\'\'..WP\:ADOPT\|Get adopted..\'\'.\|-/":[[r"""('''''\[\[WP:ADOPT\|Get adopted\]\]'')(\n\|)""", r"""\1'''\2"""]],
     r"insource:/quote  \= You may also wish to consider using a Wizard to help you create articles\. See the ..Wikipedia\:Article wizard\|Article Wizard..\.\'\'\'\'\'. \|/":[[r"""(\|Article Wizard\]\].)'''''""", r"""\1"""]],
-    r"insource:/\'\'The\ following\ discussion\ is\ preserved\ as\ an\ archive\ of\ a\ \[\[wikipedia\:requests\ for\ adminship\|request\ for\ adminship\]\]\ that\ \'\'\'did\ not\ succeed\'\'\'\.\ \<strong\ style\=\"color\:red\"\>Please\ do\ not\ modify\ it\.\<\/strong\>\[\[Category\:Unsuccessful\ requests\ for\ adminship\|\{\{SUBPAGENAME\}\}\]\][^']/":[[r"""(:''The following discussion.*?\]\])$""", r"""\1''"""]],
+    r"insource:/\'\'The\ following\ discussion\ is\ preserved\ as\ an\ archive\ of\ a\ \[\[wikipedia\:requests\ for\ adminship\|request\ for\ adminship\]\]\ that\ \'\'\'did\ not\ succeed\'\'\'\.\ \<strong\ style\=\"color\:red\"\>Please\ do\ not\ modify\ it\.\<\/strong\>\[\[Category\:Unsuccessful\ requests\ for\ adminship\|\{\{SUBPAGENAME\}\}\]\][^']/":[[r"""(:''The following discussion[^\n]*?\}\}\]\])$""", r"""\1''"""]],
     r"insource:/\n\* \'\'\'\[\[Wikipedia\:Selected anniversaries\/\w*\|Archive\]\]\n/":[[r"""(\* '''\[\[Wikipedia:Selected anniversaries\/\w+\|Archive\]\])$""", r"""\1'''"""]],
     r"insource:/\<span style\=\"font\-family:Ubuntu;\">\'\'\'\[\[User:Thepenguin9\|\<span style\=\"color\:\#5828ee\">Thepenguin9\<\/span>\]\]/":[[r"""('''\[\[User:Thepenguin9\|[^\n]*?\]\])(?!''')""", r"""\1'''"""]],
-    r"insource:/how articles should be written\.\<\/li>\s\<\/td>/":[[r"""(<tr><td>\n<ul style=.*?<\/li>\n)(<\/td><\/tr>)""", r"""\1</ul>\n\2"""], [r"""(Image:Evolution-tasks2\.png.*?<\/li>\n)(<\/td><\/tr>)""", r"""\1</ul>\n\2"""]],
     r"insource:/\'\'What would you like to change about that\?[^\']+/":[[r"""(; ''What[^\n]*?\?)$""", r"""\1''"""]],
     r"insource:/\<big\>\<big\>\<big\>\<big\>I am now an admin!!!\<\/big\>\<big\>\<\/big\>\<\/big\>/":[[r"""(<big>)\1{3}(I am now an admin!{3})(<\/big>)<big>\3\3""", r"""\1\1\1\1\2\3\3\3\3"""]],
     r"insource:/\<font color\=\"\#660000\"\>```\[\[User\: Buster7/ insource:/black\"\> Talk\<\/em\>\'\'\'\]\]\<\/small\>[^\<]/":[[r"""(<span class="plainlinks"[^\n]*?>)<font color="#660000">([^\n]*?<\/small>)""", r"""\1\2</span>"""]],
@@ -59,8 +57,8 @@ regexes = {
     r"insource:/\'\'\'\&nbsp\;\&\#124\;\&nbsp\;\[\[User\_talk\:Gordonrox24\|\<sup\>\<span\ style\=\"font-family\:Arial\;color\:red\"\>\'\'Talk\'\'\<\/span\>\<\/sup\>\]\][^']/":[[r"""('''&nbsp;[^\n]*?Gordonrox24[^\n]*?\]\])(?!''')""", r"""\1'''"""]],
     r"insource:/>\'\'\'Happy\<\/span>/":[[r"""(\[\[User:Happysailor\|<span[^\n]*?>)'''([^\n]*?sailor)'''(<\/span>\]\])""", r"""'''\1\2\3'''"""]],
     r"insource:/\<hr\/>\<p>\<small>\'\'\'Notice to administrators:\'\'\'.*?\<\/small\>\<\/div\>/":[[r"""(<hr\/>)<p>([^\n]*?<\/small><\/div>)""", r"""\1\2"""]],
-    r"insource:/[^']\[\[User:Tofutwitch11\|\<span style='font-family: \"Arial Black\"; color:Teal'\>\<big\>T\<\/big\>\<small\>ofutwitch11\<\/small\>\<\/span\>\]\]''' \<sup\>\<small\>\[\[User talk:Tofutwitch11\|\<span style=\"color:Orange;\"\>\(T\<small\>ALK\<\/small\>\)\<\/span\>\]\]\<\/small\>\<\/sup\>[^']/":[[r"""(\[\[User:Tofutwitch11\|<span[^\n]*?\]\]'''[^\n]*?<\/small><\/sup>)(?!''')""", r"""\1''''"""]],
-    r"insource:/\[\[User\:Jeremjay24\|\<span\ style\=\"font-family\:Tahoma\;color\:\#FF8040\"\>Jeremjay24\<\/span\>\]\]\'\'\'\&nbsp\;\[\[User_talk\:Jeremjay24\|\<sub\>\<span\ style\=\"font-family\:Tahoma\;color\:green\"\>\'\'msg\'\'\<\/span\>\<\/sub\>\]\]/":[[r"""(\[\[User:Jeremjay24\|<span[^\n]*?\]\]'''.*?<\/sub>\]\])(?!''')""", r"""\1'''"""]],
+    r"insource:/[^']\[\[User:Tofutwitch11\|\<span style='font-family: \"Arial Black\"; color:Teal'\>\<big\>T\<\/big\>\<small\>ofutwitch11\<\/small\>\<\/span\>\]\]''' \<sup\>\<small\>\[\[User talk:Tofutwitch11\|\<span style=\"color:Orange;\"\>\(T\<small\>ALK\<\/small\>\)\<\/span\>\]\]\<\/small\>\<\/sup\>[^']/":[[r"""(\[\[User:Tofutwitch11\|<span[^\n]*?\]\]'''[^\n]*?<\/small><\/sup>)(?!''')""", r"""\1'''"""]],
+    r"insource:/\[\[User\:Jeremjay24\|\<span\ style\=\"font-family\:Tahoma\;color\:\#FF8040\"\>Jeremjay24\<\/span\>\]\]\'\'\'\&nbsp\;\[\[User_talk\:Jeremjay24\|\<sub\>\<span\ style\=\"font-family\:Tahoma\;color\:green\"\>\'\'msg\'\'\<\/span\>\<\/sub\>\]\]/":[[r"""(\[\[User:Jeremjay24\|<span[^\n]*?\]\]'''[^\n]*?<\/sub>\]\])(?!''')""", r"""\1'''"""]],
     r"insource:/\[\[User:Wifione\|''\<span style=\"color: blue; text-shadow:silver 0.3em 0.3em 0.1em\"\>▒  ♪ ♫ Wifione ♫ ♪  ▒\<\/span\>\]\]/":[[r"""(\[\[User:Wifione\|''<span[^\n]*?<\/span>)(\]\])""", r"""\1''\2"""]],
     r"insource:/\[\[User:AlexJFox\|'''\<span style=\"background-color:\#CCCCCC\"\>\<span style=\"color:red\"\>\<sup\>Alex\<\/sup\>\<\/span\> \<span style=\"color:white\"\>\<small\>J\<\/small\>\<\/span\> \<span style=\"color:blue\"\>\<sub\>Fox\<\/sub\>\<\/span\>'''\]\]/":[[r"""(\[\[User:AlexJFox\|'''<span[^\n]*?<\/span>)('''\]\])""", r"""\1</span>\2"""]],
     r"insource:/\'\'\'\'\'\[\[User\:Chill\ doubt\|\<span\ style\=\"background\:\#008\;color\:\#fff\"\>•C\<span\ style\=\"background\:\#206\"\>H\<span\ style\=\"background\:\#504\"\>ILL\<span\ style\=\"background\:\#702\"\>DO\<span\ style\=\"background\:\#a00\"\>UBT•\<\/span\>\<\/span\>\<\/span\>\<\/span\>\<\/span\>\]\]\'\'\'\ /":[[r"""('{5}\[\[User:Chill doubt\|[^\n]*\]\]''')(?!'')""", r"""\1''"""]],
@@ -70,14 +68,15 @@ regexes = {
 
     # Obsolete center tags
     r"insource:/\<center>\<big>Please join us in[^\n]*?\<\/big>\<\/center>/":[[r"""<center>(<big>Please join us in[^\n]*?<\/big>)<\/center>""", r"""{{center|1=\1}}"""]],
-    r"insource:/\<small\>\<center\>This message delivered by \[\[User:MediationBot/":[[r"""(<small>)<center>(This message delivered.*?directly\]\]\.)<\/center>(<\/small>)""", r"""{{center|1=\1\2\3}}"""]],
+    r"insource:/\<small\>\<center\>This message delivered by \[\[User:MediationBot/":[[r"""(<small>)<center>(This message delivered[^\n]*?directly\]\]\.)<\/center>(<\/small>)""", r"""{{center|1=\1\2\3}}"""]],
     r"insource:/\<center\>\nThis page is an archive and its contents should be preserved in their current form;\<br\>\nany comments regarding this page should be directed to \[\[Wikipedia talk:In the news\]\]\. Thanks.\n\<\/center\>/":[[r"""<center>([^\n]*?Thanks\.\n)<\/center>""", r"""<div class="center">\1</div>"""]],
-    r"insource:/\<center>\[\[File:This month in GLAM/":[[r"""<center>(.*?\/Newsletter\]\])<\/center>""", r"""\1"""]],
+    r"insource:/\<center>\[\[File:This month in GLAM/":[[r"""<center>([^\n]*?\/Newsletter\]\])<\/center>""", r"""\1"""]],
     r"insource:/\<center\>\{\{Quote frame\|The City of Chula Vista Public Library does not advocate nor endorse the views or positions expressed by the users of its facilities.\|Chula Vista Public Library Meeting Room Policy\}\}\<\/center\>/":[[r"""<center>([^\n]*?Policy\}\})<\/center>""", r"""{{center|1=\1}}"""]],
     r"insource:/\<center\>\<small\>Got any suggestions\?/":[[r"""(<br \/>)<center>(<small>Got any suggestions\?[^\n]*?)<\/center>""", r"""\1{{center|1=\2}}"""]],
     r"insource:/featured picture\]\] status\'\'\'\<\/center\>/":[[r"""<center>(\[\[Image:Cscr-featured\.svg.*?)<\/center>""", r"""{{center|1=\1}}"""]],
     r"insource:/\<center\>\<span style\=\"font-size: 85%;\"\>/":[[r"""('''\[\[Wikipedia:WikiProject Military history\|)<font color=(darkslategray)>([^\n]+?)<\/font>(\]\]''')""", r"""\1<span style="color: \2;">\3</span>\4"""],
                                                                  [r"""<center>(<span style="font-size: 85%;">)\n(.*?<\/span>)<\/center>""", r"""{{center|1=\1\2}}"""]],
+    r"insource:/\<center\>\<small\>\[\[outreach:GLAM/Newsletter\|[^\n]*?Single-page\]\]\<\/small\>\<\/center\>/":[[r"""(\| *)<center>(<small>\[\[outreach:GLAM/Newsletter\|[^\n]*?Single-page\]\]</small>)</center>""", r"""\1{{center|1=\2}}"""]],
 
     # Invalid font tags
     r"insource:/\<font *\= *[+\-\d]\d*\>/":[[r"""<font *\= *([+\-\d]\d*)\>""", r"""<font size="\1">"""]],
@@ -109,8 +108,10 @@ pages = list(set(pages))
 if "Wikipedia:Linter/Signature submissions" in pages:
     pages.pop(pages.index("Wikipedia:Linter/Signature submissions"))
 
+i, total = 0, len(pages)
 for page in pages:
-    print("Signature submissions: {} ({}/{})".format(page, pages.index(page)+1, len(pages)))
+    i += 1
+    print("Signature submissions: {} ({}/{})".format(page, i, total))
     page = pywikibot.Page(site, page)
     text = page.text
     old_text = text
