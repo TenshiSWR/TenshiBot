@@ -76,7 +76,7 @@ regexes = {
     r"insource:/featured picture\]\] status\'\'\'\<\/center\>/":[[r"""<center>(\[\[Image:Cscr-featured\.svg.*?)<\/center>""", r"""{{center|1=\1}}"""]],
     r"insource:/\<center\>\<span style\=\"font-size: 85%;\"\>/":[[r"""('''\[\[Wikipedia:WikiProject Military history\|)<font color=(darkslategray)>([^\n]+?)<\/font>(\]\]''')""", r"""\1<span style="color: \2;">\3</span>\4"""],
                                                                  [r"""<center>(<span style="font-size: 85%;">)\n(.*?<\/span>)<\/center>""", r"""{{center|1=\1\2}}"""]],
-    r"insource:/\<center\>\<small\>\[\[outreach:GLAM/Newsletter\|[^\n]*?Single-page\]\]\<\/small\>\<\/center\>/":[[r"""(\| *)<center>(<small>\[\[outreach:GLAM/Newsletter\|[^\n]*?Single-page\]\]</small>)</center>""", r"""\1{{center|1=\2}}"""]],
+    r"insource:/\<center\>\<small\>\[\[outreach:GLAM/Newsletter\|[^\n]*?Single-page\]\]\<\/small\>\<\/center\>/":[[r"""(\| *)<center>(<small>\[\[outreach:GLAM/Newsletter\|[^\n]*?Single-page\]\]</small>)</center>""", r"""\1\2"""]],
 
     # Invalid font tags
     r"insource:/\<font *\= *[+\-\d]\d*\>/":[[r"""<font *\= *([+\-\d]\d*)\>""", r"""<font size="\1">"""]],
