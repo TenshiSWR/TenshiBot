@@ -47,9 +47,11 @@ def load_task(task: str, task_number: int | str, site_name: str = "wikipedia:en"
     print("Task {} ({}) started at {}".format(task_number, task, datetime.utcnow().strftime("[%Y-%m-%d %H:%M:%S]")))
     _ = queryandfetchall("SELECT * FROM task_status WHERE task = %(task)s;", {"task": task})
     for item in _:
-        if item[4] is None or item[4] == site_name:
+        if item[4] == site_name:
             queryandclose("UPDATE task_status SET task_number = %(task_number)s, start = %(start)s, site_name = %(site_name)s, status = 'Running' WHERE task = %(task)s AND site_name = %(site_name)s;", {"task_number": task_number, "start": datetime.utcnow(), "site_name": site_name, "task": task})
             break
+        elif item[4] is None:
+            queryandclose("UPDATE task_status SET task_number = %(task_number)s, start = %(start)s, site_name = %(site_name)s, status = 'Running' WHERE task = %(task)s AND site_name = NULL;", {"task_number": task_number, "start": datetime.utcnow(), "site_name": site_name, "task": task})
     else:
         queryandclose("INSERT INTO task_status(task, task_number, start, site_name, status) VALUES(%(task)s, %(task_number)s, %(start)s, %(site_name)s, 'Running');", {"task": task, "task_number": task_number, "start": datetime.utcnow(), "site_name": site_name})
     try:
