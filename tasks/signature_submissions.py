@@ -27,7 +27,7 @@ regexes = {
     # Missing end tags
     r"insource:/\'\'The\ following\ discussion\ is\ preserved\ as\ an\ archive\ of\ a\ \[\[wikipedia\:requests\ for\ adminship\|request\ for\ adminship\]\]\ that\ \'\'\'did\ not\ succeed\'\'\'\.\ \<strong\ style\=\"color\:red\"\>Please\ do\ not\ modify\ it\.\<\/strong\>\[\[Category\:Unsuccessful\ requests\ for\ adminship\|\{\{SUBPAGENAME\}\}\]\][^']/":[[r"""(:''The following discussion[^\n]*?\}\}\]\])$""", r"""\1''"""]],
     r"insource:/\'\'What would you like to change about that\?[^\']+/":[[r"""(; ''What[^\n]*?\?)$""", r"""\1''"""]],
-    r"insource:/Finally, please do your best to[^\n]*? Happy editing![^\n]*?\(UTC\)\n\|\}/":[[r"""(Finally, please do your best to (?:''')?always fill in the \[\[Help:Edit summary\|edit summary\]\] field(?:''')?[^\n]*?Happy editing![^\n]*?\(UTC\))(\n\|\})""", r"""\1</div>\2"""]],
+    r"insource:/Thank you for[^\n]*?Happy [Ee]diting![^\n]*?\(UTC\)\n\|\}/":[[r"""(Thank you for[^\n]*?Happy [Ee]diting![^\n]*?\(UTC\))(\n\|\})""", r"""\1</div>\2"""]],
     r"insource:/\|\<font color\=\"[a-z]*\"\>\'[\' A-Za-z0-9\!]*.\|-/":[[r"""(^\|style=".*?height: 1\.1em;)(" \|)<font color="([a-z]+)">""", r"""\1 color: \3;\2"""]],
     r"insource:/>\'\'\'Happy\<\/span>/":[[r"""(\[\[User:Happysailor\|<span[^\n]*?>)'''([^\n]*?sailor)'''(<\/span>\]\])""", r"""'''\1\2\3'''"""]],
 
