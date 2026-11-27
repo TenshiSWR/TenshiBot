@@ -36,7 +36,7 @@ regexes = {
     r"insource:/\|\<span style\=\"color:green;\"\>Richerman\<\/span\>\'\'\]\]/":[[r"""(Richerman\|<span[^>]*?>Richerman<\/span>)''(\]\])""", r"""\1\2"""]],
     r"insource:/''\[\[User:TheChampionMan1234\|The\]\]'''\[\[User talk:TheChampionMan1234\|ChampionMan\]\]'''\[\[Special:Contributions\/TheChampionMan1234\|1234\]\][^']/":[[r"""(''\[\[User:TheChampionMan1234[^\n]*?\|1234\]\])(?!'')""", r"""\1''"""]],
     r"insource:/\[\[User\:RickK\|Rick\]\]\'\'\'\[\[User talk\:RickK\|K\]\][^']/":[[r"""(\[\[User:RickK\|Rick\]\]'''[^\n]*?\|K\]\])(?!''')""", r"""\1'''"""]],
-    r"insource:/''Best wishes for your Christmas\<br>Is all you get from me[^\n]*?An' you never would be broke.\"[^']/":[[r"""(''Best wishes for your Christmas[^\n]*?An' you never would be broke\.")(?!'')"""], r"""\1''"""],
+    r"insource:/''Best wishes for your Christmas\<br>Is all you get from me[^\n]*?An' you never would be broke.\"[^']/":[[r"""(''Best wishes for your Christmas[^\n]*?An' you never would be broke\.")(?!'')""", r"""\1''"""]],
     r"insource:/''\"Here's hoping[^\n]*?sorrow don't find you\.\"[^\n']*?\n/":[[r"""(''"Here's hoping[^\n]*?sorrow don't find you\.")(?!'')([^\n']*?$)""", r"""\1''\2"""]],
 
     # Obsolete center tags
