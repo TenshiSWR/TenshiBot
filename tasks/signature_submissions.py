@@ -23,7 +23,7 @@ regexes = {
     # Missing end tags
     r"insource:/\<div style=\"margin:[^\n]*?Thank you for[^\n]*?Happy [Ee]diting![^\n]*?\(UTC\) *?[\n\r]\|\}/":[[r"""(<div style="margin:[^\n]*?Thank you for[^\n]*?Happy [Ee]diting![^\n]*?\(UTC\) *?)([\n\r]\|\})""", r"""\1</div>\2"""]],
     r"insource:/\|\<font color\=\"[a-z]*\"\>\'[\' A-Za-z0-9\!]*.\|-/":[[r"""(^\|style=".*?height: 1\.1em;)(" \|)<font color="([a-z]+)">""", r"""\1 color: \3;\2"""]],
-    r"insource:/\>\'\'\'Caballero\</":[[r"""(?<!''')(\[\[User:Caballero[^\n]*?)'''(Caballero[^\n]*?<\/u>)'''(\]\]<\/sup>)""", r"""'''\1\2\3'''"""]],
+    r"insource:/\>\'\'\'Caballero\</":[[r"""(?<!''')(\[\[User:Caballero\|<[^\n]*?)'''(Caballero[^\n]*?<\/u>)'''(\]\]<\/sup>)""", r"""'''\1\2\3'''"""]],
     r"insource:/\]\] \(\[\[User talk:Sabrebd\|talk\]\]\)\<\/span> \d/":[[r"""('''<span style="font-family:Black Chancery;text:grey 0.3em 0.3em 0.1em;">\[\[User:Sabrebd[^\n]*?\|talk\]\]\)<\/span>)(?!''')""", r"""\1'''"""]],
     r"insource:/Greetings! You have been randomly[^\n]*?service\]\]\.''[^\n]*?\(UTC\) *\n/":[[r"""(Greetings! You have been randomly(?:(?:(?!(?<!')''(?!')).)*?)service\]\]\.)''([^\n]*?\(UTC\))(?!'')""", r"""\1\2"""]],
     r"insource:/\'\'\'\[\[Wikipedia:Five pillars\|The five pillars of Wikipedia\]\] • /":[[r"""({\| width=100%.*?\|)<center>(.*?Welcome to Wikipedia!\]\]<\/big><\/big>)(?<!''')(.*?)<\/center>(.*?The five pillars of Wikipedia\]\])(?<!''')(.*?\{\{col-end\}\}[\n\r])""", r"""\1{{center|1=\2}}\3'''\4'''\5{{col-end}}\n"""]],
