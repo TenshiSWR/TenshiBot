@@ -13,32 +13,39 @@ regexes = {
                                                                                     [r"""<center>(<small>''Ichthus'' is published by.*?</small>)</center>""", r"""{{center|1=\1}}"""],
                                                                                     [r"""<center>(This depiction of the Crucifixion[^\n]*?)\n *<\/center>""", r"""{{center|1=\1}}"""],
                                                                                     [r"""<center>(<small>''Ichthus'' is the newsletter of Christianity[^\n<>]*?<\/small>)<\/center>""", r"""{{center|1=\1}}"""]],
-    r"insource:/\'\'\'\<span style=\"font-family:times new roman;\"\>\[\[User:hmwith\|/":[[r"""(''')(<span style="font-family:times new roman;">)(\[\[User:hmwith\|[^\n]+?\]\]''')""", r"""\2\1\3"""]],
-    r"insource:/\}\}\<\\/div\>/":[[r"""(\}\}<)\\(\/div>)""", r"""\1\2"""]],
 
     # Stripped tags
-    r"insource:/font style\=\"arial: ridge/":[[r"""<font( style="arial: ridge[^\n]*#000000)" color=#FF0000([^\n]*?)<font color=#ff0000><font face="arial">([^\n]*?)<\/font><\/font>([^\n]*?)<\/font>([^\n]*?)<font color=#FF0000><font face="arial">([^\n]*?)<\/font><\/font>([^\n]*?)<font color=#000000><font face="arial">([^\n]*?)<\/font><\/font>""", r"""<span\1; color: #FF0000"\2<span style="color:#ff0000; font-family: arial">\3</span>\4</span>\5<span style="color:#FF0000; font-family: arial">\6</span>\7<span style="color:#000000; font-family: arial">\8</span>"""],
-                                              [r"""<font( style="arial: ridge 2px #FF0000;")>(.*?)(<font color=#FF0000><font face="arial">)(.*?)(<\/font><\/font>)(.*?)<\/font>(.*?)\3(.*?)\5(.*?)<font color=#000000><font face="arial">(.*?)\5""", r"""<span\1>\2<span style="color: #FF0000; font-family: arial;">\4</span>\6</span>\7<span style="color: #FF0000; font-family: arial;">\8</span>\9<span style="color: #000000; font-family: arial;">\10</span>"""]],
     r"insource:/help out!\n\<\/font>/":[[r"""(Visit the \[\[Wikipedia:WikiProject Articles for creation\/[^\n]*?Backlog Elimination Drive\|drive's page\]\] and help out!)\n<\/font>""", r"""\1"""]],
-    r"insource:/''\<sup\>\[\[User:sillybillypiggy\/guestbook\|''\¡SIGN NOW OR ELSE\!''\]\]\<\/sup\>[^']/":[[r"""(gy'''<\/span>\]\])''""", r"""\1"""]],
+    r"insource:/''\<sup\>\[\[User:sillybillypiggy\/guestbook\|''\¡SIGN NOW OR ELSE\!''\]\]\<\/sup\>[^']/":[[r"""(gy'''<\/(?:font|span)>\]\])''""", r"""\1"""]],
     r"insource:/[6-9] June 2014 \(UTC\)\<\/div>\<\!\-\-Template:Afc decline\-\->\<\/div>/":[[r"""(<div.*?File:AFC-Logo_Decline\.svg.*?,\s(?:[6-9]|1[0-9]|2[0-9]|30)\sJune\s2014\s\(UTC\))<\/div>(<!--Template:Afc decline)""", r"""\1\2"""]],
     r"insource:/\d{2} June 2014 \(UTC\)\<\/div>\<\!\-\-Template:Afc decline\-\->\<\/div>/":[[r"""(<div.*?File:AFC-Logo_Decline\.svg.*?,\s(?:[6-9]|1[0-9]|2[0-9]|30)\sJune\s2014\s\(UTC\))<\/div>(<!--Template:Afc decline)""", r"""\1\2"""]],
 
     # Missing end tags
-    r"insource:/\'\'The\ following\ discussion\ is\ preserved\ as\ an\ archive\ of\ a\ \[\[wikipedia\:requests\ for\ adminship\|request\ for\ adminship\]\]\ that\ \'\'\'did\ not\ succeed\'\'\'\.\ \<strong\ style\=\"color\:red\"\>Please\ do\ not\ modify\ it\.\<\/strong\>\[\[Category\:Unsuccessful\ requests\ for\ adminship\|\{\{SUBPAGENAME\}\}\]\][^']/":[[r"""(:''The following discussion[^\n]*?\}\}\]\])$""", r"""\1''"""]],
-    r"insource:/\'\'What would you like to change about that\?[^\']+/":[[r"""(; ''What[^\n]*?\?)$""", r"""\1''"""]],
-    r"insource:/Thank you for[^\n]*?Happy [Ee]diting![^\n]*?\(UTC\)\n\|\}/":[[r"""(Thank you for[^\n]*?Happy [Ee]diting![^\n]*?\(UTC\))(\n\|\})""", r"""\1</div>\2"""]],
+    r"insource:/\<div style=\"margin:[^\n]*?Thank you for[^\n]*?Happy [Ee]diting![^\n]*?\(UTC\) *?[\n\r]\|\}/":[[r"""(<div style="margin:[^\n]*?Thank you for[^\n]*?Happy [Ee]diting![^\n]*?\(UTC\) *?)([\n\r]\|\})""", r"""\1</div>\2"""]],
     r"insource:/\|\<font color\=\"[a-z]*\"\>\'[\' A-Za-z0-9\!]*.\|-/":[[r"""(^\|style=".*?height: 1\.1em;)(" \|)<font color="([a-z]+)">""", r"""\1 color: \3;\2"""]],
-    r"insource:/>\'\'\'Happy\<\/span>/":[[r"""(\[\[User:Happysailor\|<span[^\n]*?>)'''([^\n]*?sailor)'''(<\/span>\]\])""", r"""'''\1\2\3'''"""]],
+    r"insource:/\>\'\'\'Caballero\</":[[r"""(?<!''')(\[\[User:Caballero[^\n]*?)'''(Caballero[^\n]*?<\/u>)'''(\]\]<\/sup>)""", r"""'''\1\2\3'''"""]],
+    r"insource:/\]\] \(\[\[User talk:Sabrebd\|talk\]\]\)\<\/span> \d/":[[r"""('''<span style="font-family:Black Chancery;text:grey 0.3em 0.3em 0.1em;">\[\[User:Sabrebd[^\n]*?\|talk\]\]\)<\/span>)(?!''')""", r"""\1'''"""]],
+    r"insource:/Greetings! You have been randomly[^\n]*?service\]\]\.''/":[[r"""(Greetings! You have been randomly(?:(?:(?!(?<!')''(?!')).)*?)service\]\]\.)''""", r"""\1"""]],
+    r"insource:/\'\'\'\[\[Wikipedia:Five pillars\|The five pillars of Wikipedia\]\] • /":[[r"""({\| width=100%.*?\|)<center>(.*?Welcome to Wikipedia!\]\])(?<!''')(.*?)<\/center>(.*?The five pillars of Wikipedia\]\])(?<!''')(.*?\{\{col-end\}\}[\n\r])""", r"""\1{{center|1=\2}}\3'''\4'''\5\n{{col-end}}"""]],
+    r"insource:/\]\]\'\'\'\<sup\>\[\[User_talk:OlYeller21/ insource:/Talktome\<\/span\>\]\]\<\/sup\> / -insource:/\(UTC\)\'\'\'/":[[r"""('''<sup>\[\[User_talk:OlYeller21[^\n]*?<\/sup>)(?!''')""", r"""\1'''"""]],
+    r"insource:/KuwarOnline\<\/span\>\<\/b\>\]\]\'\'\'/":[[r"""(KuwarOnline<\/span><\/b>\]\])'''""", r"""\1"""]],
+    r"insource:/KuwarOnline\<\/b\>\]\]\'\'\'/":[[r"""(KuwarOnline<\/b>\]\])'''""", r"""\1"""]],
+    r"insource:/\<tt> :D \<\/tt>/":[[r"""<tt>([^<]*?)<\/tt>""", r"""{{mono|\1}}"""],
+                                    [r"""(<div style="margin: 0; background-color:#EEEEFF; font-family: sans-serif; border:1px solid#ff69b4; text-align:left; color:black; padding-left:0.4em; padding-top: 0.2em; padding-bottom: 0.2em;">)<p>""", r"""\1"""]],
+    r"insource:/\'\'The\ following\ discussion\ is\ preserved\ as\ an\ archive\ of\ a\ \[\[wikipedia\:requests\ for\ adminship\|request\ for\ adminship\]\]\ that\ \'\'\'did\ not\ succeed\'\'\'\.\ \<span\ style\=\"color\:red\"\>\'\'\'Please\ do\ not\ modify\ it\.\'\'\'\<\/span\>\[\[Category\:Unsuccessful\ requests\ for\ adminship\|\{\{SUBPAGENAME\}\}\]\][^']/":[[r"""(:''The following discussion[^\n]*?<\/span>[^\n']*?\}\}\]\])$""", r"""\1''"""]],
+    r"insource:/\|\<span style\=\"color:green;\"\>Richerman\<\/span\>\'\'\]\]/":[[r"""(Richerman\|<span[^>]*?>Richerman<\/span>)''(\]\])""", r"""\1\2"""]],
+    r"insource:/''\[\[User:TheChampionMan1234\|The\]\]'''\[\[User talk:TheChampionMan1234\|ChampionMan\]\]'''\[\[Special:Contributions\/TheChampionMan1234\|1234\]\][^']/":[[r"""(''\[\[User:TheChampionMan1234[^\n]*?\|1234\]\])(?!'')""", r"""\1''"""]],
+    r"insource:/\[\[User\:RickK\|Rick\]\]\'\'\'\[\[User talk\:RickK\|K\]\][^']/":[[r"""(\[\[User:RickK\|Rick\]\]'''[^\n]*?\|K\]\])(?!''')""", r"""\1'''"""]],
+    r"insource:/''Best wishes for your Christmas\<br>Is all you get from me[^\n]*?An' you never would be broke.\"[^']/":[[r"""(''Best wishes for your Christmas[^\n]*?An' you never would be broke\.")(?!'')"""], r"""\1''"""],
+    r"insource:/''\"Here's hoping[^\n]*?sorrow don't find you\.\"[^\n']*?\n/":[[r"""(''"Here's hoping[^\n]*?sorrow don't find you\.")(?!'')([^\n']*?$)""", r"""\1''\2"""]],
 
     # Obsolete center tags
-    r"insource:/\<center\>\nThis page is an archive and its contents should be preserved in their current form;\<br\>\nany comments regarding this page should be directed to \[\[Wikipedia talk:In the news\]\]\. Thanks.\n\<\/center\>/":[[r"""<center>(.*?Thanks\.\n)<\/center>""", r"""<div class="center">\1</div>"""]],
-    r"insource:/\<center\>\<small\>Got any suggestions\?/":[[r"""(<br \/>)<center>(<small>Got any suggestions\?[^\n]*?)<\/center>""", r"""\1{{center|1=\2}}"""]],
-    r"insource:/featured picture\]\] status\'\'\'\<\/center\>/":[[r"""<center>(\[\[Image:Cscr-featured\.svg.*?)<\/center>""", r"""{{center|1=\1}}"""]],
+    r"insource:/\<center\>\<small\>Got any suggestions\?/":[[r"""(<br(?: \/)?>)<center>(<small>Got any suggestions\?[^\n]*?)<\/center>""", r"""\1{{center|1=\2}}"""]],
+    r"insource:/featured picture\]\] status\'\'\'\<\/center\>/":[[r"""<center>((?:\[\[Image:Cscr-featured\.svg|'''An image ''edited'')[^\n]*?)<\/center>""", r"""{{center|1=\1}}"""]],
 
     # Invalid font tags
     r"insource:/\<font *\= *[+\-\d]\d*\>/":[[r"""<font *\= *([+\-\d]\d*)\>""", r"""<font size="\1">"""]],
-    r"insource:/\<font family/":[[r"""(<font )family=""", r"""\1face="""]]
+    r"insource:/\<font family=/":[[r"""(<font )family=""", r"""\1face="""]]
 }
 site = pywikibot.Site()
 DEBUG = False
